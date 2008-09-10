@@ -1,0 +1,7 @@
+#summary Usefull links to understand the project.
+
+= Here you can find some links to the usefull information to understand this project. =
+
+|| *Links* || *Description* ||
+||[http://code.google.com/p/msinttypes/ msinttypes] || ISO C9x compliant stdint.h and inttypes.h for Microsoft Visual Studio ||
+||[http://www.stack.nl/~dimitri/doxygen/commands.html Doxygen commands] || Doxygen commands for commenting code||
