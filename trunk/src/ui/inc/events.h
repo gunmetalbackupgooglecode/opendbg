@@ -9,17 +9,17 @@
 #include "debugger.h"
 
 //////////////////////////////////////////////////////////////////////////
-// Класс событий except_event
+// Event class except_event
 class TrcExceptEvent : public wxNotifyEvent
 {
 public:
-	// конструктор по умолчанию
+	// default constructor
 	TrcExceptEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
 	 : wxNotifyEvent(commandType, id)
 	{
 	}
 
-	// конструктор в котором можно задать событие и sesId
+	// constructor via sesId
 	TrcExceptEvent(TRC_EXCEPTION_EVENT except_evt, ULONG sesId,
 	                  wxEventType commandType = wxEVT_NULL, int id = 0)
 	 : wxNotifyEvent(commandType, id),
@@ -28,9 +28,8 @@ public:
 	{
 	}
 
-	// конструктор копирования
-	// без него хуй эти сообщения будут передаваться из потока в поток
-	// с дополнительными данными
+	// copy constructor
+	// should be used to pass event with additional data among diffrent threads
 	TrcExceptEvent(const TrcExceptEvent& event)
 	 : wxNotifyEvent(event)
 	{
@@ -38,23 +37,25 @@ public:
 		this->m_sesId = event.m_sesId;
 	}
 
-	// функция для копирования объекта в новый
+	// object clone function
 	virtual wxEvent *Clone() const
 	{
 		return new TrcExceptEvent(*this);
 	};
 
-		// геттеры
+	// Getters
 	TRC_EXCEPTION_EVENT getExceptEvent();
 	ULONG getSesId();
 
-	// сеттеры
+	// Setters
 	void setExceptEvent(const TRC_EXCEPTION_EVENT& except_event);
 	void setSesId(const ULONG &sesId);
 
 private:
-	TRC_EXCEPTION_EVENT m_except_event; // событие отлачдика TRC_EXCEPTION_EVENT
-	ULONG m_sesId; // идентификатор сессии отладчика
+	// debug event TRC_EXCEPTION_EVENT
+	TRC_EXCEPTION_EVENT m_except_event;
+	// debugger session ID
+	ULONG m_sesId;
 
 private:
 	DECLARE_DYNAMIC_CLASS(TrcExceptEvent)

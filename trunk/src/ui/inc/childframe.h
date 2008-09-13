@@ -27,7 +27,7 @@ public:
 	void OnMove(wxMoveEvent& event);
 	void OnClose(wxCloseEvent& event);
 
-	// у каждого окна должна быть своя сохранялка
+	// each window must have it's own store procedure
 	virtual void SaveParams() = 0;
 	virtual void LoadParams() = 0;
 

@@ -26,7 +26,7 @@
 
 bool IsChainCmd(PUCHAR buff)
 {
-	static const char cmds[] = {0x6E, 0x6C, 0xEE, 0xEC,  0xAC, 0xA6, 0xA4, 0xAA, 0xAE};
+	static const unsigned char cmds[] = {0x6E, 0x6C, 0xEE, 0xEC,  0xAC, 0xA6, 0xA4, 0xAA, 0xAE};
 	if ((buff[0] & 0xFE) != 0xF2)
 		return 0;
 
@@ -81,7 +81,7 @@ DWORD get_ep_rva(PVOID pModBase)
 
 DWORD get_tls_dir(PVOID pModBase, ULONG num)
 {
-	return *(DWORD *)(*(DWORD *)((ULONG)pModBase + 60) + 8 * num + 120 + (ULONG)pModBase);
+	return *(DWORD *)(*(DWORD *)((UINT_PTR)pModBase + 60) + 8 * num + 120 + (UINT_PTR)pModBase);
 }
 
 

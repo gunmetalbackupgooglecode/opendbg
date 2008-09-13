@@ -151,7 +151,7 @@ typedef struct _KTRAP_FRAME
 //
 
     ULONG   ErrCode;	//	64
-    ULONG   Eip;		//	68
+    UINT_PTR   Eip;		//	68
     ULONG   SegCs;		//	6C
     ULONG   EFlags;		//	70
 

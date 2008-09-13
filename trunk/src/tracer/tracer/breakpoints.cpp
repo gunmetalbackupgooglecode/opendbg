@@ -119,10 +119,10 @@ PBREAKPOINT_LIST create_bp(PSESSION_INFO pSess, PVOID addr)
 		{
 			if (dbg_read_memory(pSess->pDbgContext, addr, &pCur->SavedByte, 1, 1))
 			{
-				if (dbg_read_memory(pSess->pDbgContext, (PVOID)((ULONG)addr & 0xFFFFF000), pCur->pHookedMem, 0x1000, 1))
+				if (dbg_read_memory(pSess->pDbgContext, (PVOID)((UINT_PTR)addr & 0xFFFFF000), pCur->pHookedMem, 0x1000, 1))
 				{
-					((BYTE*)pCur->pHookedMem)[(ULONG)addr & 0xFFF] = l_cc; // set int3 here
-					if (dbg_hook_page(pSess->pDbgContext, (PVOID)((ULONG)addr & 0xFFFFF000), pCur->pHookedMem))
+					((BYTE*)pCur->pHookedMem)[(UINT_PTR)addr & 0xFFF] = l_cc; // set int3 here
+					if (dbg_hook_page(pSess->pDbgContext, (PVOID)((UINT_PTR)addr & 0xFFFFF000), pCur->pHookedMem))
 					{
 						OutputDebugString("hidden bp set\n");
 						return pCur;
@@ -214,7 +214,7 @@ void delete_all_breakpoints(PSESSION_INFO pSess)
 		wsprintf(sz, "delete bp at %X\n", pCur->addr);
 		OutputDebugString(sz);
 		pOld = pCur;
-		dbg_write_memory(pSess->pDbgContext, pOld->addr, &pOld->SavedByte, sizeof(BYTE), 1);
+		dbg_write_memory(pSess->pDbgContext, (PVOID)pOld->addr, &pOld->SavedByte, sizeof(BYTE), 1);
 		pCur = pOld->pNext;
 		HeapFree(hHeap, 0, pOld);		
 	}
@@ -247,7 +247,7 @@ TRACERAPI ULONG trc_set_bp(ULONG sesId,ULONG bp_type,ULONG TID,PVOID addr,ULONG 
 
 void restore_bp(PSESSION_INFO pSessData, PTHREAD_DATA pThrd, PVOID addr)
 {
-	CHAR byCC = 0xCC;
+	UCHAR byCC = 0xCC;
 
 	if ( (pSessData->CC_need_addr) && (pSessData->CC_need_addr != addr))	// step after int3 break to rewrite CC
 	{
@@ -623,28 +623,26 @@ ULONG process_bp_break(PSESSION_INFO pSess, PVOID addr, ULONG tid, PULONG lpEvCo
 
 	*lpEvCode = pBp->event_code;
 	ULONG res;
-	ULONG Kind = pBp->Kind;	
+	ULONG Kind = pBp->Kind;
 
 	char sz[256];
 	wsprintf(sz, "  Break Kind = %X\n", Kind);
 	OutputDebugString(sz);
 
 	//////////////////////////////////////////////////////////////////////////
-	//user break	
-	res = (Kind & TRC_BP_USER);	
-	//one-shot
-	res |= (Kind & TRC_BP_ONE_SHOT);
+	//user break || one-shot
+	res = (Kind & TRC_BP_USER) || (Kind & TRC_BP_ONE_SHOT);	
 	delete_bp(pSess, addr, tid, TRC_BP_ONE_SHOT);
 	//trace bp - on thread
 	if (Kind & TRC_BP_THREAD)
 	{
-		res |= search_tid(pBp->pTidList, tid);
+		bool result = search_tid(pBp->pTidList, tid);
 		delete_bp(pSess, addr, tid, TRC_BP_THREAD);
-	}
-	if (res)
-	{
-		OutputDebugString("  TRC_BP_USER\n");		
-		return TRC_BP_USER;
+		if (result)
+		{
+			OutputDebugString("  TRC_BP_USER\n");		
+			return TRC_BP_USER;
+		}
 	}
 
 	OutputDebugString("ret try");
@@ -832,13 +830,13 @@ bool do_set_dr(PSESSION_INFO pSess, PTHREAD_DATA pThrd, int dr_num)
 	{
 		for (dr_num=0; dr_num<4; dr_num++)
 		{
-			(&con.Dr0)[dr_num] = (ULONG)pThrd->breakpoint[dr_num].addr;
+			(&con.Dr0)[dr_num] = (UINT_PTR)pThrd->breakpoint[dr_num].addr;
 			set_dr7(&con.Dr7, dr_num, pThrd->breakpoint[dr_num].type, pThrd->breakpoint[dr_num].range);
 		}
 
 	} else 
 	{
-		(&con.Dr0)[dr_num] = (ULONG)pThrd->breakpoint[dr_num].addr;
+		(&con.Dr0)[dr_num] = (UINT_PTR)pThrd->breakpoint[dr_num].addr;
 		set_dr7(&con.Dr7, dr_num, pThrd->breakpoint[dr_num].type, pThrd->breakpoint[dr_num].range);
 	}
 
