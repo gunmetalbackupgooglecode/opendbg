@@ -1,3 +1,8 @@
+/*! \file ldasm.h
+
+This file contains some stupid functions
+*/
+
 #ifndef _LDASM_
 #define _LDASM_
 
