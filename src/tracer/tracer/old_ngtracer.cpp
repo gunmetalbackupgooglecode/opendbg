@@ -187,12 +187,12 @@ TRACERAPI ULONG trc_attach_to_target(ULONG sesId,ULONG PID,ULONG attachOpts)
 	SESSION_INFO* pCurSessData;	
 	ATTACH_INFO AttachInfo;	
 	CONTEXT Context;
-	PBREAKPOINT_LIST smth;
+	//PBREAKPOINT_LIST smth;
 	PDBG_CONTEXT pDbgContext;
 	PTHREAD_INFO_EX thrd_lst;
 	PMODULE_INFO_EX mod_lst;
 	EVENT_FILTER c_EventFilter;
-	ULONG bp;
+	//ULONG bp;
 
 	OutputDebugString("attaching to target\n");
 
@@ -258,8 +258,8 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 	PTHREAD_INFO_EX thrd_lst; // eax@18
 	PVOID ep_addr; // ebx@22
 	unsigned long cur_tls_addr; // ebx@29
-	PMODULE_LIST main_mod; // eax@18
-	PBREAKPOINT_LIST pBp_ep; // eax@23
+	//PMODULE_LIST main_mod; // eax@18
+	//PBREAKPOINT_LIST pBp_ep; // eax@23
 	ULONG tls_dir_rva; // eax@27
 
 	signed long result; // [sp+18h] [bp-B74h]@6
@@ -344,7 +344,7 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 					{
 //						main_mod->ep_bp_break = 1;
 						OutputDebugString("setting bp in ep\n");
-						ep_addr = (PVOID)((DWORD)image_base + get_ep_rva(&buff));						
+						ep_addr = (PVOID)((UINT_PTR)image_base + get_ep_rva(&buff));						
 						set_bp_one_shot(pCurData, ep_addr);						
 					} else 
 					{
@@ -475,7 +475,7 @@ PBP_LST __cdecl get_local_hws(PTHREAD_DATA pBps)
 	{
 		if (pBps->breakpoint[i].bEnabled)
 		{
-			pList->bp[pList->count].addr = pBps->breakpoint[i].addr;
+			pList->bp[pList->count].addr = (void*)pBps->breakpoint[i].addr;
 			pList->bp[pList->count].range = pBps->breakpoint[i].range;
 			pList->bp[pList->count].type = pBps->breakpoint[i].type;
 			pList->bp[pList->count].TID = (ULONG)pBps->trc_thrd.TID;
@@ -491,7 +491,8 @@ TRACERAPI PSEH_LIST trc_get_seh_chain(ULONG SessId,ULONG tid)
 {
 	PSESSION_INFO pSessItem;
 	PTHREAD_DATA thread_data;
-	ULONG pCurFrame_va, frame_num, pFirstFrame_va;
+	PVOID pCurFrame_va, pFirstFrame_va;
+	ULONG frame_num;
 	EXCEPTION_REGISTRATION SehRec;
 	PSEH_LIST pMem;	
 	int i;
@@ -508,12 +509,12 @@ TRACERAPI PSEH_LIST trc_get_seh_chain(ULONG SessId,ULONG tid)
 	
 	//OutputDebugString("3\n");
 	pFirstFrame_va = pCurFrame_va;
-	for (frame_num = 0; pCurFrame_va != -1; frame_num++)
+	for (frame_num = 0; (UINT_PTR)pCurFrame_va != -1; frame_num++)
 	{
 		OutputDebugString("in enum\n");
 		if (!read_memory(SessId, (PVOID)pCurFrame_va, &SehRec, 8, 1))
 			break;
-		pCurFrame_va = (ULONG)SehRec.prev;
+		pCurFrame_va = SehRec.prev;
 	}
 	
 	//OutputDebugString("4\n");
@@ -529,14 +530,14 @@ TRACERAPI PSEH_LIST trc_get_seh_chain(ULONG SessId,ULONG tid)
 	pCurFrame_va = pFirstFrame_va;		
 	
 	//OutputDebugString("7\n");
-	for (i = 0; i<frame_num; i++) //cycle condition not (addr != -1) but by count, calced in the past
+	for (ULONG i = 0; i<frame_num; i++) //cycle condition not (addr != -1) but by count, calced in the past
 	{
 		OutputDebugString("in write\n");
 		if (!read_memory(SessId, (PVOID)pCurFrame_va, &SehRec, 8, 1))
 			break;
 		pMem->seh[i].frame_addr = pCurFrame_va;
 		pMem->seh[i].handler = SehRec.handler;
-		pCurFrame_va = (ULONG)SehRec.prev;
+		pCurFrame_va = SehRec.prev;
 
 		char sz[256];
 		wsprintf(sz, "pMem->seh[%X].handler = %X\n", i, pMem->seh[i].handler);
@@ -562,7 +563,7 @@ TRACERAPI bool trc_break_on_thread(ULONG SessId, ULONG tid)
 	CONTEXT con;
 	con.ContextFlags = CONTEXT_FULL;
 	dbg_get_thread_ctx(pThrd->dbg_handle, &con);
-	ULONG addr = con.Eip;
+	UINT_PTR addr = con.Eip;
 	if (!set_bp_ex(pSess, (PVOID)addr, TRC_BP_THREAD, tid, TRC_EVENT_BREAKPOINT))
 		return FALSE;
 	dbg_resume_thread(pThrd->dbg_handle);

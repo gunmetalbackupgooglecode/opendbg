@@ -71,7 +71,8 @@ PTHREAD_DATA_EX __cdecl add_thread(PSESSION_INFO pSessData, PTHREAD_START pSmth)
 //10001BA0 - get_thrd_list
 PTHREAD_DATA __cdecl get_thrd_by_tid(PSESSION_INFO pSessDataStruct, ULONG tid)
 {
-	PTHREAD_DATA_EX pFirst, pCur;
+	//PTHREAD_DATA_EX pFirst;
+	PTHREAD_DATA_EX pCur;
 	char OutputStr[256];
 	wsprintf(OutputStr, "ThreadFromId(%x,%x)\n", pSessDataStruct, tid);
 	OutputDebugString(OutputStr);

@@ -26,9 +26,8 @@
 ULONG create_modules(PSESSION_INFO pSessData, PMODULE_INFO_EX pModuleInfoEx)
 {	
 	DLL_LOAD_INFO tmp;
-	int i;
 
-	for (i=0; i<pModuleInfoEx->mod_count ; i++)
+	for (ULONG i=0; i<pModuleInfoEx->mod_count ; i++)
 	{
 		lstrcpyn(tmp.file_name, pModuleInfoEx->modules[i].mod_file, 0x104);
 		tmp.image_size = pModuleInfoEx->modules[i].mod_size;
@@ -43,7 +42,7 @@ ULONG create_modules(PSESSION_INFO pSessData, PMODULE_INFO_EX pModuleInfoEx)
 MODULE_LIST* __cdecl add_module(PSESSION_INFO pSessData, PDLL_LOAD_INFO pSmth)
 {
 	
-	MODULE_LIST* pFirst, *pMem, *pSecond;
+	MODULE_LIST* pFirst, *pMem;
 	char str[256];
 	
 	wsprintf(str, "add_module(%X, %X)", pSessData, pSmth);
@@ -94,7 +93,7 @@ signed long __cdecl delete_module(PSESSION_INFO pSessData, PDLL_UNLOAD_INFO unlo
 {	
 	PMODULE_LIST pCurMod; // esi@1	
 	PMODULE_LIST *pPrev; // ecx@5
-	CHAR OutputString[256]; // [sp+4h] [bp-40h]@8
+//	CHAR OutputString[256]; // [sp+4h] [bp-40h]@8
 
 	pCurMod = pSessData->pModules;
 	pPrev = &pSessData->pModules;

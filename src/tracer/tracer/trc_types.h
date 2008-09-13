@@ -7,7 +7,7 @@
 
 typedef struct _EXCEPTION_REGISTRATION {
 	struct _EXCEPTION_REGISTRATION* prev;		// 00
-	ULONG handler;	// 04
+	PVOID handler;	// 04
 } EXCEPTION_REGISTRATION, *PEXCEPTION_REGISTRATION;
 
 
@@ -32,7 +32,7 @@ typedef struct _drs {
 typedef struct _EXCEP_FRAME {
 	struct _EXCEP_FRAME* pPrev; //pointer to the previously raised exception frame
 	ULONG	CallRes;
-	ULONG	TraceMode;
+	BYTE	TraceMode;
 	BOOL	bDebugTraced;
 	PSEH_LIST pSehs;	//zero if no seh chains =)	
 } EXCEP_FRAME, *PEXCEP_FRAME;
@@ -122,7 +122,7 @@ typedef struct _BP_EX {
 typedef struct _SESSION_INFO {
 	ULONG 		SessionId;  // 00
 	ULONG		bTerminated;  // 04
-	ULONG		remote_id;  // 08
+	UINT_PTR	remote_id;  // 08
 	ULONG       options;    // 0C
 	CALLBACK_INFO DbgEvent; // 10    
 	CALLBACK_INFO ProcEvent;// 18    
@@ -134,7 +134,7 @@ typedef struct _SESSION_INFO {
 	PDBG_CONTEXT pDbgContext;// 34	
 	CRITICAL_SECTION	SyncCS;
 	char		image_name[265];
-	PVOID		CC_need_addr;
+	PVOID	CC_need_addr;
 	TRC_PROCESS	trc_process;
 } SESSION_INFO, *PSESSION_INFO;
 

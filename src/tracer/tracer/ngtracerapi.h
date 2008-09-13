@@ -58,9 +58,9 @@ typedef struct _trcrf {
  ULONG   Ebx;
  ULONG   Ebp;
 
- ULONG   Eip;
- ULONG   SegCs;
- ULONG   EFlags;
+ UINT_PTR   Eip;
+ ULONG		SegCs;
+ ULONG		EFlags;
 
  ULONG	Esp;
  ULONG	SegSs;
@@ -112,10 +112,10 @@ PTRC_MODULE		CurrentModule;
 
 
 typedef struct _bp{
-	ULONG	TID;
-	ULONG	type;
-	PVOID	addr;
-	ULONG	range;
+	ULONG		TID;
+	ULONG		type;
+	PVOID		addr;
+	ULONG		range;
 }BP,*PBP;
 
 typedef struct _bplst{
@@ -124,8 +124,8 @@ typedef struct _bplst{
 }BP_LST,*PBP_LST;
 
 typedef struct _SEH_INFO {
-	ULONG	frame_addr;	// 00
-	ULONG	handler;	// 04
+	PVOID	frame_addr;	// 00
+	PVOID	handler;	// 04
 } SEH_INFO, *PSEH_INFO;
 
 typedef struct _SEH_LIST {

@@ -35,7 +35,7 @@ ULONG read_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOL code_page)
 	PSESSION_INFO CurrSessItem;
 	int result = 0;
 	PBREAKPOINT_LIST lpCurrBp;
-	char sz[256];
+	//char sz[256];
 
 	//wsprintf(sz, "read_memory(%X, %X, %X, %X, %X)\n", sesId, addr, buffer, size, code_page);
 	//OutputDebugString(sz);
@@ -50,12 +50,12 @@ ULONG read_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOL code_page)
 	lpCurrBp = CurrSessItem->pSoftBps;
 	while (lpCurrBp)	
 	{
-		if (((ULONG)lpCurrBp->addr >= (ULONG)addr) && ((ULONG)lpCurrBp->addr < (size + (ULONG)addr)))
+		if (((UINT_PTR)lpCurrBp->addr >= (UINT_PTR)addr) && ((UINT_PTR)lpCurrBp->addr < (size + (UINT_PTR)addr)))
 		{
 			//wsprintf(sz, "Bp at %X alr. set, delta is %X\n", lpCurrBp->addr, (ULONG)addr - (ULONG)lpCurrBp->addr);
 			//OutputDebugString(sz);
 			//OutputDebugString("set original byte\n");
-			((char*)buffer)[(ULONG)lpCurrBp->addr - (ULONG)addr] = lpCurrBp->SavedByte;
+			((char*)buffer)[(UINT_PTR)lpCurrBp->addr - (UINT_PTR)addr] = lpCurrBp->SavedByte;
 		}
 		lpCurrBp = lpCurrBp->pNext;
 	}
@@ -130,10 +130,10 @@ ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOL code_
 		lpCurrBp = CurrSessItem->pSoftBps;
 		if (lpCurrBp)
 		do {
-			if (((ULONG)lpCurrBp->addr >= (ULONG)addr) && ((ULONG)lpCurrBp->addr < (size + (ULONG)addr)))
+			if (((UINT_PTR)lpCurrBp->addr >= (UINT_PTR)addr) && ((UINT_PTR)lpCurrBp->addr < (size + (UINT_PTR)addr)))
 			{
-				lpCurrBp->SavedByte = ((char*)pBuffer)[(ULONG)lpCurrBp->addr - (ULONG)addr];
-				((char*)pBuffer)[(ULONG)lpCurrBp->addr - (ULONG)addr] = 0xCC;
+				lpCurrBp->SavedByte = ((char*)pBuffer)[(UINT_PTR)lpCurrBp->addr - (UINT_PTR)addr];
+				((unsigned char*)pBuffer)[(UINT_PTR)lpCurrBp->addr - (UINT_PTR)addr] = 0xCC;
 			}
 			lpCurrBp = lpCurrBp->pNext;
 		} while (lpCurrBp);					
@@ -151,7 +151,7 @@ ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOL code_
 //------------------------------------------------------------------------
 ULONG trc_write_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size)
 {
-	char sz[256];
+	//char sz[256];
 	//wsprintf(sz, "trc_write_memory(%X, %X, %X, %X)", sesId, addr, buffer, size);
 	//OutputDebugString(sz);
 

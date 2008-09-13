@@ -45,7 +45,7 @@ void Debugger::bp_list()
 
 	if(bp_list) {
 		printf("bp list==========\n");
-		for(int i=0;i<bp_list->count;i++) {
+		for(unsigned int i=0;i<bp_list->count;i++) {
 			switch(bp_list->bp[i].type) {
 				case TRC_BP_SOFTWARE:
 					type = sf;
@@ -68,7 +68,7 @@ void Debugger::threads_list()
 PTHREAD_LIST thrd_lst=trc_get_thread_list(m_sesId);
 		if(thrd_lst){
 			printf("running threads list==================\n");
-			for(int i=0;i<thrd_lst->count;i++){
+			for(unsigned int i=0;i<thrd_lst->count;i++){
 				printf("TID=%x,teb addr=%x\n",thrd_lst->thread[i].TID,thrd_lst->thread[i].teb_addr);
 			}
 			printf("======================================\n");
@@ -81,7 +81,7 @@ void Debugger::mod_list()
 	PMOD_LIST mod_list=trc_get_module_list(m_sesId);
 		if(mod_list){
 			printf("loaded modules list==================\n");
-			for(int i=0;i<mod_list->count;i++){
+			for(unsigned int i=0;i<mod_list->count;i++){
 				printf("mod path: %s,mod base: %x,mod size: %x\n",mod_list->module[i].ModName,mod_list->module[i].ImageBase,mod_list->module[i].ImageSize);
 			}
 			printf("=====================================\n");
@@ -250,7 +250,7 @@ ULONG __stdcall Debugger::dbg_event(PTRC_EXCEPTION_EVENT evt)
 		print_regs((ULONG)evt->CurrentThread->TID);
 		PMnemonics mnem=DasmDisasmCmd(m_sesId,(PVOID)evt->Frame.Eip,0x30);
 		if(mnem){
-			for(int i=0;i<mnem->count;i++){
+			for(unsigned int i=0;i<mnem->count;i++){
 			printf("%s\n",mnem->row[i].mnem.AsmCode);
 			}
 		DasmFreeBuffer(mnem);

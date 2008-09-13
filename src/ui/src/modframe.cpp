@@ -99,7 +99,7 @@ void ModFrame::RefreshModList(ULONG sesId)
 	PMOD_LIST mod_list = trc_get_module_list(sesId);
 
 	m_listCtrl.DeleteAllItems();
-	for (long i = 0; i < mod_list->count; ++i)
+	for (unsigned long i = 0; i < mod_list->count; ++i)
 	{
 		m_listCtrl.InsertItem(i, "");
 		m_listCtrl.SetItem(i, 0, wxString::Format(wxT("%X"), mod_list->module[i].ImageBase));
