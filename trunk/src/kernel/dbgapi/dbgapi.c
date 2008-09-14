@@ -127,6 +127,10 @@ int dbg_build_start_params(
 		"SYSTEM\\CurrentControlSet\\Services\\%s", drv_name
 		);
 
+	// TODO: I don't understand - what is it?!
+	// It's probably beginning of the pdb support
+	// But for now this feature is not necessary
+	// How turn off it?! I can't... ;(
 	do
 	{
 		if (RegOpenKey(HKEY_LOCAL_MACHINE, name, &h_key) != 0) {
