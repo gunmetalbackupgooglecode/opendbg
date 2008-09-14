@@ -209,7 +209,7 @@ TRACERAPI ULONG trc_attach_to_target(ULONG sesId,ULONG PID,ULONG attachOpts)
 	c_EventFilter.filtr_count = 0;
 	OutputDebugString("debuger attached\n");
 	dbg_set_filter(pCurSessData->pDbgContext, &c_EventFilter);
-	dbg_set_rdtsc(pCurSessData->pDbgContext, 1);
+	dbg_set_rdtsc(pCurSessData->pDbgContext, true);
 
 	pCurSessData->trc_process.peb_addr = AttachInfo.peb_addr;
 	pCurSessData->trc_process.PID = PID;
@@ -495,7 +495,7 @@ TRACERAPI PSEH_LIST trc_get_seh_chain(ULONG SessId,ULONG tid)
 	ULONG frame_num;
 	EXCEPTION_REGISTRATION SehRec;
 	PSEH_LIST pMem;	
-	int i;
+	//int i;
 
 	//OutputDebugString("1\n");
 	pSessItem = get_sess_by_id(SessId);

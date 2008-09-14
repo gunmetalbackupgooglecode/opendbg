@@ -338,7 +338,7 @@ int dbg_unhook_page(
 	   IN PVOID         page_addr
 	   );
 
-DBGAPI_API 
+DBGAPI_API
 void dbg_detach_debugger(
 			IN PDBG_CONTEXT context
 			);
