@@ -1,3 +1,8 @@
+/*! \file events.h
+* \brief Debugger's events
+* \author d1mk4
+*/
+
 #ifndef __EVENTS_H__
 #define __EVENTS_H__
 
@@ -8,28 +13,29 @@
 #include "precomp.h"
 #include "debugger.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Event class except_event
+/*! \class TrcExceptEvent events.h "src/ui/inc/events.h"
+*   \brief This is exeption event for process it in UI
+*/
 class TrcExceptEvent : public wxNotifyEvent
 {
 public:
-	// default constructor
+	//! Default constructor
 	TrcExceptEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
 	 : wxNotifyEvent(commandType, id)
 	{
 	}
 
-	// constructor via sesId
+	//! Constructor via sesId
 	TrcExceptEvent(TRC_EXCEPTION_EVENT except_evt, ULONG sesId,
-	                  wxEventType commandType = wxEVT_NULL, int id = 0)
+	               wxEventType commandType = wxEVT_NULL, int id = 0)
 	 : wxNotifyEvent(commandType, id),
 	   m_except_event(except_evt),
 	   m_sesId(sesId)
 	{
 	}
 
-	// copy constructor
-	// should be used to pass event with additional data among diffrent threads
+	//! Copy constructor
+	/*! should be used to pass event with additional data among diffrent threads */
 	TrcExceptEvent(const TrcExceptEvent& event)
 	 : wxNotifyEvent(event)
 	{
@@ -37,42 +43,45 @@ public:
 		this->m_sesId = event.m_sesId;
 	}
 
-	// object clone function
+	//! Clone function
 	virtual wxEvent *Clone() const
 	{
 		return new TrcExceptEvent(*this);
 	};
 
-	// Getters
+	//! Get except event
 	TRC_EXCEPTION_EVENT getExceptEvent();
+
+	//! Get current debug session id
 	ULONG getSesId();
 
-	// Setters
+	//! Set except event
 	void setExceptEvent(const TRC_EXCEPTION_EVENT& except_event);
+
+	//! Set current debug session id
 	void setSesId(const ULONG &sesId);
 
 private:
-	// debug event TRC_EXCEPTION_EVENT
-	TRC_EXCEPTION_EVENT m_except_event;
-	// debugger session ID
-	ULONG m_sesId;
+	TRC_EXCEPTION_EVENT m_except_event; //! debug event TRC_EXCEPTION_EVENT
+		ULONG m_sesId; //! debugger session ID 
 
 private:
 	DECLARE_DYNAMIC_CLASS(TrcExceptEvent)
 };
 
-//////////////////////////////////////////////////////////////////////////
-// Класс событий dbg_event
+/*! \class TrcDebugEvent events.h "src/ui/inc/events.h"
+*   \brief This is debug event for process it in UI
+*/
 class TrcDebugEvent : public wxNotifyEvent
 {
 public:
-	// конструктор по умолчанию
+	//! Default constructor
 	TrcDebugEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
   : wxNotifyEvent(commandType, id)
 	{
 	}
 
-	// конструктор в котором можно задать событие и sesId
+	//! Constructor via sesId
 	TrcDebugEvent(TRC_EXCEPTION_EVENT debug_evt, ULONG sesId,
 	                  wxEventType commandType = wxEVT_NULL, int id = 0)
 	 : wxNotifyEvent(commandType, id),
@@ -81,9 +90,8 @@ public:
 	{
 	}
 
-	// конструктор копирования
-	// без него хуй эти сообщения будут передаваться из потока в поток
-	// с дополнительными данными
+	//! Copy constructor
+	/*! should be used to pass event with additional data among diffrent threads */
 	TrcDebugEvent(const TrcDebugEvent& event)
 	 : wxNotifyEvent(event)
 	{
@@ -91,42 +99,46 @@ public:
 		this->m_sesId = event.m_sesId;
 	}
 
-	// функция для копирования объекта в новый
+	//! Clone function
 	virtual wxEvent *Clone() const
 	{
 		return new TrcDebugEvent(*this);
 	};
 
-	// геттеры
+	//! Get except event
 	TRC_EXCEPTION_EVENT getDebugEvent();
+
+	//! Get current debug session id
 	ULONG getSesId();
 
-	// сеттеры
+	//! Set except event
 	void setDebugEvent(const TRC_EXCEPTION_EVENT& debug_event);
+
+	//! Set current debug session id
 	void setSesId(const ULONG& sesId);
 
 private:
-	TRC_EXCEPTION_EVENT m_debug_event; // событие отлачдика TRC_EXCEPTION_EVENT
-	ULONG m_sesId; // идентификатор сессии отладчика
+	TRC_EXCEPTION_EVENT m_debug_event; //! debug event TRC_EXCEPTION_EVENT
+	ULONG m_sesId; //! debugger session ID
 
 private:
 	DECLARE_DYNAMIC_CLASS(TrcDebugEvent);
 };
 
-//////////////////////////////////////////////////////////////////////////
-// Класс событий process_event
+/*! \class TrcProcEvent events.h "src/ui/inc/events.h"
+*   \brief This is debug event for process it in UI
+*/
 class TrcProcEvent : public wxNotifyEvent
 {
 public:
-	// конструктор по умолчанию
+	//! Default constructor
 	TrcProcEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
 	 : wxNotifyEvent(commandType, id)
 	{
 	}
 
-	// конструктор копирования
-	// без него хуй эти сообщения будут передаваться из потока в поток
-	// с дополнительными данными
+	//! Copy constructor
+	/*! should be used to pass event with additional data among diffrent threads */
 	TrcProcEvent(const TrcProcEvent& event)
 	 : wxNotifyEvent(event)
 	{
@@ -134,7 +146,7 @@ public:
 		this->m_sesId = event.m_sesId;
 	}
 
-	// конструктор в котором можно задать событие и sesId
+	//! Constructor via sesId
 	TrcProcEvent(TRC_PROCESS_EVENT proc_evt, ULONG sesId,
 	                  wxEventType commandType = wxEVT_NULL, int id = 0)
 	 : wxNotifyEvent(commandType, id),
@@ -143,40 +155,46 @@ public:
 	{
 	}
 
-	// функция для копирования объекта в новый
+	//! Clone function
 	virtual wxEvent *Clone() const
 	{
 		return new TrcProcEvent(*this);
 	};
 
-	// геттеры
+	//! Get except event
 	TRC_PROCESS_EVENT getProcEvent();
+
+	//! Get current debug session id
 	ULONG getSesId();
 
-	// сеттеры
+	//! Set except event
 	void setProcEvent(const TRC_PROCESS_EVENT &proc_event);
+
+	//! Set current debug session id
 	void setSesId(const ULONG& sesId);
 
 private:
-	TRC_PROCESS_EVENT m_proc_event; // событие отлачдика TRC_PROCESS_EVENT
-	ULONG m_sesId; // идентификатор сессии отладчика
+	TRC_PROCESS_EVENT m_proc_event; //! debug event TRC_PROCESS_EVENT
+	ULONG m_sesId; //! debugger session ID
 
 private:
 	DECLARE_DYNAMIC_CLASS(TrcProcEvent);
 };
 
+/*! \class GuiProcEvent events.h "src/ui/inc/events.h"
+*   \brief This is proc event at the UI side for process it in UI
+*/
 class GuiProcEvent : public wxNotifyEvent
 {
 public:
-	// конструктор по умолчанию
+	//! Default constructor
 	GuiProcEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
 	 : wxNotifyEvent(commandType, id)
 	{
 	}
 
-	// конструктор копирования
-	// без него хуй эти сообщения будут передаваться из потока в поток
-	// с дополнительными данными
+	//! Copy constructor
+	/*! should be used to pass event with additional data among diffrent threads */
 	GuiProcEvent(const GuiProcEvent& event)
 	 : wxNotifyEvent(event)
 	{
@@ -186,49 +204,59 @@ public:
 		this->m_sesId = event.m_sesId;
 	}
 
-	// сеттеры
+	//! set break-point address
 	void setAddrBP(const wxString &addrBP);
+
+	//! set disasm code for break point
 	void setDisasmBP(const wxString &disasmBP);
+
+	//! set current debug event
 	void setDebugEvent(const TRC_EXCEPTION_EVENT &debug_event);
+
+	//! set current sesstion id
 	void setSesId(const ULONG& sesId);
 
-	// геттеры
+	//! get break-point address
 	wxString getAddrBP();
+
+	//! get disasm code where situated this break-point
 	wxString getDisasmBP();
+
+	//! get current debug event
 	TRC_EXCEPTION_EVENT getDebugEvent();
-	ULONG getSesId();
 
-	// конструктор в котором можно задать событие и sesId
-	//GuiProcEvent(TRC_PROCESS_EVENT proc_evt, ULONG sesId,
-	//                  wxEventType commandType = wxEVT_NULL, int id = 0)
-	// : wxNotifyEvent(commandType, id),
-	//{
-	//}
+	//! get current debug session id
+	ULONG getSesId(); 
 
-	// функция для копирования объекта в новый
+	//! Clone function
 	virtual wxEvent *Clone() const
 	{
 		return new GuiProcEvent(*this);
 	};
 
 private:
-	wxString m_addrBP;
-	wxString m_disasmBP;
-	TRC_EXCEPTION_EVENT m_debug_event; // событие отлачдика TRC_PROCESS_EVENT
-	ULONG m_sesId; // идентификатор сессии отладчика
+	wxString m_addrBP; //! this member used for storing bp address
+	wxString m_disasmBP; //! this member used for storing disasm data
+	TRC_EXCEPTION_EVENT m_debug_event; //! debug event TRC_EXCEPTION_EVENT
+	ULONG m_sesId; //! debugger session ID
 
 private:
 	DECLARE_DYNAMIC_CLASS(GuiProcEvent);
 };
 
-// определяем функции(конструкторы) для обработчика событий
+//! callback TrcExceptEvent class
 typedef void (wxEvtHandler::*TrcExceptEventFunction)(TrcExceptEvent&);
+
+//! callback for TrcDebugEvent class
 typedef void (wxEvtHandler::*TrcDebugEventFunction)(TrcDebugEvent&);
+
+//! callback for TrcProcEvent class
 typedef void (wxEvtHandler::*TrcProcEventFunction)(TrcProcEvent&);
 
+//! callback for GuiProcEvent class
 typedef void (wxEvtHandler::*GuiProcEventFunction)(GuiProcEvent&);
 
-// определяем номера наших событий
+//! define event-map with ids
 BEGIN_DECLARE_EVENT_TYPES()
 	DECLARE_EVENT_TYPE(wxEVT_TRC_EXCEPT, 7776)
 	DECLARE_EVENT_TYPE(wxEVT_TRC_DEBUG, 7777)
@@ -237,13 +265,14 @@ BEGIN_DECLARE_EVENT_TYPES()
 	DECLARE_EVENT_TYPE(wxEVT_GUI_TEXT2WINDOW, 8888)
 END_DECLARE_EVENT_TYPES()
 
+//! this enum has command ids in CPUFrame context menu
 enum
 {
 	GUI_MSG_ADD_BP = 10001,
 	GUI_MSG_DEL_BP
 };
 
-// определяем макросы для использования в карте событий
+//! trc_except macros for using in event-map
 #define EVT_TRC_EXCEPT(id, fn) \
 	DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_TRC_EXCEPT, id, wxID_ANY, \
@@ -251,6 +280,7 @@ enum
 		(wxObject *) NULL \
 		),
 
+//! trc_debug macros for using in event-map
 #define EVT_TRC_DEBUG(id, fn) \
 	DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_TRC_DEBUG, id, wxID_ANY, \
@@ -258,6 +288,7 @@ enum
 		(wxObject *) NULL \
 		),
 
+//! trc_process macros for using in event-map
 #define EVT_TRC_PROCESS(id, fn) \
 		DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_TRC_PROCESS, id, wxID_ANY, \
@@ -265,6 +296,7 @@ enum
 		(wxObject *) NULL \
 		),
 
+//! gui_sndtext macros for using in event-map
 #define EVT_GUI_SNDTEXT(id, fn) \
 		DECLARE_EVENT_TABLE_ENTRY( \
 		wxEVT_GUI_TEXT2WINDOW, id, wxID_ANY, \

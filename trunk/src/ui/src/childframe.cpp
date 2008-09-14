@@ -23,7 +23,7 @@
 #include "childframe.h"
 
 //////////////////////////////////////////////////////////////////////////
-// карта событий
+// event map
 BEGIN_EVENT_TABLE(ChildFrame, wxControl)
 	EVT_MENU(MDI_CHILD_QUIT, ChildFrame::OnQuit)
 	EVT_MENU(MDI_REFRESH, ChildFrame::OnRefresh)

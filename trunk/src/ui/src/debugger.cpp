@@ -89,28 +89,28 @@ void Debugger::mod_list()
 		}
 }
 
-ULONG Debugger::set_hwbp(char * bp)
+uint32_t Debugger::set_hwbp( char * bp )
 {
 	ULONG addr=htodw(bp),result;
 	result=trc_set_bp(m_sesId, TRC_HWBP_EXECUTE,NULL,(PVOID)addr, NULL);
 	return result;
 }
 
-ULONG Debugger::set_bp(char * bp)
+uint32_t Debugger::set_bp( char * bp )
 {
 	ULONG addr=htodw(bp),result;
 	result=trc_set_bp(m_sesId, TRC_BP_SOFTWARE,NULL,(PVOID)addr, NULL);
 	return result;
 }
 
-ULONG Debugger::del_bp(char * bp)
+uint32_t Debugger::del_bp( char * bp )
 {
 	ULONG addr = htodw(bp),result;
 	result = trc_delete_bp(m_sesId,NULL,(PVOID)addr, NULL);
 	return result;
 }
 
-int Debugger::load_target( char *target, ULONG options )
+int Debugger::load_target( char *target, uint32_t options )
 {
 	printf("loading %s\n", target);
 		if(!trc_load_target(m_sesId, target, options ))//| TRC_OPT_BREAK_ON_MOD_EP  
@@ -164,7 +164,7 @@ void Debugger::print_mem(char *mem_addr)
 		}
 }
 
-void Debugger::print_regs(ULONG tid)
+void Debugger::print_regs( uint32_t tid )
 {
 	CONTEXT ctx;
 	ZeroMemory(&ctx,sizeof(ctx));
@@ -175,7 +175,7 @@ void Debugger::print_regs(ULONG tid)
 	}
 }
 
-ULONG Debugger::split_cmd(char * str,char **cmd,char **arg)
+uint32_t Debugger::split_cmd( char * str,char **cmd,char **arg )
 {
 	int i=0,j=0,retval=0;
 	PCHAR p=str;
@@ -204,13 +204,13 @@ ULONG Debugger::split_cmd(char * str,char **cmd,char **arg)
 	return retval;
 }
 
-ULONG __stdcall Debugger::excpt_event(PTRC_EXCEPTION_EVENT evt)
+uint32_t __stdcall Debugger::excpt_event( PTRC_EXCEPTION_EVENT evt )
 {
 	printf("event code: %x,EIP=%x\n",evt->EventCode,evt->Frame.Eip);
 	return TRC_EXC_NOT_HANDLE;
 }
 
-ULONG __stdcall Debugger::dbg_event(PTRC_EXCEPTION_EVENT evt)
+uint32_t __stdcall Debugger::dbg_event( PTRC_EXCEPTION_EVENT evt )
 {
 	CONTEXT	ctx;
 	ULONG	retValue=NULL;
@@ -263,7 +263,7 @@ ULONG __stdcall Debugger::dbg_event(PTRC_EXCEPTION_EVENT evt)
 	return retValue;
 }
 
-ULONG __stdcall Debugger::proc_event(PTRC_PROCESS_EVENT evt)
+uint32_t __stdcall Debugger::proc_event( PTRC_PROCESS_EVENT evt )
 {
 
 	if(evt->EventCode==TRC_EVENT_TERMINATE)
@@ -289,7 +289,7 @@ ULONG __stdcall Debugger::proc_event(PTRC_PROCESS_EVENT evt)
 	return 0;
 }
 
-void Debugger::load( const wxString &path, ULONG options )
+void Debugger::load( const wxString &path, uint32_t options )
 {
 	
 	load_target(const_cast<char*>(path.c_str()), options);
@@ -300,7 +300,7 @@ void Debugger::unload()
 	trc_session_close(m_sesId);
 }
 
-void Debugger::open_session( ULONG options, LPVOID params )
+void Debugger::open_session( uint32_t options, LPVOID params )
 {
 	// TRC_SESSION_LOCAL, NULL
 	m_sesId = trc_session_open(options, params);

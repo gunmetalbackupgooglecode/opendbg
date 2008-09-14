@@ -18,11 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "precomp.h"
+/*! \file events.cpp
+* \brief Implementation of debugger's events
+* \author d1mk4
+*/
 
+#include "precomp.h"
 #include "events.h"
 
-// регестрируем наш тип событий глобально
 DEFINE_EVENT_TYPE(wxEVT_TRC_EXCEPT)
 DEFINE_EVENT_TYPE(wxEVT_TRC_DEBUG)
 DEFINE_EVENT_TYPE(wxEVT_TRC_PROCESS)
@@ -35,12 +38,6 @@ IMPLEMENT_DYNAMIC_CLASS(TrcProcEvent, wxNotifyEvent)
 
 IMPLEMENT_DYNAMIC_CLASS(GuiProcEvent, wxNotifyEvent)
 
-
-//////////////////////////////////////////////////////////////////////////
-// реализация класса события evt_except
-
-// геттеры
-
 TRC_EXCEPTION_EVENT TrcExceptEvent::getExceptEvent()
 {
 	return m_except_event;
@@ -50,8 +47,6 @@ ULONG TrcExceptEvent::getSesId()
 {
 	return m_sesId;
 }
-
-// сеттеры
 
 void TrcExceptEvent::setExceptEvent( const TRC_EXCEPTION_EVENT& except_event )
 {
@@ -63,12 +58,6 @@ void TrcExceptEvent::setSesId( const ULONG& sesId )
 	m_sesId = sesId;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// реализация класса события evt_debug
-// указываем реализацию обработчиков
-
-// геттеры
-
 TRC_EXCEPTION_EVENT TrcDebugEvent::getDebugEvent()
 {
 	return m_debug_event;
@@ -78,8 +67,6 @@ ULONG TrcDebugEvent::getSesId()
 {
 	return m_sesId;
 }
-
-// cеттеры
 
 void TrcDebugEvent::setDebugEvent( const TRC_EXCEPTION_EVENT& debug_event )
 {
@@ -91,11 +78,6 @@ void TrcDebugEvent::setSesId( const ULONG& sesId )
 	m_sesId = sesId;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// реализация класса события evt_proc
-
-// геттеры
-
 TRC_PROCESS_EVENT TrcProcEvent::getProcEvent()
 {
 	return m_proc_event;
@@ -106,8 +88,6 @@ ULONG TrcProcEvent::getSesId()
 	return m_sesId;
 }
 
-// сеттеры
-
 void TrcProcEvent::setProcEvent( const TRC_PROCESS_EVENT &proc_event )
 {
 	m_proc_event = proc_event;
@@ -117,11 +97,6 @@ void TrcProcEvent::setSesId( const ULONG& sesId )
 {
 	m_sesId = sesId;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// реализация класса событий GuiProcEvent
-
-// геттеры
 
 wxString GuiProcEvent::getAddrBP()
 {
@@ -142,8 +117,6 @@ ULONG GuiProcEvent::getSesId()
 {
 	return this->m_sesId;
 }
-
-// сеттеры
 
 void GuiProcEvent::setAddrBP( const wxString &addrBP )
 {

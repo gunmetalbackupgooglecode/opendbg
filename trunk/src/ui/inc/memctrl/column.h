@@ -1,3 +1,10 @@
+/*! \file column.h
+* \brief Header of column control
+
+This control used for presenting data in style like ListView
+* \author d1mk4
+*/
+
 #ifndef __COLUMN_H__
 #define __COLUMN_H__
 
@@ -112,7 +119,7 @@ private:
 private:
 	wxString m_text;
 
-	std::vector<wxPoint> m_selPoint; // для хранения координат каретки выделенного текста
+	std::vector<wxPoint> m_selPoint; //< for storing selected points 
 
 private:
 	wxString m_name;

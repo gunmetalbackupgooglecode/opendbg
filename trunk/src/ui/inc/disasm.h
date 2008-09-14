@@ -1,3 +1,8 @@
+/*! \file column.h
+* \brief Header of basic disassembler
+* \author d1mk4
+*/
+
 #define DISASMAPI	 extern "C" __declspec(dllexport) 
 
 typedef struct _ref{

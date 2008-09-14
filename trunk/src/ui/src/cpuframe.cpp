@@ -18,6 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*! \file bpframe.h
+* \brief Implementation of CPU frame
+
+This frame provides all functionality for work with code's dump,
+break points and some other
+* \author d1mk4
+*/
+
 #include "precomp.h"
 
 #include "cpuframe.h"
@@ -27,9 +35,11 @@ BEGIN_EVENT_TABLE(CPUFrame, ChildFrame)
 	EVT_SIZE(CPUFrame::OnSize)
 END_EVENT_TABLE()
 
-
-//////////////////////////////////////////////////////////////////////////
-// Конструктор окна CPU
+/*!
+CPUFrame constructor
+@param[in] parent MDI parent window
+@param[in] title  title name for new window
+*/
 CPUFrame::CPUFrame( wxMDIParentFrame *parent, const wxString& title )
  : ChildFrame(parent, title),
    m_listCtrl(this, CPU_LIST_CTRL,
@@ -44,16 +54,18 @@ CPUFrame::CPUFrame( wxMDIParentFrame *parent, const wxString& title )
 	LoadParams();
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// Деструктор окна CPU
+/*!
+	Window destructor
+*/
 CPUFrame::~CPUFrame()
 {
 	SaveParams();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// функция добавлнеия данных в CPUFrame
+/*!
+This handler processes all right button clicks on the listview items
+@param[in] event listview event
+*/
 void CPUFrame::AddItem( TrcDebugEvent& event )
 {
 	TRC_EXCEPTION_EVENT evt = event.getDebugEvent();
@@ -105,8 +117,6 @@ void CPUFrame::AddItem( TrcDebugEvent& event )
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-//
 void CPUFrame::ShowContextMenu( const wxPoint& pos )
 {
 	wxMenu menu;
@@ -117,15 +127,11 @@ void CPUFrame::ShowContextMenu( const wxPoint& pos )
 	PopupMenu(&menu, pos.x, pos.y);
 }
 
-//////////////////////////////////////////////////////////////////////////
-//
 void CPUFrame::OnItemRClick( wxListEvent& event )
 {
 //	wxMessageBox(m_listCtrl.m_address);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// сохранить все параметры этого окна
 void CPUFrame::SaveParams()
 {
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -146,8 +152,6 @@ void CPUFrame::SaveParams()
 	this->SaveWinCoord(wxT("ChildFrame/CPU"));
 }
 
-//////////////////////////////////////////////////////////////////////////
-// загрузить все параметры этого окна
 void CPUFrame::LoadParams()
 {
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -163,8 +167,6 @@ void CPUFrame::LoadParams()
 	this->LoadWinCoord(wxT("ChildFrame/CPU"));
 }
 
-//////////////////////////////////////////////////////////////////////////
-//
 void CPUFrame::OnTest( wxCommandEvent& event )
 {
 	wxMessageBox("cpuframe");

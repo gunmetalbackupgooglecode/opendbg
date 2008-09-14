@@ -18,14 +18,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*! \file mainframe.cpp
+* \brief This is implementation of main window
+* \author d1mk4
+*/
+
 #include "precomp.h"
 
 #include "mainframe.h"
 
 IMPLEMENT_APP(App)
 
-//////////////////////////////////////////////////////////////////////////
-// карта событий главного окна
+//! event-man of main window
 BEGIN_EVENT_TABLE(MainFrame, wxMDIParentFrame)
 	EVT_MENU(MDI_ABOUT, MainFrame::OnAbout)
 	EVT_MENU(MDI_QUIT, MainFrame::OnQuit)
@@ -41,7 +45,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxMDIParentFrame)
 	EVT_MENU(MDI_VIEW_STACK, MainFrame::OnStackFrame)
 
 	EVT_MENU(MDI_DBG_RUN, MainFrame::OnRun)
-	EVT_MENU(MDI_DBG_STEP_INTO, MainFrame::OnStepInfo)
+	EVT_MENU(MDI_DBG_STEP_INTO, MainFrame::OnStepInto)
 	EVT_MENU(MDI_DBG_STEP_OVER, MainFrame::OnStepOver)
 	EVT_MENU(MDI_DBG_RUN_TIL_RET, MainFrame::OnTilRet)
 
@@ -54,7 +58,6 @@ BEGIN_EVENT_TABLE(MainFrame, wxMDIParentFrame)
 END_EVENT_TABLE()
 
 //////////////////////////////////////////////////////////////////////////
-// реализация главного конструктора
 MainFrame::MainFrame(wxWindow *parent,
                  const wxWindowID id,
                  const wxString& title,
@@ -156,14 +159,13 @@ MainFrame::MainFrame(wxWindow *parent,
 	// Associate the menu bar with the frame
 	SetMenuBar(menu_bar);
 
-	// загружаем размер и позицию главного окна
+	// load layout all frames in window and position of main window
 	LoadLayout();
 
 	m_auimgr.Update();
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 MainFrame::~MainFrame()
 {
 	SaveLayout();
@@ -172,7 +174,6 @@ MainFrame::~MainFrame()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::SaveLayout()
 {
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -211,7 +212,6 @@ void MainFrame::SaveLayout()
 }
 
 //////////////////////////////////////////////////////////////////////////
-// load layout of all windows and controls
 void MainFrame::LoadLayout()
 {
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -250,27 +250,23 @@ void MainFrame::LoadLayout()
 }
 
 //////////////////////////////////////////////////////////////////////////
-// the dispatcher for "on close" events
 void MainFrame::OnClose(wxCloseEvent& event)
 {
 	event.Skip();
 }
 
 //////////////////////////////////////////////////////////////////////////
-// the dispatcher for clicks on quit program
 void MainFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
 	Close();
 }
 
 //////////////////////////////////////////////////////////////////////////
-// the dispatcher for clicks on about menu in the program
 void MainFrame::OnAbout(wxCommandEvent& WXUNUSED(event) )
 {
 }
 
 //////////////////////////////////////////////////////////////////////////
-// the dispatcher for "on size" events
 void MainFrame::OnSize(wxSizeEvent&
                                   #ifdef __WXUNIVERSAL__
                                   event
@@ -293,7 +289,6 @@ void MainFrame::OnSize(wxSizeEvent&
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::OnCPUFrame( wxCommandEvent& event )
 {
 	if (m_auimgr.GetPane(m_cpuframe.get()).IsShown())
@@ -305,7 +300,6 @@ void MainFrame::OnCPUFrame( wxCommandEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::OnLogFrame( wxCommandEvent& event )
 {
 	if (m_auimgr.GetPane(m_logframe.get()).IsShown())
@@ -317,7 +311,6 @@ void MainFrame::OnLogFrame( wxCommandEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::OnRegFrame( wxCommandEvent& event )
 {
 	if (m_auimgr.GetPane(m_regframe.get()).IsShown())
@@ -329,7 +322,6 @@ void MainFrame::OnRegFrame( wxCommandEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::OnBPFrame( wxCommandEvent& event )
 {
 	if (m_auimgr.GetPane(m_bpframe.get()).IsShown())
@@ -341,7 +333,6 @@ void MainFrame::OnBPFrame( wxCommandEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::OnModFrame( wxCommandEvent& event )
 {
 	if (m_auimgr.GetPane(m_modframe.get()).IsShown())
@@ -353,7 +344,6 @@ void MainFrame::OnModFrame( wxCommandEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::OnThreadFrame( wxCommandEvent& event )
 {
 	if (m_auimgr.GetPane(m_threadframe.get()).IsShown())
@@ -365,7 +355,6 @@ void MainFrame::OnThreadFrame( wxCommandEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::OnMemFrame( wxCommandEvent& event )
 {
 	if (m_auimgr.GetPane(m_memframe.get()).IsShown())
@@ -377,7 +366,6 @@ void MainFrame::OnMemFrame( wxCommandEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void MainFrame::OnStackFrame( wxCommandEvent& event )
 {
 	if (m_auimgr.GetPane(m_stackframe.get()).IsShown())
@@ -389,8 +377,6 @@ void MainFrame::OnStackFrame( wxCommandEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-// функция открытия модуля в которой задаются основные флаги отладки в
-// самом начале
 void MainFrame::OnOpenModule( wxCommandEvent& event )
 {
 	wxFileDialog dialog(this, wxT("Open module for debug"),
@@ -408,12 +394,12 @@ void MainFrame::OnOpenModule( wxCommandEvent& event )
 
 		m_debugger.open_session(TRC_SESSION_LOCAL, NULL);
 
-		// установка callback обработчиков
+		// set callback dispatchers for cooperation with tracer
 		m_debugger.set_callback(TRC_DBG_EVENTS_CALLBACK, thunk_dbg_event, this);
 		m_debugger.set_callback(TRC_PROCESS_EVENTS_CALLBACK, thunk_proc_event, this);
 		m_debugger.set_callback(TRC_EXCEPTIONS_CALLBACK, thunk_except_event, this);
 
-		// TODO: сделать диалог Настройки Отладчика как в ольке
+		// TODO: make settings dialog like ollydbg
 		m_debugger.load(dialog.GetPath(), TRC_OPT_BREAK_ON_EP | TRC_OPT_BREAK_ON_SEH_HANDLER);
 
 		//CONTEXT ctx;
@@ -426,7 +412,6 @@ void MainFrame::OnOpenModule( wxCommandEvent& event )
 
 #if wxUSE_TOOLBAR
 //////////////////////////////////////////////////////////////////////////
-// инициализация тулбара
 void MainFrame::InitToolBar( wxToolBar* dbgToolbar, wxToolBar* winToolBar )
 {
 	wxBitmap bitmaps[12];
@@ -463,33 +448,34 @@ void MainFrame::InitToolBar( wxToolBar* dbgToolbar, wxToolBar* winToolBar )
 #endif // wxUSE_TOOLBAR
 
 //////////////////////////////////////////////////////////////////////////
-// функция задания отладочному потоку выполнения программы пошагово с
-// заходом во все функции
-void MainFrame::OnStepInfo( wxCommandEvent& event )
+void MainFrame::OnStepInto( wxCommandEvent& event )
 {
 	m_debugger.m_trace_mode = TRC_STEP_INTO;
 	m_debug_condition.Signal();
 }
 
+//////////////////////////////////////////////////////////////////////////
 void MainFrame::OnStepOver( wxCommandEvent& event )
 {
 	m_debugger.m_trace_mode = TRC_STEP_OVER;
 	m_debug_condition.Signal();
 }
 
-
+//////////////////////////////////////////////////////////////////////////
 void MainFrame::OnTilRet( wxCommandEvent& event )
 {
 	m_debugger.m_trace_mode = TRC_RUN_TIL_RET;
 	m_debug_condition.Signal();
 }
 
+//////////////////////////////////////////////////////////////////////////
 void MainFrame::OnRun( wxCommandEvent& event )
 {
 	m_debugger.m_trace_mode = TRC_RUN;
 	m_debug_condition.Signal();
 }
 
+//////////////////////////////////////////////////////////////////////////
 void MainFrame::OnExceptHandle(TrcExceptEvent &event)
 {
 	if( wxMessageBox(wxT("Handle this exception?"), wxT("Exception"), wxYES | wxNO) == wxID_YES )
@@ -501,7 +487,6 @@ void MainFrame::OnExceptHandle(TrcExceptEvent &event)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// callback-заглушка для dbg_event
 ULONG __stdcall MainFrame::thunk_dbg_event( PTRC_EXCEPTION_EVENT evt, void *arg )
 {
 	MainFrame* pthis = static_cast<MainFrame*>(arg);
@@ -522,8 +507,7 @@ ULONG __stdcall MainFrame::thunk_dbg_event( PTRC_EXCEPTION_EVENT evt, void *arg 
 	return static_cast<MainFrame*>(arg)->m_debugger.get_tracemode();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// callback-заглушка для proc_event
+/////////////////////////////////////////////////////////////////////////
 ULONG __stdcall MainFrame::thunk_proc_event( PTRC_PROCESS_EVENT evt, void *arg )
 {
 	MainFrame* pthis = static_cast<MainFrame*>(arg);
@@ -536,7 +520,6 @@ ULONG __stdcall MainFrame::thunk_proc_event( PTRC_PROCESS_EVENT evt, void *arg )
 }
 
 //////////////////////////////////////////////////////////////////////////
-// callback-заглушка для except_event
 ULONG __stdcall MainFrame::thunk_except_event( PTRC_EXCEPTION_EVENT evt, void *arg )
 {
 	MainFrame* pthis = static_cast<MainFrame*>(arg);
@@ -555,15 +538,13 @@ ULONG __stdcall MainFrame::thunk_except_event( PTRC_EXCEPTION_EVENT evt, void *a
 }
 
 //////////////////////////////////////////////////////////////////////////
-// инициализация отладчика
 int MainFrame::InitDebugger()
 {
 	return m_debugger.init();
 }
 
 //////////////////////////////////////////////////////////////////////////
-// функция-контролер получает сообщения о бряках, обрабатывает их
-// и посылает окну BPFrame
+//! controller-function receives break-point events and sends it to BPFrame
 void MainFrame::OnMsgBP( GuiProcEvent& event )
 {
 	GuiProcEvent evt(wxEVT_GUI_TEXT2WINDOW, wxID_ANY);
@@ -606,6 +587,7 @@ void MainFrame::OnMsgBP( GuiProcEvent& event )
 	wxPostEvent(this->m_bpframe->GetEventHandler(), evt);
 }
 
+//////////////////////////////////////////////////////////////////////////
 void MainFrame::ShowUsableWindows()
 {
 	m_auimgr.GetPane(m_cpuframe.get()).Show(true);
@@ -623,9 +605,9 @@ void MainFrame::ShowUsableWindows()
 
 //////////////////////////////////////////////////////////////////////////
 //
-// Точка входа программы
+//! Application's entry point
 //
-// Определяет ключевые моменты архитектуры главного окна
+//! This functions defines important startup settings of the main window
 // ---------------------------------------------------------------------------
 bool App::OnInit()
 {
@@ -639,15 +621,13 @@ bool App::OnInit()
 	                    wxDefaultPosition, wxDefaultSize,
 	                    wxDEFAULT_FRAME_STYLE | wxCLIP_SIBLINGS | wxHSCROLL | wxVSCROLL);
 
-	// инициализируем отладчик
-	// если больше нуля все ок
+	// startup debugger engine
 	if( frame->InitDebugger() > 0 )
 	{
 		frame->Show(true);
 		SetTopWindow(frame);
 	}
-	// иначе выводим сообщение
-	// и закрываем окно
+	// else output error message and close the window
 	else
 	{
 		wxMessageBox(wxT("dbgapi.sys not found!"), wxT("Error"), wxOK | wxICON_ERROR);

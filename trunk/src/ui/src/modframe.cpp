@@ -30,7 +30,6 @@ BEGIN_EVENT_TABLE(ModFrame, ChildFrame)
 END_EVENT_TABLE()
 
 //////////////////////////////////////////////////////////////////////////
-// конструктор
 ModFrame::ModFrame( wxMDIParentFrame *parent, const wxString& title )
  : ChildFrame(parent, title),
    m_listCtrl(this, wxID_ANY,
@@ -48,14 +47,12 @@ ModFrame::ModFrame( wxMDIParentFrame *parent, const wxString& title )
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Деструктор
 ModFrame::~ModFrame()
 {
 	this->SaveParams();
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void ModFrame::SaveParams() 
 {
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -74,7 +71,6 @@ void ModFrame::SaveParams()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void ModFrame::LoadParams()
 {
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -93,7 +89,6 @@ void ModFrame::LoadParams()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void ModFrame::RefreshModList(ULONG sesId)
 {
 	PMOD_LIST mod_list = trc_get_module_list(sesId);

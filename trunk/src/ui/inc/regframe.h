@@ -51,7 +51,6 @@ class RegFrame : public ChildFrame
 	DECLARE_EVENT_TABLE()
 
 public:
-	// конструктор окна
 	RegFrame(wxMDIParentFrame* parent, const wxString& title);
 
 	// деструктор
