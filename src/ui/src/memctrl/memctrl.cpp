@@ -22,9 +22,6 @@
 
 #include "memctrl/memctrl.h"
 
-// TODO: обработку событий мышки при нажатии на символ и позиционирование каретки на этот символ
-// TODO: организовать менеджер позиционировани€ по двум колонкам каретки и двух виртуальных кареток
-
 #define COLUMN_LINE_DELTA 3
 
 IMPLEMENT_DYNAMIC_CLASS(ListTextCtrl, wxControl)
@@ -191,7 +188,7 @@ void ListTextCtrl::OnPaint( wxPaintEvent &event )
 
 void ListTextCtrl::OnChar( wxKeyEvent &event )
 {
-	// TODO: !!!! заменить весь повтор€ющийс€ код на функции !!!!
+	// TODO: !!!! make code refactoring !!!!
 	switch ( event.GetKeyCode() )
 	{
 		case WXK_PAGEUP:
@@ -409,7 +406,7 @@ void ListTextCtrl::SetHexSelection( const wxPoint& evtPos )
 	{
 		vecPt[i].x *= 3;
 
-		// TODO: сделать оптимальней
+		// TODO: make optimization for this code
 		hexPt.push_back(wxPoint(vecPt[i].x, vecPt[i].y));
 		hexPt.push_back(wxPoint(vecPt[i].x+1, vecPt[i].y));
 		hexPt.push_back(wxPoint(vecPt[i].x+2, vecPt[i].y));

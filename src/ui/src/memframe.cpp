@@ -73,7 +73,7 @@ void MemFrame::RefreshMemory( TrcDebugEvent& event )
 	OutputMemory(event.getSesId(), ctx.Eip);
 }
 
-void MemFrame::OutputMemory( ULONG sesId, ULONG addr )
+void MemFrame::OutputMemory( uint32_t sesId, uint32_t mem_addr )
 {
 	wxString output;
 

@@ -20,7 +20,7 @@ public:
 	MemFrame(wxMDIParentFrame *parent, const wxString& title);
 	~MemFrame();
 
-	void OutputMemory(ULONG sesId, ULONG mem_addr);
+	void OutputMemory(uint32_t sesId, uint32_t mem_addr);
 
 	void RefreshMemory(TrcDebugEvent& event);
 	void OnSize(wxSizeEvent& event);

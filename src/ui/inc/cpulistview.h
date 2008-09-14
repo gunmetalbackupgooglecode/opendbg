@@ -1,3 +1,12 @@
+/*! \file cpulistview.h
+* \brief Header of CPU listview control
+
+This control provides all functionality for work with code's dump,
+break points and some other
+* \author d1mk4
+*/
+
+
 #ifndef __CPULISTVIEW_H__
 #define __CPULISTVIEW_H__
 

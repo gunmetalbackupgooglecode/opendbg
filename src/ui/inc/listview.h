@@ -1,3 +1,8 @@
+/*! \file listview.h
+* \brief Inherited listview control
+* \author d1mk4
+*/
+
 #ifndef __LISTVIEW_H__
 #define __LISTVIEW_H__
 

@@ -28,7 +28,6 @@ BEGIN_EVENT_TABLE(ThreadFrame, ChildFrame)
 END_EVENT_TABLE()
 
 //////////////////////////////////////////////////////////////////////////
-// конструктор
 ThreadFrame::ThreadFrame( wxMDIParentFrame *parent, const wxString& title )
  : ChildFrame(parent, title),
    m_listCtrl(this, wxID_ANY,
@@ -42,28 +41,24 @@ ThreadFrame::ThreadFrame( wxMDIParentFrame *parent, const wxString& title )
 }
 
 //////////////////////////////////////////////////////////////////////////
-// деструктор
 ThreadFrame::~ThreadFrame()
 {
 	SaveParams();
 }
 
 //////////////////////////////////////////////////////////////////////////
-// функция сохранения параметров
 void ThreadFrame::SaveParams()
 {
 	SaveWinCoord(wxT("ChildFrame/Thread"));
 }
 
 //////////////////////////////////////////////////////////////////////////
-// функция загрузки параметров
 void ThreadFrame::LoadParams()
 {
 	LoadWinCoord(wxT("ChildFrame/Thread"));
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void ThreadFrame::RefreshThreadList( ULONG sesId )
 {
 	PTHREAD_LIST thread_list = trc_get_thread_list(sesId);

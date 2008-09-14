@@ -73,6 +73,8 @@
 #include <map>
 #include <algorithm>
 
+#include <stdint.h>
+
 #include "resource.h"
 
 #endif // __PRECOMP_H__

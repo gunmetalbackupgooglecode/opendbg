@@ -1,7 +1,7 @@
 /*
-    *    
+    *
     * Copyright (c) 2008 
-    * d1mk4 <d1mk4@bk.ru> 
+    * d1mk4 <d1mk4@bk.ru>
     *
 
     This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,6 @@ BEGIN_EVENT_TABLE(LogFrame, ChildFrame)
 END_EVENT_TABLE()
 
 //////////////////////////////////////////////////////////////////////////
-// конструктор создания окна
 LogFrame::LogFrame( wxMDIParentFrame *parent, const wxString& title )
   : ChildFrame(parent, title),
     m_textCtrl(this, wxID_ANY, wxEmptyString,
@@ -43,21 +42,18 @@ LogFrame::LogFrame( wxMDIParentFrame *parent, const wxString& title )
 }
 
 //////////////////////////////////////////////////////////////////////////
-// деструктор
 LogFrame::~LogFrame()
 {
 	this->SaveParams();
 }
 
 //////////////////////////////////////////////////////////////////////////
-// функция печати сообщений в textCtrl
 void LogFrame::Print( const wxString &str )
 {
 	m_textCtrl.AppendText(str);
 }
 
 //////////////////////////////////////////////////////////////////////////
-// функция отправки сообщений от dbg_event в Log
 void LogFrame::DbgEventToLog( TrcDebugEvent &event )
 {
 	wxString output;
@@ -68,7 +64,6 @@ void LogFrame::DbgEventToLog( TrcDebugEvent &event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-// функция отправки сообщений от except_event в Log
 void LogFrame::ExceptEventToLog( TrcExceptEvent &event )
 {
 	wxString output;
@@ -80,7 +75,6 @@ void LogFrame::ExceptEventToLog( TrcExceptEvent &event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-// функция отправки сообщений от proc_event в Log
 void LogFrame::ProcEventToLog( TrcProcEvent &event )
 {
 	wxString output;
@@ -116,19 +110,18 @@ void LogFrame::ProcEventToLog( TrcProcEvent &event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void LogFrame::SaveParams()
 {
 	this->SaveWinCoord(wxT("ChildFrame/Log"));
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void LogFrame::LoadParams()
 {
 	this->LoadWinCoord(wxT("ChildFrame/Log"));
 }
 
+//////////////////////////////////////////////////////////////////////////
 void LogFrame::OnSize( wxSizeEvent& event )
 {
 	m_textCtrl.SetClientSize(event.GetSize());

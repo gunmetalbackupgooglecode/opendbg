@@ -275,13 +275,8 @@ void RegRichTextCtrl::WhatBasicRegister( const char *RegNames, int val, Context 
 void RegRichTextCtrl::OnMoveMouse( wxMouseEvent& event )
 {
 }
-//////////////////////////////////////////////////////////////////////////
-//
-//
-//////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
-//
 RegFrame::RegFrame( wxMDIParentFrame *parent, const wxString& title )
   : ChildFrame(parent, title)
 {
@@ -322,7 +317,6 @@ RegFrame::RegFrame( wxMDIParentFrame *parent, const wxString& title )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 RegFrame::~RegFrame()
 {
 	SaveParams();
@@ -358,8 +352,6 @@ void RegFrame::OutputFPU( const Context &ctx )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
-// TODO: сделать вывод регистров FPU, DR, MMX, 3DNow!
 void RegFrame::Output( TrcDebugEvent& event )
 {
 	Context ctx;
@@ -376,21 +368,18 @@ void RegFrame::Output( TrcDebugEvent& event )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void RegFrame::SaveParams()
 {
 	this->SaveWinCoord(wxT("ChildFrame/Reg"));
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 void RegFrame::LoadParams()
 {
 	this->LoadWinCoord(wxT("ChildFrame/Reg"));
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 wxPanel* RegFrame::MakePageDR()
 {
 	wxPanel *panel = new wxPanel(m_bookCtrl);
@@ -404,7 +393,6 @@ wxPanel* RegFrame::MakePageDR()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 wxPanel* RegFrame::MakePageMMX()
 {
 	wxPanel *panel = new wxPanel(m_bookCtrl);
@@ -419,7 +407,6 @@ wxPanel* RegFrame::MakePageMMX()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 wxPanel* RegFrame::MakePageFPU()
 {
 	wxPanel *panel = new wxPanel(m_bookCtrl);
@@ -434,7 +421,6 @@ wxPanel* RegFrame::MakePageFPU()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 wxPanel* RegFrame::MakePage3dnow()
 {
 	wxPanel *panel = new wxPanel(m_bookCtrl);
@@ -449,7 +435,6 @@ wxPanel* RegFrame::MakePage3dnow()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
 int RegFrame::GetContextId()
 {
 	return m_sesId;
