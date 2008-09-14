@@ -131,7 +131,7 @@ void delete_all_modules(PSESSION_INFO pSess)
 TRACERAPI PMOD_LIST trc_get_module_list(ULONG sesId)
 {
 	PSESSION_INFO CurrSessItem;
-	ULONG result = 1, mod_count;
+	ULONG mod_count;
 	PMODULE_LIST pFirstModule, pCurModule;
 	PMOD_LIST pModList;
 	

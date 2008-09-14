@@ -108,8 +108,6 @@ HANDLE dbg_create_process(
 }
 
 
-
-
 static 
 int dbg_build_start_params(
 	   s8 *drv_name, u32 acc_key, 
@@ -413,16 +411,19 @@ int dbg_get_context(
 
 	do
 	{
-		if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (u32)thread_id)) == NULL ) {
+		if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL )
+		{
 			break;
 		}
 
-		if (GetThreadContext(h_thread, context)) {
+		if (GetThreadContext(h_thread, context))
+		{
 			succs = 1;
 		}
 	} while (0);
 
-	if (h_thread != NULL) {
+	if (h_thread != NULL)
+	{
 		CloseHandle(h_thread);
 	}
 
@@ -441,7 +442,7 @@ int dbg_set_context(
 
 	do
 	{
-		if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (u32)thread_id)) == NULL ) {
+		if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL ) {
 			break;
 		}
 
@@ -534,3 +535,180 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+HFILE dbg_open_file(
+		 IN  LPCSTR lpFileName,
+		 OUT LPOFSTRUCT lpReOpenBuff,
+		 IN  UINT uStyle
+		 )
+{
+	return OpenFile(lpFileName, lpReOpenBuff, uStyle);
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+BOOL dbg_close_file(
+		 IN  HANDLE hObject
+		 )
+{
+	return CloseHandle(hObject);
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+BOOL dbg_read_file(
+        IN  HANDLE hFile,
+        OUT LPVOID lpBuffer,
+        IN  DWORD nNumberOfBytesToRead,
+        OUT LPDWORD lpNumberOfBytesRead,
+        IN  LPOVERLAPPED lpOverlapped
+        )
+{
+    return ReadFile(hFile,
+                    lpBuffer,
+                    nNumberOfBytesToRead,
+                    lpNumberOfBytesRead,
+                    lpOverlapped);
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+DWORD dbg_resume_thread(
+        IN  HANDLE hThread
+        )
+{
+    return ResumeThread(hThread);
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+DWORD dbg_suspend_thread(
+        IN HANDLE hThread               
+        )
+{
+    return SuspendThread(hThread);
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+int dbg_set_rdtsc(
+        IN PVOID   context,
+        IN BOOLEAN rdtsc_on
+        )
+{
+    return -1;
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+void dbg_close_thread(
+		  IN PVOID dbg_thread
+		  )
+{
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+PVOID dbg_open_thread(
+	      IN PVOID context,
+		  IN ULONG thread_id
+	  	  )
+{
+    return INVALID_HANDLE_VALUE;
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+PVOID dbg_enum_processes(
+        IN PVOID remote_id
+        )
+{
+    return INVALID_HANDLE_VALUE;
+}
+
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+PVOID dbg_enum_modules(
+        IN PVOID context
+        )
+{
+    return INVALID_HANDLE_VALUE;
+}
+
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+PVOID dbg_enum_threads(
+        IN PVOID remote_id,
+        IN ULONG process_id
+        )
+{
+    return INVALID_HANDLE_VALUE;
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+void dbg_free_memory(void *memory)
+{
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+int dbg_get_thread_ctx(
+        IN  PVOID dbg_thread,
+        OUT PVOID trd_context
+        )
+{
+    return -1;
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+void dbg_detach_debugger(
+        IN PVOID context
+        )
+{
+}
+
+/*!
+    Stupid thunk
+*/
+DBGAPI_API
+int dbg_hook_page(
+        IN PVOID context,
+        IN PVOID page_addr,
+        IN PVOID code_page
+        )
+{
+    return -1;
+}

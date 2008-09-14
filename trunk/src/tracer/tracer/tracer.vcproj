@@ -56,7 +56,7 @@
 				ObjectFile="$(OutDir)\obj\$(ProjectName)\"
 				ProgramDataBaseFileName="$(OutDir)\obj\$(ProjectName)\vc80.pdb"
 				XMLDocumentationFileName="$(OutDir)\obj\$(ProjectName)\"
-				WarningLevel="3"
+				WarningLevel="4"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="0"
 			/>
