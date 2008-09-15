@@ -2,7 +2,7 @@
 #define TRACERAPI	extern "C" __declspec(dllexport) 
 
 
-#ifndef DBGAPI
+#ifndef DBGAPI_API
 typedef struct _PROCESS_INFO
 {
 	ULONG process_id;
@@ -32,7 +32,7 @@ typedef struct _THREAD_INFO_EX
 	THREAD_INFO  threads[];
 } THREAD_INFO_EX, *PTHREAD_INFO_EX;
 
-#endif
+#endif //DBGAPI_API
 
 
 typedef struct _trcrf {
