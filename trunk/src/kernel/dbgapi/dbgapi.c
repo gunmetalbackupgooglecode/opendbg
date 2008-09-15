@@ -22,9 +22,9 @@
 #include <stdio.h>
 #include <tlhelp32.h>
 #include <psapi.h>
+#include "defines.h"
 #include "dbgapi.h"
 #include "ntdll.h"
-#include "..\sys\defines.h"
 #include "..\sys\syscall.h"
 
 static struct {

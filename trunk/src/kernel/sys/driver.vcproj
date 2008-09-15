@@ -57,6 +57,7 @@
 				PreprocessorDefinitions="_X86_=1;i386=1;CONDITION_HANDLING=1;NT_INST=0;WIN32=100;_NT1X_=100;WINNT=1;_WIN32_WINNT=0x0600;WINVER=0x0600;_WIN32_IE=0x0700;WIN32_LEAN_AND_MEAN=1;DEVL=1;__BUILDMACHINE__=WinDDK;FPO=0;NDEBUG;_DLL=1;_WIN2K_COMPAT_SLIST_USAGE;NTDDI_VERSION=0x06000000;KMDF_MAJOR_VERSION=01;KMDF_MINOR_VERSION=005"
 				IgnoreStandardIncludePath="true"
 				ExceptionHandling="0"
+				RuntimeLibrary="1"
 				BufferSecurityCheck="false"
 				ObjectFile="$(OutDir)\obj\$(ProjectName)\"
 				ProgramDataBaseFileName="$(OutDir)\obj\$(ProjectName)\vc80.pdb"
