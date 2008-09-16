@@ -185,7 +185,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)\i386"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="2"
@@ -241,8 +241,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="..\Release\i386\dbgapi.lib ..\lib\i386\msvcrt.lib"
+				AdditionalOptions="../../../bin/Release/dbgapi.lib"
+				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;"
 				GenerateManifest="false"
 				GenerateDebugInformation="true"
 				SubSystem="1"
