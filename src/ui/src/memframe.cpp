@@ -73,7 +73,7 @@ void MemFrame::RefreshMemory( TrcDebugEvent& event )
 	OutputMemory(event.getSesId(), ctx.Eip);
 }
 
-void MemFrame::OutputMemory( uint32_t sesId, uint32_t mem_addr )
+void MemFrame::OutputMemory( uint32_t sesId, uint32_t mem_addr)
 {
 	wxString output;
 
@@ -82,7 +82,8 @@ void MemFrame::OutputMemory( uint32_t sesId, uint32_t mem_addr )
 
 	unsigned char *buff = new unsigned char[pktSize];
 	unsigned char *p = buff;
-	trc_read_memory(sesId, (PVOID)addr, buff, pktSize);
+    // CHECK: is mem_addr should be used?
+	trc_read_memory(sesId, (PVOID)mem_addr, buff, pktSize);
 
 	while(pktSize)
 	{
@@ -104,7 +105,8 @@ void MemFrame::OutputMemory( uint32_t sesId, uint32_t mem_addr )
 		pktSize -= align;
 	}
 
-	m_memctrl->SetAddrValue(addr, szMemRegion);
+    // CHECK: is mem_addr should be used?
+	m_memctrl->SetAddrValue(mem_addr, szMemRegion);
 	m_memctrl->SetDumpValue(output);
 
 	delete[] buff;
