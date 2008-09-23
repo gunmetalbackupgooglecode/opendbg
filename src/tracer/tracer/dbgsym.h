@@ -1,3 +1,6 @@
+#ifndef DBGSYM_H__
+#define DBGSYM_H__
+
 #include <windows.h>
 #include <tchar.h>
 
@@ -5,8 +8,6 @@
 #include <dbghelp.h>
 
 #include <stdio.h>
-
-#include "stdint.h"
 
 #include <vector>
 #include <exception>
@@ -16,7 +17,6 @@
 #include <iostream>
 #include <xstring>
 #include <utility>
-#include <boost/bind.hpp>
 
 #include <map>
 
@@ -73,6 +73,7 @@ public:
 	typedef DWORD                                                   error_type;
 	typedef SYMBOL_INFO                                             sym_info_type;
 	typedef PSYM_ENUMERATESYMBOLS_CALLBACK                          enum_callback_type;
+	typedef IMAGEHLP_MODULE                                         module_info_type;
 
 public:
 	static handle_type get_current_process()
@@ -86,7 +87,7 @@ public:
 		ulong_type dwLow   =   ::GetFileSize(h, &dwHigh);
 
 		if( 0xFFFFFFFF == dwLow &&
-		    ERROR_SUCCESS != ::GetLastError())
+			ERROR_SUCCESS != ::GetLastError())
 			dwHigh = 0xFFFFFFFF;
 
 		return (static_cast<ulong_type>(dwHigh) << 32) | dwLow;
@@ -127,6 +128,14 @@ public:
 	{
 		return ::SymEnumSymbols(get_current_process(), modbase, NULL, static_cast<enum_callback_type>(callback), arg);
 	}
+
+	static module_info_type sym_get_module_info(ulong_type modbase)
+	{
+		module_info_type module_info;
+		memset(&module_info, 0, sizeof(module_info));
+		::SymGetModuleInfo(get_current_process(), modbase, &module_info);
+		return module_info;
+	}
 };
 
 template <>
@@ -146,6 +155,7 @@ public:
 	typedef DWORD                                                   error_type;
 	typedef SYMBOL_INFOW                                            sym_info_type;
 	typedef PSYM_ENUMERATESYMBOLS_CALLBACKW                         enum_callback_type;
+	typedef IMAGEHLP_MODULEW                                      module_info_type;
 
 public:
 	static handle_type get_current_process()
@@ -159,7 +169,7 @@ public:
 		DWORD   dwLow   =   ::GetFileSize(h, &dwHigh);
 
 		if( 0xFFFFFFFF == dwLow &&
-		    ERROR_SUCCESS != ::GetLastError())
+			ERROR_SUCCESS != ::GetLastError())
 			dwHigh = 0xFFFFFFFF;
 
 		return (static_cast<ulong_type>(dwHigh) << 32) | dwLow;
@@ -202,6 +212,89 @@ public:
 	{
 		return ::SymEnumSymbolsW(get_current_process(), modbase, search_mask.c_str(), reinterpret_cast<enum_callback_type>(callback), arg);
 	}
+
+	static module_info_type sym_get_module_info(ulong_type modbase)
+	{
+		module_info_type module_info;
+		memset(&module_info, 0, sizeof(module_info));
+		::SymGetModuleInfoW(get_current_process(), modbase, &module_info);
+		return module_info;
+	}
+};
+
+template <typename C, typename T = dbgsym_traits<C> >
+class module_properties
+{
+public:
+	typedef C                                            char_type;
+	typedef T                                            traits_type;
+	typedef typename traits_type::ulong_type             ulong_type;
+	typedef typename traits_type::string_type            string_type;
+	typedef typename traits_type::bool_type              bool_type;
+	typedef typename traits_type::module_info_type       module_info_type;
+
+public:
+	void init()
+	{
+		if (!traits_type::sym_init())
+			throw std::runtime_error("Error: sym_init");
+
+		m_options = traits_type::get_sym_options();
+		m_options |= SYMOPT_DEBUG;
+		traits_type::set_sym_options(m_options);
+	}
+
+	module_properties()
+	{
+		init();
+	}
+
+	~module_properties()
+	{
+		// Unload symbols for the module
+		if (!traits_type::sym_unload_module(m_modbase))
+			throw std::runtime_error("Error: sym_unload_module");
+
+		if (!traits_type::sym_cleanup())
+			throw std::runtime_error("Error: sym_cleanup");
+	}
+
+	module_properties(string_type const& modname)
+	{
+		init();
+
+		m_modbase = traits_type::sym_load_module(modname);
+		if(!m_modbase)
+			throw std::runtime_error("Error: sym_load_module");
+
+		m_module_info = traits_type::sym_get_module_info(m_modbase);
+	}
+
+	// Get information about loaded symbols 
+	module_info_type get_properties()
+	{
+		return m_module_info;
+	}
+
+	ulong_type get_modbase()
+	{
+		return m_modbase;
+	}
+
+	ulong_type get_options()
+	{
+		return m_options;
+	}
+
+	ulong_type get_timestamp()
+	{
+		return m_modbase.TimeDateStamp;
+	}
+
+private:
+	ulong_type        m_modbase;
+	module_info_type  m_module_info;
+	ulong_type        m_options;
 };
 
 template <typename T>
@@ -221,15 +314,15 @@ public:
 
 public:
 	sym_info()
-	 : m_size(( sizeof(sym_info_type)+ MAX_SYM_NAME*sizeof(char_type)
-			+sizeof(ulong_type) - 1 )/sizeof(ulong_type))
+		: m_size(( sizeof(sym_info_type)+ MAX_SYM_NAME*sizeof(char_type)
+		+sizeof(ulong_type) - 1 )/sizeof(ulong_type))
 	{
 		m_obj = (pointer)new char[m_size];
 	}
 
 	sym_info(const sym_info_type& rhs)
-	 : m_size(( sizeof(sym_info_type)+ MAX_SYM_NAME*sizeof(char_type)
-			+sizeof(ulong_type) - 1 )/sizeof(ulong_type))
+		: m_size(( sizeof(sym_info_type)+ MAX_SYM_NAME*sizeof(char_type)
+		+sizeof(ulong_type) - 1 )/sizeof(ulong_type))
 	{
 		m_obj = (pointer)new char[m_size];
 		string_type name(rhs.Name);
@@ -238,7 +331,7 @@ public:
 	}
 
 	sym_info(const sym_info& rhs)
-	 : m_size(rhs.m_size)
+		: m_size(rhs.m_size)
 	{
 		m_obj = new sym_info_type(*rhs.m_obj);
 	}
@@ -281,6 +374,7 @@ public:
 	typedef C                                            char_type;
 	typedef T                                            traits_type;
 	typedef dbgsym_sequence<C, T>                        class_type;
+	typedef module_properties<C, T>                      module_properties;
 	typedef typename traits_type::ulong_type             ulong_type;
 	typedef typename traits_type::string_type            string_type;
 	typedef typename traits_type::bool_type              bool_type;
@@ -290,35 +384,20 @@ public:
 	typedef std::map<string_type, sym_info_type>         sym_info_map_type;
 	typedef typename sym_info_map_type::iterator         iterator;
 	typedef typename sym_info_map_type::const_iterator   const_iterator;
-	typedef typename sym_info_map_type::key_type                  key_type;
+	typedef typename sym_info_map_type::key_type         key_type;
 
 public:
 	explicit dbgsym_sequence(string_type const& module_name)
-	 : m_modname(module_name)
+		: m_modname(module_name)
 	{
-		ulong_type options = traits_type::get_sym_options();
-		options |= SYMOPT_DEBUG;
-		traits_type::set_sym_options(options);
+		module_properties mod_info(module_name);
 
-		if (!traits_type::sym_init())
-			throw std::runtime_error("Error: sym_init");
-
-		m_modbase = traits_type::sym_load_module(m_modname);
-		if(!m_modbase)
-			throw std::runtime_error("Error: sym_load_module");
-
-		if (!::SymEnumSymbols(::GetCurrentProcess(), m_modbase, 0, reinterpret_cast<traits_type::enum_callback_type>(enum_sym_callback), this))
+		if (!traits_type::sym_enum_symbols(mod_info.get_modbase(), "", reinterpret_cast<traits_type::enum_callback_type>(enum_sym_callback), this))
 			throw std::runtime_error("Error: sym_enum_symblos");
 	}
 
 	~dbgsym_sequence()
 	{
-		// Unload symbols for the module
-		if (!traits_type::sym_unload_module(m_modbase))
-			throw std::runtime_error("Error: sym_unload_module");
-
-		if (!traits_type::sym_cleanup())
-			throw std::runtime_error("Error: sym_cleanup");
 	}
 
 	static bool_type __stdcall enum_sym_callback(sym_info_type_* sym_info, ulong_type symsize, void* arg)
@@ -349,19 +428,6 @@ public:
 	}
 
 private:
-	//// Get information about loaded symbols 
-	//IMAGEHLP_MODULE64 get_properties()
-	//{
-	//	IMAGEHLP_MODULE64 ModuleInfo; 
-	//	memset(&ModuleInfo, 0, sizeof(ModuleInfo) );
-	//	::SymGetModuleInfo64( GetCurrentProcess(), m_mod_base, &ModuleInfo ); 
-
-	//	return ModuleInfo;
-	//}
-
-private:
-	ulong_type m_options;
-	ulong_type m_modbase;
 	string_type m_search_mask;
 	string_type m_modname;
 	sym_info_map_type m_sym_map;
@@ -370,19 +436,20 @@ private:
 /////////////////////////////////////////////////////////////////////////////////
 //// main 
 ////
+//
+//void print_sym(const std::pair<std::string, sym_info<char> >& sym)
+//{
+//	std::cout << "name: " << sym.first << "\n";
+//}
+//
+//int main( int argc, const char* argv[] )
+//{
+//	dbgsym_sequence<char> dbg_sym("ntoskrnl.exe");
+//
+//	sym_info<char> t = dbg_sym["wctomb"];
+//
+//	return 0;
+//}
 
-void print_sym(const std::pair<std::string, sym_info<char> >& sym)
-{
-	std::cout << "name: " << sym.first << "\n";
-}
+#endif
 
-int main( int argc, const char* argv[] )
-{
-	dbgsym_sequence<char> dbg_sym(argv[1]);
-
-	std::for_each(dbg_sym.begin(), dbg_sym.end(), boost::bind(&print_sym, _1));
-
-	sym_info<char> t = dbg_sym["wctomb"];
-
-	return 0;
-}
