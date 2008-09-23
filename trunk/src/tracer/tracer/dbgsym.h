@@ -260,6 +260,7 @@ public:
 	}
 
 	module_properties(string_type const& modname)
+	 : m_modname(modname)
 	{
 		init();
 
@@ -274,6 +275,11 @@ public:
 	module_info_type get_properties()
 	{
 		return m_module_info;
+	}
+
+	string_type get_modname()
+	{
+		return m_modname;
 	}
 
 	ulong_type get_modbase()
@@ -293,6 +299,7 @@ public:
 
 private:
 	ulong_type        m_modbase;
+	string_type       m_modname;
 	module_info_type  m_module_info;
 	ulong_type        m_options;
 };
@@ -388,10 +395,16 @@ public:
 
 public:
 	explicit dbgsym_sequence(string_type const& module_name)
-		: m_modname(module_name)
+	 : m_modname(module_name)
 	{
 		module_properties mod_info(module_name);
 
+		if (!traits_type::sym_enum_symbols(mod_info.get_modbase(), "", reinterpret_cast<traits_type::enum_callback_type>(enum_sym_callback), this))
+			throw std::runtime_error("Error: sym_enum_symblos");
+	}
+
+	dbgsym_sequence(module_properties& mod_info)
+	{
 		if (!traits_type::sym_enum_symbols(mod_info.get_modbase(), "", reinterpret_cast<traits_type::enum_callback_type>(enum_sym_callback), this))
 			throw std::runtime_error("Error: sym_enum_symblos");
 	}
@@ -444,7 +457,9 @@ private:
 //
 //int main( int argc, const char* argv[] )
 //{
-//	dbgsym_sequence<char> dbg_sym("ntoskrnl.exe");
+//	module_properties<char> mod_info("ntoskrnl.exe");
+//
+//	dbgsym_sequence<char> dbg_sym(mod_info);
 //
 //	sym_info<char> t = dbg_sym["wctomb"];
 //
