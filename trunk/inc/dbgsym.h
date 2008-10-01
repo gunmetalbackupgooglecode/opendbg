@@ -1,5 +1,5 @@
-#ifndef DBGSYM_H__
-#define DBGSYM_H__
+#ifndef _DBGSYM_H__
+#define _DBGSYM_H__
 
 #include <windows.h>
 #include <tchar.h>
@@ -19,8 +19,6 @@
 #include <utility>
 
 #include <map>
-
-#pragma comment( lib, "dbghelp.lib" )
 
 template <typename T>
 class dbgsym_traits
@@ -466,5 +464,4 @@ private:
 //	return 0;
 //}
 
-#endif
-
+#endif //_DBGSYM_H__
