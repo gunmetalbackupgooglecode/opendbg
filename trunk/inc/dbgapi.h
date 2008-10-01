@@ -262,7 +262,7 @@ typedef struct _DBG_CONTEXT
 
 
 
-#pragma pack (pop)
+//#pragma pack (pop)
 
 #define DBG_EXCEPTION     1
 #define DBG_TERMINATED    2 

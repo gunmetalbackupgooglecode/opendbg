@@ -6,6 +6,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbgapi", "dbgapi\dbgapi.vcproj", "{A383900F-BFF7-4C3C-8B08-360B4D0F1928}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcproj", "{A38C04C7-B172-4897-8471-E3478903035E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A383900F-BFF7-4C3C-8B08-360B4D0F1928} = {A383900F-BFF7-4C3C-8B08-360B4D0F1928}
+		{EA6284CE-8C7E-4461-BBED-CC3D5E95513B} = {EA6284CE-8C7E-4461-BBED-CC3D5E95513B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
