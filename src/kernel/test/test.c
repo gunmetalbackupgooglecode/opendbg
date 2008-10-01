@@ -18,16 +18,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "stdint.h"
 #include <windows.h>
 #include <stdio.h>
 #include "test.h"
-#include "..\dbgapi\dbgapi.h"
+#include "dbgapi.h"
+//#include "dbgsym.h"
 
-static u_long 
+static uintptr_t
 CALLBACK get_symbols_callback(
-		int sym_type, char *sym_name, char *sym_subname
+		int sym_type, char * sym_name, char * sym_subname
 		)
 {
+
 	if (sym_type == SYM_TIMESTAMP)
 	{
 		return 0x45E53F9C;

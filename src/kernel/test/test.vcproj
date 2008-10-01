@@ -29,6 +29,7 @@
 			ConfigurationType="1"
 			UseOfMFC="2"
 			CharacterSet="2"
+			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -51,11 +52,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
+				ObjectFile="$(OutDir)\obj\$(ProjectName)\"
+				ProgramDataBaseFileName="$(OutDir)\obj\$(ProjectName)\vc80.pdb"
+				XMLDocumentationFileName="$(OutDir)\obj\$(ProjectName)\"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
@@ -71,8 +76,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="..\debug\dbgapi.lib"
+				AdditionalOptions="$(SolutionDir)/../../bin/$(ConfigurationName)/dbgapi.lib dbghelp.lib"
+				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -85,6 +92,100 @@
 			<Tool
 				Name="VCManifestTool"
 				EmbedManifest="false"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfMFC="2"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="MASM"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="1"
+				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="2"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
+				ExceptionHandling="0"
+				RuntimeLibrary="0"
+				BufferSecurityCheck="false"
+				UsePrecompiledHeader="0"
+				AssemblerOutput="1"
+				AssemblerListingLocation="$(IntDir)\"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CallingConvention="0"
+				CompileAs="1"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="../../../bin/Release/dbgapi.lib"
+				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;"
+				GenerateManifest="false"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -166,99 +267,6 @@
 			<Tool
 				Name="VCManifestTool"
 				EmbedManifest="false"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfMFC="2"
-			CharacterSet="2"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="MASM"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="1"
-				InlineFunctionExpansion="1"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="false"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
-				ExceptionHandling="0"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="false"
-				UsePrecompiledHeader="0"
-				AssemblerOutput="1"
-				AssemblerListingLocation="$(IntDir)\"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-				CallingConvention="0"
-				CompileAs="1"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions="../../../bin/Release/dbgapi.lib"
-				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;"
-				GenerateManifest="false"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
