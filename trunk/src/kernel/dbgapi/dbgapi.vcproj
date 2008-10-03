@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="2"
+			CharacterSet="0"
 			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
 			>
 			<Tool

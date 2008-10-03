@@ -25,6 +25,7 @@
 			OutputDirectory="$(SolutionDir)\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
+			CharacterSet="0"
 			DeleteExtensionsOnClean="*.obj;*.ilk;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.pgc;*.pgd;$(TargetPath)"
 			WholeProgramOptimization="0"
 			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
@@ -448,7 +449,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\defines.h"
+				RelativePath="..\..\..\inc\defines.h"
 				>
 			</File>
 			<File
