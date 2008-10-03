@@ -28,7 +28,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="2"
-			CharacterSet="2"
+			CharacterSet="0"
 			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
 			>
 			<Tool
@@ -386,7 +386,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\test.c"
+				RelativePath=".\test.cpp"
 				>
 			</File>
 		</Filter>
