@@ -23,6 +23,7 @@
 #include <tlhelp32.h>
 #include <psapi.h>
 #include "defines.h"
+#include "dbgconst.h"
 #include "dbgapi.h"
 #include "ntdll.h"
 #include "..\sys\syscall.h"
@@ -45,7 +46,7 @@ static struct {
 
 #define NUM_SYM (sizeof(req_symbols)/sizeof(req_symbols[0]))
 
-static char driver_name[] = "dbgapi.sys";
+static const char driver_name[] = "dbgapi.sys";
 static u32  acc_key;
 
 static SC_HANDLE dbg_install_sc(char *path, char *name)

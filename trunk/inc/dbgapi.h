@@ -293,13 +293,8 @@ typedef struct _EVENT_FILTER
 	EXCEPT_FILTER filters[FILTER_MAX];
 } EVENT_FILTER, *PEVENT_FILTER;
 
-#define SYM_TIMESTAMP     0 /* timestamp of kernel image */
-#define SYM_NTAPI_NUM     1 /* number of Nt api          */
-#define SYM_OFFSET        2 /* global symbol offset      */
-#define SYM_STRUCT_OFFSET 3 /* structure field offset    */
-
 typedef 
-u_long (CALLBACK *dbg_sym_get)(
+uintptr_t (CALLBACK *dbg_sym_get)(
         int  sym_type,
         char *sym_name,
         char *sym_subname

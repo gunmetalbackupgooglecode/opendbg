@@ -345,8 +345,8 @@ void dbg_detach_debugger(
 
 DBGAPI_API
 int dbg_initialize_api(
-	   IN ULONG access_key1,
-	   IN ULONG access_key2
+	   IN ULONG  access_key1,
+	   IN void * access_key2
 	   );
 
 DBGAPI_API
