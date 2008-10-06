@@ -21,6 +21,8 @@
 #include "windows.h"
 //#include "dbgapi.h"
 //#include "ngtracerapi.h"
+#include "dbgconst.h"
+//#include "dbgsym.h"
 #include "trc_types.h"
 #define NOT_PWD_2(x)		((x) & ((x)-1))
 
@@ -69,6 +71,60 @@ TRACERAPI PPROCESS_INFO_EX trc_enum_processes(ULONG sesId)
 }
 
 
+static uintptr_t
+CALLBACK get_symbols_callback(
+		int sym_type, char * sym_name, char * sym_subname
+		)
+{
+
+	if (sym_type == SYM_TIMESTAMP)
+	{
+		return 0x45E53F9C;
+	}
+
+	if (sym_type == SYM_NTAPI_NUM)
+	{
+		if (strcmp(sym_name, "ZwTerminateProcess") == 0) {
+			return 0x101;
+		}
+
+		if (strcmp(sym_name, "ZwCreateThread") == 0) {
+			return 0x035;
+		}
+
+		if (strcmp(sym_name, "ZwTerminateThread") == 0) {
+			return 0x102;
+		}		
+	}
+
+	if (sym_type == SYM_OFFSET)
+	{
+		if (strcmp(sym_name, "_NtTerminateProcess@8") == 0) {
+			return 0xf076c;
+		}
+
+		if (strcmp(sym_name, "_NtResumeThread@8") == 0) {
+			return 0xf2764;
+		}
+
+		if (strcmp(sym_name, "_KiDispatchException@20") == 0) {
+			return 0x2578e;
+		}	
+	}
+
+	if (sym_type == SYM_STRUCT_OFFSET)
+	{
+		if (strcmp(sym_name, "_ETHREAD") == 0) 
+		{
+			if (strcmp(sym_subname, "ThreadListEntry") == 0) {
+				return 0x22c;
+			}
+		}
+	}
+
+	return 0;
+}
+
 TRACERAPI int trc_init()
 {
 	if (by_is_inited)
@@ -76,7 +132,7 @@ TRACERAPI int trc_init()
 
 	hHeap = HeapCreate(0, 0x50000, 0);
 	by_is_inited = 1;
-	return dbg_initialize_api(0x75ECB86B, 0x0FB0B4647);
+	return dbg_initialize_api(0x75ECB86B, *get_symbols_callback);
 }
 
 
@@ -205,7 +261,7 @@ TRACERAPI ULONG trc_attach_to_target(ULONG sesId,ULONG PID,ULONG attachOpts)
 	if (!pDbgContext)
 		return 0;	 
 		
-	c_EventFilter.event_mask = -1;
+	c_EventFilter.event_mask = 0xFFFFffff;
 	c_EventFilter.filtr_count = 0;
 	OutputDebugString("debuger attached\n");
 	dbg_set_filter(pCurSessData->pDbgContext, &c_EventFilter);
@@ -310,7 +366,7 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 		pCurData->trc_process.PID = Process_id;
 
 		pCurData->pDbgContext = pDbgContext;
-		EventFilter.event_mask = -1;
+		EventFilter.event_mask = 0xFFFFffff;
 		EventFilter.filtr_count = 0;
 
 		image_base = AttachInfo.image_base; //	image_base
