@@ -212,7 +212,7 @@ uint32_t __stdcall Debugger::excpt_event( PTRC_EXCEPTION_EVENT evt )
 
 uint32_t __stdcall Debugger::dbg_event( PTRC_EXCEPTION_EVENT evt )
 {
-	CONTEXT	ctx;
+//	CONTEXT	ctx;
 	ULONG	retValue=NULL;
 	
 	printf("***********\nexception in thread %x thread teb id %x\n",evt->CurrentThread->TID,evt->CurrentThread->teb_addr);

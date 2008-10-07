@@ -48,7 +48,7 @@
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(ProjectDir)\inc&quot;;&quot;$(SolutionDir)../../inc&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="true"
