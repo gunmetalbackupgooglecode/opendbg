@@ -240,7 +240,7 @@ TRACERAPI ULONG trc_set_thread_ctx(ULONG sesId,ULONG TID,PCONTEXT ctx)
 TRACERAPI ULONG trc_get_thread_ctx(ULONG sesId,ULONG TID,PCONTEXT ctx)
 {
 	PSESSION_INFO CurrSessItem;
-	int result = 0;
+//	int result = 0;
 
 	CurrSessItem = get_sess_by_id(sesId);
 

@@ -18,12 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "windows.h"
+#include <windows.h>
 //#include "dbgapi.h"
 //#include "ngtracerapi.h"
 #include "dbgconst.h"
 //#include "dbgsym.h"
 #include "trc_types.h"
+
 #define NOT_PWD_2(x)		((x) & ((x)-1))
 
 ///////////////////////////////////////////////////////
