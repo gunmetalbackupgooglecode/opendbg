@@ -10,10 +10,11 @@ typedef unsigned long    u32;
 typedef unsigned short   u16;
 typedef unsigned char    u8;
 
-typedef __int64 s64;
-typedef long    s32;
-typedef short   s16;
-typedef char    s8;
+typedef __int64		s64;
+typedef int 		s32;
+typedef short		s16;
+typedef char		s8;
+typedef const char  cs8;
 
 #pragma pack (push, 1)
 
