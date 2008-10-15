@@ -71,7 +71,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="dbgapi.lib"
+				AdditionalOptions="dbgapi.lib dbghelp.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
@@ -160,7 +160,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="dbgapi.lib"
+				AdditionalOptions="dbgapi.lib dbghelp.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
@@ -245,6 +245,10 @@
 			>
 			<File
 				RelativePath=".\dbgapi.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\inc\dbgsym.h"
 				>
 			</File>
 			<File

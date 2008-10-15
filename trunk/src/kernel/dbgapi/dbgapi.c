@@ -49,7 +49,7 @@ static struct {
 static const char driver_name[] = "dbgapi.sys";
 static u32  acc_key;
 
-static SC_HANDLE dbg_install_sc(char *path, char *name)
+static SC_HANDLE dbg_install_sc(const char *path, const char *name)
 {
     SC_HANDLE h_scm;
     SC_HANDLE h_svc = NULL;
@@ -106,7 +106,7 @@ HANDLE dbg_create_process(
 
 static
 int dbg_build_start_params(
-       s8 *drv_name, u32 acc_key,
+       cs8 *drv_name, u32 acc_key,
        dbg_sym_get sym_callback
        )
 {
