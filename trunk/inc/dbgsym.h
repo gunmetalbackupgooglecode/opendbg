@@ -35,6 +35,7 @@ public:
 	typedef int                                                     int_type;
 	typedef bool                                                    bool_type;
 	typedef unsigned long                                           ulong_type;
+	typedef unsigned long long                                      u64b;
 	typedef HANDLE                                                  handle_type;
 	typedef HINSTANCE                                               module_type;
 	typedef DWORD                                                   error_type;
@@ -64,6 +65,7 @@ public:
 	typedef int                                                     int_type;
 	typedef bool                                                    bool_type;
 	typedef unsigned long                                           ulong_type;
+	typedef unsigned long long                                      u64b;
 	typedef HANDLE                                                  handle_type;
 	typedef HINSTANCE                                               module_type;
 	typedef DWORD                                                   error_type;
@@ -86,7 +88,7 @@ public:
 			ERROR_SUCCESS != ::GetLastError())
 			dwHigh = 0xFFFFFFFF;
 
-		return (static_cast<ulong_type>(dwHigh) << 32) | dwLow;
+		return (static_cast<u64b>(dwHigh) << 32) | dwLow;
 	}
 
 	static ulong_type sym_init()
@@ -120,7 +122,7 @@ public:
 		return ::SymUnloadModule64(get_current_process(), modbase);
 	}
 
-	static ulong_type sym_enum_symbols(ulong_type modbase, string_type const& search_mask, void* callback, void* arg)
+	static ulong_type sym_enum_symbols(ulong_type modbase, string_type const& /*search_mask*/, void* callback, void* arg)
 	{
 		return ::SymEnumSymbols(get_current_process(), modbase, NULL, static_cast<enum_callback_type>(callback), arg);
 	}
@@ -146,6 +148,7 @@ public:
 	typedef int                                                     int_type;
 	typedef bool                                                    bool_type;
 	typedef unsigned long                                           ulong_type;
+	typedef unsigned long long                                      u64b;
 	typedef HANDLE                                                  handle_type;
 	typedef HINSTANCE                                               module_type;
 	typedef DWORD                                                   error_type;
@@ -168,7 +171,7 @@ public:
 			ERROR_SUCCESS != ::GetLastError())
 			dwHigh = 0xFFFFFFFF;
 
-		return (static_cast<ulong_type>(dwHigh) << 32) | dwLow;
+		return (static_cast<u64b>(dwHigh) << 32) | dwLow;
 	}
 
 	static ulong_type sym_init()
@@ -262,7 +265,7 @@ public:
 
 		m_modbase = traits_type::sym_load_module(modname);
 		if(!m_modbase)
-			throw std::runtime_error("Error: sym_load_module");
+			throw std::runtime_error("Error: sym_load_module: " + modname);
 
 		m_module_info = traits_type::sym_get_module_info(m_modbase);
 	}
@@ -409,7 +412,7 @@ public:
 	{
 	}
 
-	static bool_type __stdcall enum_sym_callback(sym_info_type_* sym_info, ulong_type symsize, void* arg)
+	static bool_type __stdcall enum_sym_callback(sym_info_type_* sym_info, ulong_type /*symsize*/, void* arg)
 	{
 		class_type* pthis = static_cast<class_type*>(arg);
 		if( sym_info != 0 )
@@ -443,23 +446,22 @@ private:
 };
 
 /////////////////////////////////////////////////////////////////////////////////
-//// main 
-////
-//
-//void print_sym(const std::pair<std::string, sym_info<char> >& sym)
-//{
-//	std::cout << "name: " << sym.first << "\n";
-//}
-//
-//int main( int argc, const char* argv[] )
-//{
-//	module_properties<char> mod_info("ntoskrnl.exe");
-//
-//	dbgsym_sequence<char> dbg_sym(mod_info);
-//
-//	sym_info<char> t = dbg_sym["wctomb"];
-//
-//	return 0;
-//}
+//// Example
+/*
+void print_sym(const std::pair<std::string, sym_info<char> >& sym)
+{
+	std::cout << "name: " << sym.first << "\n";
+}
 
+int main( int argc, const char* argv[] )
+{
+	module_properties<char> mod_info("ntoskrnl.exe");
+
+	dbgsym_sequence<char> dbg_sym(mod_info);
+
+	sym_info<char> t = dbg_sym["wctomb"];
+
+	return 0;
+}
+*/
 #endif //_DBGSYM_H__
