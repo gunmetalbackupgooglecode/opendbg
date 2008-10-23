@@ -112,10 +112,13 @@ PBREAKPOINT_LIST create_bp(PSESSION_INFO pSess, PVOID addr)
 	
 
 	//OutputDebugString("Try to set bp...");
+	// FIXME: OLOLO! sucky condition, sucky code?
+	/*
 	if ((pSess->options | TRC_OPT_HIDE_BREAKPOINTS) && 0)
 	{		
-	
-		if (pCur->pHookedMem = VirtualAlloc(0, 0x1000, 0x3000, PAGE_EXECUTE_READWRITE))
+		pCur->pHookedMem = VirtualAlloc(0, 0x1000, 0x3000, PAGE_EXECUTE_READWRITE);
+
+		if (pCur->pHookedMem)
 		{
 			if (dbg_read_memory(pSess->pDbgContext, addr, &pCur->SavedByte, 1, 1))
 			{
@@ -135,6 +138,7 @@ PBREAKPOINT_LIST create_bp(PSESSION_INFO pSess, PVOID addr)
 
 	}
 	else
+	*/
 	{// if (options | TRC_OPT_HIDE_BREAKPOINTS)
 		//not hidden
 		//OutputDebugString("3\n");
@@ -484,7 +488,7 @@ BOOL set_disabled_bp(PSESSION_INFO pSess, ULONG bp_type, PVOID addr, ULONG TID)
 	return res;
 }
 
-void disable_thread_hw(PSESSION_INFO pSess, PTHREAD_DATA pThrd, ULONG bp_type, PVOID addr, ULONG TID)
+void disable_thread_hw(PSESSION_INFO pSess, PTHREAD_DATA pThrd, ULONG bp_type, PVOID addr, ULONG /*TID*/)
 {
 	int i;
 	for (i=0; i<4; i++)

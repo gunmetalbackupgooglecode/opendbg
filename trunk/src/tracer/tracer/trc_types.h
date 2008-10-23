@@ -196,8 +196,8 @@ extern signed long  delete_module(PSESSION_INFO pSessData, PDLL_UNLOAD_INFO a2);
 //extern ULONG delete_thrd_hw(int SesId,int tid, PVOID addr, ULONG bp_type_mask);
 //extern ULONG do_delete_soft_bp(ULONG SessId, PVOID addr);
 //extern ULONG delete_hw(int Sesid, int tid, PVOID addr, ULONG bp_type_mask);
-extern ULONG read_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOL code_page);
-extern ULONG write_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOL code_page);
+extern ULONG read_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOLEAN code_page);
+extern ULONG write_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOLEAN code_page);
 
 signed long ProcessException(PDBG_EVENT pDbg, PSESSION_INFO pSessData, PTRC_EXCEPTION_EVENT pSomeData);
 

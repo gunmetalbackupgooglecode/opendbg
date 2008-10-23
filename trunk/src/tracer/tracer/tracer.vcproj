@@ -248,6 +248,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\inc\dbgutils.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\inc\dbgsym.h"
 				>
 			</File>
