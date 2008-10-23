@@ -35,7 +35,7 @@ public:
 	typedef int                                                     int_type;
 	typedef bool                                                    bool_type;
 	typedef unsigned long                                           ulong_type;
-	typedef unsigned long long                                      u64b;
+	typedef unsigned long long                                      u64b_type;
 	typedef HANDLE                                                  handle_type;
 	typedef HINSTANCE                                               module_type;
 	typedef DWORD                                                   error_type;
@@ -65,7 +65,7 @@ public:
 	typedef int                                                     int_type;
 	typedef bool                                                    bool_type;
 	typedef unsigned long                                           ulong_type;
-	typedef unsigned long long                                      u64b;
+	typedef unsigned long long                                      u64b_type;
 	typedef HANDLE                                                  handle_type;
 	typedef HINSTANCE                                               module_type;
 	typedef DWORD                                                   error_type;
@@ -79,7 +79,7 @@ public:
 		return ::GetCurrentProcess();
 	}
 
-	static ulong_type get_file_size(handle_type h)
+	static u64b_type get_file_size(handle_type h)
 	{
 		ulong_type dwHigh;
 		ulong_type dwLow   =   ::GetFileSize(h, &dwHigh);
@@ -88,7 +88,7 @@ public:
 			ERROR_SUCCESS != ::GetLastError())
 			dwHigh = 0xFFFFFFFF;
 
-		return (static_cast<u64b>(dwHigh) << 32) | dwLow;
+		return (static_cast<u64b_type>(dwHigh) << 32) | dwLow;
 	}
 
 	static ulong_type sym_init()
@@ -148,7 +148,7 @@ public:
 	typedef int                                                     int_type;
 	typedef bool                                                    bool_type;
 	typedef unsigned long                                           ulong_type;
-	typedef unsigned long long                                      u64b;
+	typedef unsigned long long                                      u64b_type;
 	typedef HANDLE                                                  handle_type;
 	typedef HINSTANCE                                               module_type;
 	typedef DWORD                                                   error_type;
@@ -162,7 +162,7 @@ public:
 		return ::GetCurrentProcess();
 	}
 
-	static ulong_type get_file_size(handle_type h)
+	static u64b_type get_file_size(handle_type h)
 	{
 		DWORD   dwHigh;
 		DWORD   dwLow   =   ::GetFileSize(h, &dwHigh);
@@ -171,7 +171,7 @@ public:
 			ERROR_SUCCESS != ::GetLastError())
 			dwHigh = 0xFFFFFFFF;
 
-		return (static_cast<u64b>(dwHigh) << 32) | dwLow;
+		return (static_cast<u64b_type>(dwHigh) << 32) | dwLow;
 	}
 
 	static ulong_type sym_init()
