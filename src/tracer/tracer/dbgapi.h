@@ -1,6 +1,9 @@
 #define DBGAPI_API extern "C" __declspec(dllimport) 
 
 #define DBGAPI
+
+#pragma warning(disable:4200)
+
 #pragma pack (push, 1)
 
 typedef struct _OPT_DATA
@@ -30,9 +33,6 @@ typedef struct _PROCESS_INFO_EX
 	ULONG        proc_count;
 	PROCESS_INFO processes[];
 } PROCESS_INFO_EX, *PPROCESS_INFO_EX;
-
-
-
 
 typedef struct _THREAD_INFO
 {

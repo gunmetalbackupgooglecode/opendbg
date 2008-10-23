@@ -30,10 +30,10 @@ TRACERAPI ULONG trc_read_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size)
 }
 
 //------------------------------------------------------------------------
-ULONG read_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOL code_page)
+ULONG read_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOLEAN code_page)
 {
 	PSESSION_INFO CurrSessItem;
-	int result = 0;
+	//int result = 0;
 	PBREAKPOINT_LIST lpCurrBp;
 	//char sz[256];
 
@@ -106,7 +106,7 @@ TRACERAPI PTHREAD_LIST trc_get_thread_list(ULONG sesId)
 }
 
 //------------------------------------------------------------------------
-ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOL code_page)
+ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOLEAN code_page)
 {
 	PVOID pBuffer;
 	PSESSION_INFO CurrSessItem;
@@ -124,7 +124,8 @@ ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOL code_
 	if (!pBuffer)
 		return 0;	
 
-	try {	
+	//try 
+	{	
 		memcpy(pBuffer, pBuffer, size);
 
 		lpCurrBp = CurrSessItem->pSoftBps;
@@ -139,10 +140,12 @@ ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOL code_
 		} while (lpCurrBp);					
 		res = dbg_write_memory(CurrSessItem->pDbgContext, addr, pBuffer, size, code_page);
 	}
+	/*
 	catch(...)
 	{
 		OutputDebugString("Some exception in trc_write_memory\n");
 	}
+	*/
 	VirtualFree(pBuffer, size, MEM_FREE);
 
 	return res;	

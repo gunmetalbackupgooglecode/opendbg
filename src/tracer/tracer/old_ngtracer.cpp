@@ -22,7 +22,8 @@
 //#include "dbgapi.h"
 //#include "ngtracerapi.h"
 #include "dbgconst.h"
-//#include "dbgsym.h"
+#include "dbgutils.h"
+#include "dbgsym.h"
 #include "trc_types.h"
 
 #define NOT_PWD_2(x)		((x) & ((x)-1))
@@ -126,14 +127,31 @@ CALLBACK get_symbols_callback(
 	return 0;
 }
 
+/*
+	try {
+		module_properties<char> ntos_mod_info("ntoskrnl.exe");
+		dbgsym_sequence<char> ntos_dbg_sym(ntos_mod_info);
+		sym_info<char> t = ntos_dbg_sym["wctomb"];
+	}
+	catch(std::runtime_error e) {
+		print_error(e.what());
+	}
+	catch(...)
+	{
+		// TODO: make something suitable
+		MessageBox(0, "OLOLO", "!!!", 0);
+	}
+*/
+
 TRACERAPI int trc_init()
 {
-	if (by_is_inited)
-		return 1;
+	if (by_is_inited) return 1;
 
 	hHeap = HeapCreate(0, 0x50000, 0);
 	by_is_inited = 1;
-	return dbg_initialize_api(0x75ECB86B, *get_symbols_callback);
+
+	int res = dbg_initialize_api(0x75ECB86B, *get_symbols_callback);
+	return res;
 }
 
 

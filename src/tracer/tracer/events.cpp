@@ -208,8 +208,8 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 		
 		if (pSessData->options & TRC_OPT_ONCE_BREAK)
 		{
-			PBREAKPOINT_LIST pBp;
-			if (pBp = find_soft_bp_by_addr(pSessData->pSoftBps, (PVOID)ExceptEvent.Frame.Eip))
+			PBREAKPOINT_LIST pBp = find_soft_bp_by_addr(pSessData->pSoftBps, (PVOID)ExceptEvent.Frame.Eip);
+			if (pBp)
 			{
 				pSessData->CC_need_addr = (PVOID)ExceptEvent.Frame.Eip;
 				dbg_write_memory(pSessData->pDbgContext, (PVOID)ExceptEvent.Frame.Eip, &pBp->SavedByte, 1, 1);
@@ -456,7 +456,7 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 
 		return RES_CONTINUE | RES_CORRECT_FRAME;
 	}
-	return RES_CONTINUE;
+	//return RES_CONTINUE;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -496,7 +496,7 @@ ULONG process_callback(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExceptEvent)
 	return res;
 }
 
-void process_callback_nil(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExceptEvent)
+void process_callback_nil(PSESSION_INFO /*pSess*/, PTRC_EXCEPTION_EVENT /*pExceptEvent*/)
 {
 	/*
 	PTHREAD_DATA pThrd = get_thrd_list(pSess, pExceptEvent->CurrentThread->TID);
@@ -704,8 +704,8 @@ ULONG process_bp(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExcepEvent, PDBG_EVE
 		res = TRC_RUN;
 	}
 
-	PBREAKPOINT_LIST pBp;
-	if (pBp = find_soft_bp_by_addr(pSess->pSoftBps, (PVOID)except_addr))
+	PBREAKPOINT_LIST pBp = find_soft_bp_by_addr(pSess->pSoftBps, (PVOID)except_addr);
+	if (pBp)
 	{
 		OutputDebugString("Delete bp CC for a moment\n");
 		dbg_write_memory(pSess->pDbgContext, (PVOID)except_addr, &pBp->SavedByte, sizeof(BYTE), 1);
