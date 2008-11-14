@@ -1,4 +1,4 @@
-#define DBGAPI_API extern "C" __declspec(dllimport) 
+#define DBGAPI_API extern "C" __declspec(dllimport)
 
 #define DBGAPI
 
@@ -63,7 +63,7 @@ typedef struct _MODULE_INFO_EX
 	MODULE_INFO modules[];
 } MODULE_INFO_EX, *PMODULE_INFO_EX;
 
-typedef struct _KTRAP_FRAME 
+typedef struct _KTRAP_FRAME
 {
 //
 //  Following 4 values are only used and defined for DBG systems,
@@ -207,7 +207,7 @@ typedef struct _RDTSC_CALL
 {
 	PVOID addr;
 	ULONG edx;
-	ULONG eax;	
+	ULONG eax;
 } RDTSC_CALL, *PRDTSC_CALL;
 
 typedef struct _DBG_EVENT
@@ -269,7 +269,7 @@ typedef struct _DBG_CONTEXT
 #pragma pack (pop)
 
 #define DBG_EXCEPTION     1
-#define DBG_TERMINATED    2 
+#define DBG_TERMINATED    2
 #define DBG_START_THREAD  4
 #define DBG_EXIT_THREAD   8
 #define DBG_LOAD_DLL      16
@@ -288,7 +288,7 @@ typedef struct _EXCEPT_FILTER
 {
 	ULONG  filtr_from;
 	ULONG  filtr_to;
-} EXCEPT_FILTER, *PEXCEPT_FILTER; 
+} EXCEPT_FILTER, *PEXCEPT_FILTER;
 
 typedef struct _EVENT_FILTER
 {
@@ -304,7 +304,7 @@ DBGAPI_API int dbg_get_log_msg(char *buff);
 DBGAPI_API int dbg_set_options(POPT_DATA options);
 DBGAPI_API int dbg_is_proc_hidden(HANDLE proc_id);
 
-DBGAPI_API 
+DBGAPI_API
 PDBG_CONTEXT dbg_attach_debugger(
 				 IN  PVOID        remote_id,
 				 IN  ULONG        dbgd_proc_id,
@@ -463,7 +463,7 @@ int dbg_terminate_process(
 		  );
 
 DBGAPI_API
-PPROCESS_INFO_EX 
+PPROCESS_INFO_EX
      dbg_enum_processes(
            IN PVOID remote_id
 		   );
@@ -485,3 +485,4 @@ DBGAPI_API
 void dbg_free_memory(void *memory);
 
 #define dbg_write_memory(q,w,e,r,t) (OutputDebugString("=============writemem====="), dbg_write_memory(q,w,e,r,t))
+

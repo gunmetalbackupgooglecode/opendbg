@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
     *
 

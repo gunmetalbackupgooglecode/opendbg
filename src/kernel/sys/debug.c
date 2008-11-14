@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
     *
 
@@ -56,8 +56,8 @@ int dbg_open_process(syscall *data)
 	HANDLE    h_proc;
 	int       succs = 0;
 
-	if ( (data->in_size  == sizeof(HANDLE)) && 
-		 (data->out_size == sizeof(HANDLE)) ) 
+	if ( (data->in_size  == sizeof(HANDLE)) &&
+		 (data->out_size == sizeof(HANDLE)) )
 	{
 		status = PsLookupProcessByProcessId(
 			        *(HANDLE*)(data->in_data), &process
@@ -93,7 +93,7 @@ int dbg_terminate_process(syscall *data)
 			h_proc, &process
 			);
 
-		if (NT_SUCCESS(status)) 
+		if (NT_SUCCESS(status))
 		{
 			dbg_process_terminated(
 				process, STATUS_SUCCESS
@@ -152,7 +152,7 @@ int dbg_attach_call(syscall *data)
 			break;
 		}
 
-		debug->chan   = chan;		
+		debug->chan   = chan;
 		debug->active = 1;
 		succs = 1;
 	} while (0);
@@ -165,7 +165,7 @@ int dbg_attach_call(syscall *data)
 		ObDereferenceObject(process);
 	}
 
-	if (succs == 0) 
+	if (succs == 0)
 	{
 		if (chan != NULL) {
 			channel_free(chan);
@@ -228,7 +228,7 @@ int dbg_get_message(syscall *data)
 
 	do
 	{
-		if ( (data->in_size != sizeof(HANDLE)) || (data->out_size != sizeof(dbg_msg)) ) {			
+		if ( (data->in_size != sizeof(HANDLE)) || (data->out_size != sizeof(dbg_msg)) ) {
 			break;
 		}
 
@@ -236,11 +236,11 @@ int dbg_get_message(syscall *data)
 			*(HANDLE*)(data->in_data), &process
 			);
 
-		if (NT_SUCCESS(status) == FALSE) {			
+		if (NT_SUCCESS(status) == FALSE) {
 			break;
 		}
 
-		if ( (debug = dbg_find_item(IoGetCurrentProcess(), process)) == NULL ) {			
+		if ( (debug = dbg_find_item(IoGetCurrentProcess(), process)) == NULL ) {
 			break;
 		}
 
@@ -277,7 +277,7 @@ NTSTATUS
 		h_proc = h_process;
 	}
 
-	if (ExGetPreviousMode() == UserMode) 
+	if (ExGetPreviousMode() == UserMode)
 	{
 		status = ObReferenceObjectByHandle(
 			h_proc, 0x0001, *PsProcessType, UserMode, &process, NULL
@@ -287,7 +287,7 @@ NTSTATUS
 		{
 			dbg_process_terminated(
 				process, exit_status
-				);		
+				);
 
 			ObDereferenceObject(process);
 		}
@@ -308,7 +308,7 @@ void dbg_delayed_term_event(term_event *t_event)
 	channel_send_recv(
 		t_event->debug->chan, &t_event->msg, &cont
 		);
-	
+
 	dbg_delete_item(t_event->debug);
 	dbg_deref_item(t_event->debug);
 
@@ -347,21 +347,21 @@ void dbg_process_terminated(
 	{
 		t_event = NULL; succs = 0;
 
-		do 
+		do
 		{
 			if ( (debug->filter.event_mask & DBG_TERMINATED) == 0 ) {
 				break;
 			}
-			
+
 			if ( (t_event = mem_alloc(sizeof(term_event))) == NULL ) {
 				break;
 			}
 
-			t_event->debug          = debug;			
+			t_event->debug          = debug;
 			t_event->msg.process_id = PsGetCurrentProcessId();
 			t_event->msg.thread_id  = PsGetCurrentThreadId();
 			t_event->msg.event_code = DBG_TERMINATED;
-			
+
 			t_event->msg.terminated.exit_code = exit_code;
 			t_event->msg.terminated.proc_id   = PsGetProcessId(process);
 
@@ -371,15 +371,15 @@ void dbg_process_terminated(
 
 		} while (0);
 
-		if (succs == 0) 
+		if (succs == 0)
 		{
 			if (t_event != NULL) {
 				mem_free(t_event);
 			}
 
 			dbg_deref_item(debug);
-		}				
-	} 
+		}
+	}
 }
 
 static
@@ -451,7 +451,7 @@ NTSTATUS
 			msg.thread_id  = PsGetCurrentThreadId();
 			msg.event_code = DBG_START_THREAD;
 
-			__try 
+			__try
 			{
 				msg.thread_start.thread_id = info.ClientId.UniqueThread;
 				msg.thread_start.teb_addr  = info.TebBaseAddress;
@@ -467,7 +467,7 @@ NTSTATUS
 			/* send debug event and wait replay */
 			if (channel_send_recv(debug->chan, &msg, &cont) == 0) {
 				break;
-			}			
+			}
 		} while (0);
 
 		if (process != NULL) {
@@ -490,7 +490,7 @@ NTSTATUS
 }
 
 static
-NTSTATUS 
+NTSTATUS
   NewZwTerminateThread(
      HANDLE   ThreadHandle,
 	 NTSTATUS ExitStatus
@@ -547,16 +547,16 @@ NTSTATUS
 		}
 	} while (0);
 
-	if (thread != NULL) 
+	if (thread != NULL)
 	{
 		/* report for terminate process if last thread terminated */
 		thr_list = addof(thread, thread_enth_offs);
 
-		if (thr_list->Flink->Flink == thr_list) 
+		if (thr_list->Flink->Flink == thr_list)
 		{
 			dbg_process_terminated(
 				process, ExitStatus
-				);	
+				);
 		}
 
 		ObDereferenceObject(thread);
@@ -569,7 +569,7 @@ NTSTATUS
 	return OldZwTerminateThread(h_thread, ExitStatus);
 }
 
-static  
+static
 int dbg_process_exception(
 	   PEXCEPTION_RECORD except_record,
 	   BOOLEAN           first_chance
@@ -593,9 +593,9 @@ int dbg_process_exception(
 		}
 
 		/* check exception filters */
-		for (i = 0; i < debug->filter.filtr_count; i++) 
+		for (i = 0; i < debug->filter.filtr_count; i++)
 		{
-			if ( (code >= debug->filter.filters[i].filtr_from) && 
+			if ( (code >= debug->filter.filters[i].filtr_from) &&
 				 (code <= debug->filter.filters[i].filtr_to) )
 			{
 				break;
@@ -623,7 +623,7 @@ int dbg_process_exception(
 			/* correct exception record */
 			fastcpy(
 				except_record, &cont.new_record, sizeof(EXCEPTION_RECORD)
-				);			   
+				);
 		}
 
 		if (cont.status & RES_CONTINUE) {
@@ -647,7 +647,7 @@ static void
     BOOLEAN           FirstChance
     )
 {
-	if (PreviousMode == UserMode) 
+	if (PreviousMode == UserMode)
 	{
 		if (dbg_process_exception(ExceptionRecord, FirstChance) != 0) {
 			return;
@@ -655,7 +655,7 @@ static void
 	}
 
 	OldKiDispatchException(
-		ExceptionRecord, ExceptionFrame, TrapFrame, 
+		ExceptionRecord, ExceptionFrame, TrapFrame,
 		PreviousMode, FirstChance
 		);
 }
@@ -739,7 +739,7 @@ int init_debug(HANDLE h_key)
 		}
 
 		/* get offset of ThreadListEntry in _ETHREAD */
-		if (reg_query_val(h_key, L"sym__ETHREAD.ThreadListEntry", 
+		if (reg_query_val(h_key, L"sym__ETHREAD.ThreadListEntry",
 			&thread_enth_offs, sizeof(thread_enth_offs)) == 0) {
 			break;
 		}
@@ -747,7 +747,7 @@ int init_debug(HANDLE h_key)
 		/* get offset of _KiDispatchException@20 */
 		if (reg_query_val(h_key, L"sym__KiDispatchException@20", &offs2, sizeof(offs2)) == 0) {
 			break;
-		}	
+		}
 
 		set_sdt_hook(
 			idx1, NewZwTerminateProcess, &OldZwTerminateProcess

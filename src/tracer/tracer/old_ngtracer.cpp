@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * Hobleen
     *
 
@@ -30,6 +30,9 @@
 
 ///////////////////////////////////////////////////////
 // global variables
+
+static module_properties<char> * ntos_mod_info;
+static dbgsym_sequence<char> * ntos_dbg_sym;
 
 PSESSION_INFO_EX lpFirstSessListItem;
 //SESSION_INFO* pCurSessData;
@@ -68,70 +71,86 @@ TRACERAPI PPROCESS_INFO_EX trc_enum_processes(ULONG sesId)
 	PSESSION_INFO pCurSessData = get_sess_by_id(sesId);
 
 	if (pCurSessData && (pCurSessData->remote_id != TRC_SESSION_INVALID))
-			return dbg_enum_processes((PVOID)pCurSessData->remote_id);	
+			return dbg_enum_processes((PVOID)pCurSessData->remote_id);
 	return 0;
 }
 
 
 static uintptr_t
 CALLBACK get_symbols_callback(
-		int sym_type, char * sym_name, char * sym_subname
+		int sym_type, const char * sym_name, const char * sym_subname
 		)
 {
-
+	/*
 	if (sym_type == SYM_TIMESTAMP)
 	{
-		return 0x45E53F9C;
+		return (uintptr_t)ntos_mod_info->get_timestamp();
 	}
+	*/
+	char * tmp;
+
+	tmp = (char *)malloc(200);
 
 	if (sym_type == SYM_NTAPI_NUM)
 	{
-		if (strcmp(sym_name, "ZwTerminateProcess") == 0) {
-			return 0x101;
-		}
+		sym_info<char> t = (*ntos_dbg_sym)[sym_name];
+		sprintf(tmp, "API: %X", t.get_pointer()->Address - t.get_pointer()->ModBase);
+		print_error(tmp);
 
-		if (strcmp(sym_name, "ZwCreateThread") == 0) {
-			return 0x035;
-		}
+		sprintf(tmp, "API: %X", t.get_pointer()->Index);
+		print_error(tmp);
 
-		if (strcmp(sym_name, "ZwTerminateThread") == 0) {
-			return 0x102;
-		}		
+		sprintf(tmp, "API: %X", t.get_pointer()->Value);
+		print_error(tmp);
+
+		return ((uintptr_t)(t.get_pointer()->Address - t.get_pointer()->ModBase));
 	}
 
 	if (sym_type == SYM_OFFSET)
 	{
-		if (strcmp(sym_name, "_NtTerminateProcess@8") == 0) {
-			return 0xf076c;
-		}
+		sym_info<char> t = (*ntos_dbg_sym)[sym_name];
+		sprintf(tmp, "OFF: %X", t.get_pointer()->Address);
+		print_error(tmp);
 
-		if (strcmp(sym_name, "_NtResumeThread@8") == 0) {
-			return 0xf2764;
-		}
+		sprintf(tmp, "OFF: %X", t.get_pointer()->ModBase);
+		print_error(tmp);
 
-		if (strcmp(sym_name, "_KiDispatchException@20") == 0) {
-			return 0x2578e;
-		}	
+		sprintf(tmp, "OFF: %X", t.get_pointer()->Index);
+		print_error(tmp);
+
+		sprintf(tmp, "OFF: %X", t.get_pointer()->Value);
+		print_error(tmp);
+
+		return ((uintptr_t)(t.get_pointer()->Address - t.get_pointer()->ModBase));
 	}
 
 	if (sym_type == SYM_STRUCT_OFFSET)
 	{
-		if (strcmp(sym_name, "_ETHREAD") == 0) 
+		throw std::runtime_error("DEBUG_BREAK\n");
+		if (strcmp(sym_name, "_ETHREAD") == 0)
 		{
 			if (strcmp(sym_subname, "ThreadListEntry") == 0) {
-				return 0x22c;
+				//return ((uintptr_t)(t.get_pointer()->Address - t.get_pointer()->ModBase));
 			}
 		}
 	}
 
+	free(tmp);
 	return 0;
 }
 
-/*
+TRACERAPI int trc_init()
+{
+	if (by_is_inited) return 1;
+
+	hHeap = HeapCreate(0, 0x50000, 0);
+	by_is_inited = 1;
+
 	try {
-		module_properties<char> ntos_mod_info("ntoskrnl.exe");
-		dbgsym_sequence<char> ntos_dbg_sym(ntos_mod_info);
-		sym_info<char> t = ntos_dbg_sym["wctomb"];
+		if (!ntos_mod_info)
+			ntos_mod_info = new module_properties<char>("ntoskrnl.exe");
+		if (!ntos_dbg_sym)
+			ntos_dbg_sym  = new dbgsym_sequence<char> (*ntos_mod_info);
 	}
 	catch(std::runtime_error e) {
 		print_error(e.what());
@@ -141,31 +160,27 @@ CALLBACK get_symbols_callback(
 		// TODO: make something suitable
 		MessageBox(0, "OLOLO", "!!!", 0);
 	}
-*/
 
-TRACERAPI int trc_init()
-{
-	if (by_is_inited) return 1;
-
-	hHeap = HeapCreate(0, 0x50000, 0);
-	by_is_inited = 1;
 
 	int res = dbg_initialize_api(0x75ECB86B, *get_symbols_callback);
+	delete ntos_mod_info;
+	delete ntos_dbg_sym;
+
 	return res;
 }
 
 
 TRACERAPI int trc_session_open(ULONG sessionType,LPVOID sessionParams)
-{	
+{
 	PSESSION_INFO_EX pSessItem;
 	//PSESSION_INFO_EX tmp;
 	static ULONG sess_count = 1;
 
 	if (!by_is_inited)
-		return 0;	
+		return 0;
 
 	if (sessionType != TRC_SESSION_LOCAL)
-	{		
+	{
 		return 0;
 	}
 
@@ -180,7 +195,7 @@ TRACERAPI int trc_session_open(ULONG sessionType,LPVOID sessionParams)
 	pSessItem->data.SessionId = sess_count++;
 	pSessItem->pNext = lpFirstSessListItem;
 	lpFirstSessListItem = pSessItem;
-	
+
 	OutputDebugString("session added!\n");
 	return pSessItem->data.SessionId;
 }
@@ -188,9 +203,9 @@ TRACERAPI int trc_session_open(ULONG sessionType,LPVOID sessionParams)
 
 TRACERAPI VOID trc_session_close(ULONG sesId)
 {
-	SESSION_INFO_EX* pSessItem = lpFirstSessListItem;	
+	SESSION_INFO_EX* pSessItem = lpFirstSessListItem;
 	SESSION_INFO_EX* pPred = 0;
-	
+
 	while (pSessItem)
 	{
 		if (pSessItem->data.SessionId == sesId)
@@ -198,7 +213,7 @@ TRACERAPI VOID trc_session_close(ULONG sesId)
 
 		pPred = pSessItem;
 		pSessItem = pSessItem->pNext;
-	}		
+	}
 
 	if (!pSessItem)
 		return;
@@ -207,7 +222,7 @@ TRACERAPI VOID trc_session_close(ULONG sesId)
 		lpFirstSessListItem = pSessItem->pNext;
 	else
 		pSessItem->pNext = pSessItem->pNext;
-	
+
 	char sz[256];
 	PBREAKPOINT_LIST pBps = pSessItem->data.pSoftBps;
 	while (pBps)
@@ -245,22 +260,22 @@ TRACERAPI ULONG trc_get_options(ULONG SessId)
 {
 	SESSION_INFO* pCurSessData;
 
-	pCurSessData = get_sess_by_id(SessId);	
-	return (pCurSessData) ? pCurSessData->options : NULL;	
+	pCurSessData = get_sess_by_id(SessId);
+	return (pCurSessData) ? pCurSessData->options : NULL;
 }
 
 
 TRACERAPI ULONG trc_set_options(ULONG SessId,ULONG opt)
 {
-	SESSION_INFO* pCurSessData = get_sess_by_id(SessId);	
+	SESSION_INFO* pCurSessData = get_sess_by_id(SessId);
 	return (pCurSessData) ? (pCurSessData->options = opt, TRUE) : FALSE;
 }
 
 
 TRACERAPI ULONG trc_attach_to_target(ULONG sesId,ULONG PID,ULONG attachOpts)
 {
-	SESSION_INFO* pCurSessData;	
-	ATTACH_INFO AttachInfo;	
+	SESSION_INFO* pCurSessData;
+	ATTACH_INFO AttachInfo;
 	CONTEXT Context;
 	//PBREAKPOINT_LIST smth;
 	PDBG_CONTEXT pDbgContext;
@@ -273,13 +288,13 @@ TRACERAPI ULONG trc_attach_to_target(ULONG sesId,ULONG PID,ULONG attachOpts)
 
 	pCurSessData = get_sess_by_id(sesId);
 	if (!pCurSessData)
-		return 0;	
-	
+		return 0;
+
 	pCurSessData->options |= attachOpts;
 	pCurSessData->pDbgContext = pDbgContext = dbg_attach_debugger((PVOID)pCurSessData->remote_id, PID, (PDBGRECV)&OnEventProc, (PVOID)sesId, &AttachInfo);
 	if (!pDbgContext)
-		return 0;	 
-		
+		return 0;
+
 	c_EventFilter.event_mask = 0xFFFFffff;
 	c_EventFilter.filtr_count = 0;
 	OutputDebugString("debuger attached\n");
@@ -293,7 +308,7 @@ TRACERAPI ULONG trc_attach_to_target(ULONG sesId,ULONG PID,ULONG attachOpts)
 	if (thrd_lst)
 	{
 		create_threads(pCurSessData, thrd_lst);
-		dbg_free_memory(thrd_lst);		
+		dbg_free_memory(thrd_lst);
 	}
 
 	mod_lst = dbg_enum_modules(pCurSessData->pDbgContext);
@@ -326,7 +341,7 @@ TRACERAPI ULONG trc_attach_to_target(ULONG sesId,ULONG PID,ULONG attachOpts)
 TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 {
 	PSESSION_INFO pCurData; // eax@1
-	
+
 	PVOID remote_id; // ebx@5
 	ULONG Process_id; // ebx@16
 	PDBG_CONTEXT pDbgContext; // eax@17
@@ -345,7 +360,7 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 //	ULONG EventFilter_filter_count; // [sp+868h] [bp-324h]@18	//	filtr_count
 	PVOID image_base; // [sp+24h] [bp-B68h]@18
 	DLL_LOAD_INFO dll_load; // [sp+154h] [bp-A38h]@18				//image_base
-	CHAR OutputString[256]; // [sp+260h] [bp-92Ch]@18	
+	CHAR OutputString[256]; // [sp+260h] [bp-92Ch]@18
 	PTHREAD_DATA_EX pCurThread; // [sp+14h] [bp-B78h]@19
 	ULONG tls_buffer[6]; // [sp+28h] [bp-B64h]@28
 
@@ -361,14 +376,14 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 	pCurData->options |= opt;
 	wsprintf(OutputString, "sess opts after load: %X\n", pCurData->options);
 	OutputDebugString(OutputString);
-	remote_id = (PVOID)pCurData->remote_id;	
+	remote_id = (PVOID)pCurData->remote_id;
 	if ( remote_id == (PVOID)TRC_SESSION_INVALID )
 		return 0;
 
 	memset(&buff, 0, sizeof(buff));
 	memset(&AttachInfo, 0, sizeof(AttachInfo));
 
-	OutputDebugString("dbg_create_process\n");	
+	OutputDebugString("dbg_create_process\n");
 	Process_id = dbg_create_process(remote_id, (PCHAR)lpImagePath, 4);
 
 	result = 0;
@@ -397,7 +412,7 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 		add_module(pCurData, &dll_load);
 
 		wsprintf(OutputString, "module base: %x module size: %x fname is %s\n", AttachInfo.image_base, AttachInfo.image_size, AttachInfo.file_name);
-		OutputDebugString(OutputString);		
+		OutputDebugString(OutputString);
 
 		OutputDebugString("dbg_enum_threads\n");
 		thrd_lst = dbg_enum_threads(remote_id, Process_id);
@@ -407,10 +422,10 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 			pCurThread = pCurData->pThreads;
 			OutputDebugString("dbg_open_thread\n");
 			if ( pCurThread )
-			{					
+			{
 				OutputDebugString("Try to call dbg_open_file()\n");
 				hFile = dbg_open_file(pDbgContext, AttachInfo.file_name, GENERIC_READ, OPEN_EXISTING);
-				
+
 				if ( hFile )
 				{
 					OutputDebugString("Try to call dbg_read_file()\n");
@@ -419,18 +434,18 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 					{
 //						main_mod->ep_bp_break = 1;
 						OutputDebugString("setting bp in ep\n");
-						ep_addr = (PVOID)((UINT_PTR)image_base + get_ep_rva(&buff));						
-						set_bp_one_shot(pCurData, ep_addr);						
-					} else 
+						ep_addr = (PVOID)((UINT_PTR)image_base + get_ep_rva(&buff));
+						set_bp_one_shot(pCurData, ep_addr);
+					} else
 					{
 						OutputDebugString("Doesn't try to set EP bp.\n");
 					}
-					
-					//v18 = SessId;					
+
+					//v18 = SessId;
 					if ( pCurData->options & TRC_OPT_BREAK_ON_TLS )
 					{
 						OutputDebugString("setting bp on Tls callbacks\n");
-						tls_dir_rva = get_tls_dir(&buff, 9);						
+						tls_dir_rva = get_tls_dir(&buff, 9);
 						if ( tls_dir_rva )
 						{
 							OutputDebugString("Tls directory found\n");
@@ -449,17 +464,17 @@ TRACERAPI ULONG trc_load_target(ULONG SessId, PCHAR lpImagePath, ULONG opt)
 						} // if ( tls_dir_rva )
 					} // if ( opt & TRC_OPT_BREAK_ON_TLS )
 				}
-				else 
+				else
 					OutputDebugString("dbg_open_file() failed!\n");
-				dbg_close_file(hFile);					
+				dbg_close_file(hFile);
 				result = 1;
 			} // 	if ( pCurThread )
-			else 
+			else
 				OutputDebugString("pCurThread == NULL!!!\n");
 			dbg_resume_thread(pCurThread->data.dbg_handle);
 			dbg_free_memory(thrd_lst);
 		}
-	}	
+	}
 	return result;
 }
 
@@ -498,17 +513,17 @@ PBP_LST __cdecl get_global_hws(PSESSION_INFO pSessData)
 	PBP_LST pList;
 	int thrd_count;
 
-	pCur = pFirst = pSessData->pThreads;	
-			
+	pCur = pFirst = pSessData->pThreads;
+
 	thrd_count = 0;
 	while (pCur)
 	{
 		thrd_count++;
-		pCur = pCur->pNext;		
+		pCur = pCur->pNext;
 	}
 	if (!thrd_count)
 		return 0;
-		
+
 	pList = (PBP_LST)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 4 + (thrd_count * sizeof(BP)*4));
 	if (pList == NULL)
 		return 0;
@@ -528,10 +543,10 @@ PBP_LST __cdecl get_global_hws(PSESSION_INFO pSessData)
 		}
 		pCur = pCur->pNext;
 	}
-	
+
 	if (pList->count)
 		return pList;
-		
+
 	HeapFree(hHeap, 0, pList);
 	return 0;
 }
@@ -557,7 +572,7 @@ PBP_LST __cdecl get_local_hws(PTHREAD_DATA pBps)
 			pList->count++;
 		}
 	}
-	
+
 	return pList;
 }
 
@@ -569,19 +584,19 @@ TRACERAPI PSEH_LIST trc_get_seh_chain(ULONG SessId,ULONG tid)
 	PVOID pCurFrame_va, pFirstFrame_va;
 	ULONG frame_num;
 	EXCEPTION_REGISTRATION SehRec;
-	PSEH_LIST pMem;	
+	PSEH_LIST pMem;
 	//int i;
 
 	//OutputDebugString("1\n");
 	pSessItem = get_sess_by_id(SessId);
 	if (!pSessItem)
 		return 0;
-	
+
 	//OutputDebugString("2\n");
 	thread_data = get_thrd_by_tid(pSessItem, tid);
 	if ((!thread_data) || (!read_memory(SessId, thread_data->trc_thrd.teb_addr, &pCurFrame_va, 4, 1)))
 		return 0;
-	
+
 	//OutputDebugString("3\n");
 	pFirstFrame_va = pCurFrame_va;
 	for (frame_num = 0; (UINT_PTR)pCurFrame_va != -1; frame_num++)
@@ -591,19 +606,19 @@ TRACERAPI PSEH_LIST trc_get_seh_chain(ULONG SessId,ULONG tid)
 			break;
 		pCurFrame_va = SehRec.prev;
 	}
-	
+
 	//OutputDebugString("4\n");
 	if (frame_num == 0)
-		return 0;		
+		return 0;
 	//OutputDebugString("5\n");
 	pMem = (PSEH_LIST)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 4+frame_num*8);
 	if (pMem == NULL)
 		return 0;
-		
+
 	//OutputDebugString("6\n");
 	pMem->count = frame_num;
-	pCurFrame_va = pFirstFrame_va;		
-	
+	pCurFrame_va = pFirstFrame_va;
+
 	//OutputDebugString("7\n");
 	for (ULONG i = 0; i<frame_num; i++) //cycle condition not (addr != -1) but by count, calced in the past
 	{
@@ -619,7 +634,7 @@ TRACERAPI PSEH_LIST trc_get_seh_chain(ULONG SessId,ULONG tid)
 		OutputDebugString(sz);
 	}
 	//OutputDebugString("8\n");
-	return pMem;	
+	return pMem;
 }
 
 TRACERAPI bool trc_break_on_thread(ULONG SessId, ULONG tid)
@@ -629,7 +644,7 @@ TRACERAPI bool trc_break_on_thread(ULONG SessId, ULONG tid)
 		return FALSE;
 
 	PTHREAD_DATA pThrd;
-	pThrd = (tid) ? get_thrd_by_tid(pSess, tid) : &pSess->pThreads->data;		
+	pThrd = (tid) ? get_thrd_by_tid(pSess, tid) : &pSess->pThreads->data;
 	if (!pThrd)
 		return FALSE;
 
@@ -648,3 +663,4 @@ TRACERAPI bool trc_break_on_thread(ULONG SessId, ULONG tid)
 
 
 //#define IMAGE_EP(x) (PVOID)(((PIMAGE_NT_HEADERS)((char*)(x) + ((PIMAGE_DOS_HEADER)(x))->e_lfanew))->OptionalHeader.AddressOfEntryPoint +(char*)(x))
+

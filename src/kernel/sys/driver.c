@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
     *
 
@@ -47,11 +47,11 @@ NTSTATUS DriverEntry(
             IN PUNICODE_STRING reg_pth
 			)
 {
-	PIMAGE_DOS_HEADER d_head;
-	PIMAGE_NT_HEADERS n_head;
+//	PIMAGE_DOS_HEADER d_head;
+//	PIMAGE_NT_HEADERS n_head;
 	NTSTATUS          status = STATUS_UNSUCCESSFUL;
 	HANDLE            h_key  = NULL;
-	u32               tstamp;
+//	u32               tstamp;
 
 	do
 	{
@@ -69,19 +69,22 @@ NTSTATUS DriverEntry(
 		DbgMsg("kernel base: %x\n", ntkrn_base);
 
 		/* get ntoskrnl timestamp */
+		/* turned off because of the futility: dbghelp do this stuf
 		if (reg_query_val(h_key, L"sym_timestamp", &tstamp, sizeof(tstamp)) == 0) {
 			DbgMsg("unable to get ntoskrnl timestamp\n");
 			break;
 		}
-
+		*/
 		/* validate ntoskrnl timestamp */
+		/*
 		d_head = ntkrn_base;
 		n_head = addof(d_head, d_head->e_lfanew);
 
 		if (n_head->FileHeader.TimeDateStamp != tstamp) {
 			DbgMsg("invalid ntoskrnl timestamp\n");
 			break;
-		}		
+		}
+		*/
 
 		if (init_dbg_item(h_key) == 0) {
 			DbgMsg("init_dbg_item failed\n");
@@ -98,7 +101,7 @@ NTSTATUS DriverEntry(
 			break;
 		}
 
-		DbgMsg("dbgapi initialized\n"); 
+		DbgMsg("dbgapi initialized\n");
 		status = STATUS_SUCCESS;
 	} while (0);
 
@@ -108,3 +111,4 @@ NTSTATUS DriverEntry(
 
 	return status;
 }
+

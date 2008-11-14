@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * Hobleen
     *
 
@@ -34,10 +34,10 @@ PMODULE_LIST __cdecl get_module_by_addr(PSESSION_INFO pSessData, UINT_PTR addr)
 	PMODULE_LIST pCurModule; // esi@1
 	UINT_PTR need_addr; // ebx@2
 	UINT_PTR mod_end; // ebp@3
-	
+
 	//PMODULE_LIST pFirstMod; // [sp+10h] [bp-204h]@1
 
-	pCurModule = pSessData->pModules;	
+	pCurModule = pSessData->pModules;
 	if ( !pCurModule )
 		return 0;
 
@@ -56,12 +56,12 @@ PMODULE_LIST __cdecl get_module_by_addr(PSESSION_INFO pSessData, UINT_PTR addr)
 			{
 				OutputDebugString(pCurModule->data.ModName);
 				OutputDebugString("\n");
-				return pCurModule;				
+				return pCurModule;
 			}
 		}
-		pCurModule = pCurModule->pNext;		
-	}	
-	return 0;	
+		pCurModule = pCurModule->pNext;
+	}
+	return 0;
 }
 
 
@@ -70,7 +70,7 @@ ULONG __cdecl DbgEv2ExcEv(PDBG_EVENT pDbgEvent, PTRC_EXCEPTION_EVENT a2)
 //	ULONG result; // eax@1
 	PDBG_EVENT pEvent; // eax@1
 
-	pEvent = pDbgEvent;	
+	pEvent = pDbgEvent;
 	a2->Frame.Dr0 = pDbgEvent->exception.TrapFrame.Dr0; // DR0?
 	a2->Frame.Dr1 = pDbgEvent->exception.TrapFrame.Dr1;	// DR1
 	a2->Frame.Dr2 = pDbgEvent->exception.TrapFrame.Dr2;	// DR2
@@ -86,7 +86,7 @@ ULONG __cdecl DbgEv2ExcEv(PDBG_EVENT pDbgEvent, PTRC_EXCEPTION_EVENT a2)
 
 	a2->Frame.Edx = pDbgEvent->exception.TrapFrame.Edx;	// Edx
 	a2->Frame.Ecx = pDbgEvent->exception.TrapFrame.Ecx;	// Ecx
-	a2->Frame.Eax = pDbgEvent->exception.TrapFrame.Eax;	// Eax	
+	a2->Frame.Eax = pDbgEvent->exception.TrapFrame.Eax;	// Eax
 	a2->Frame.Ebx = pDbgEvent->exception.TrapFrame.Ebx;	// Ebx
 	a2->Frame.Ebp = pDbgEvent->exception.TrapFrame.Ebp;	// Ebp
 
@@ -95,7 +95,7 @@ ULONG __cdecl DbgEv2ExcEv(PDBG_EVENT pDbgEvent, PTRC_EXCEPTION_EVENT a2)
 	a2->Frame.Eip = pDbgEvent->exception.TrapFrame.Eip;	// Eip
 	a2->Frame.Esp = pDbgEvent->exception.TrapFrame.HardwareEsp;	// Esp
 
-	
+
 	a2->Frame.EFlags = pDbgEvent->exception.TrapFrame.EFlags;	// EFlags
 	return 0;
 }
@@ -106,7 +106,7 @@ ULONG __cdecl ExcEv2DbgEv(PDBG_EVENT pDbgEvent, PTRC_EXCEPTION_EVENT a2)
 //	ULONG result; // eax@1
 	PDBG_EVENT pEvent; // eax@1
 
-	pEvent = pDbgEvent;	
+	pEvent = pDbgEvent;
 	pDbgEvent->exception.TrapFrame.Dr0 = a2->Frame.Dr0; // DR0?
 	pDbgEvent->exception.TrapFrame.Dr1 = a2->Frame.Dr1;	// DR1
 	pDbgEvent->exception.TrapFrame.Dr2 = a2->Frame.Dr2;	// DR2
@@ -123,7 +123,7 @@ ULONG __cdecl ExcEv2DbgEv(PDBG_EVENT pDbgEvent, PTRC_EXCEPTION_EVENT a2)
 
 	pDbgEvent->exception.TrapFrame.Edx = a2->Frame.Edx;	// Edx
 	pDbgEvent->exception.TrapFrame.Ecx = a2->Frame.Ecx;	// Ecx
-	pDbgEvent->exception.TrapFrame.Eax = a2->Frame.Eax;	// Eax	
+	pDbgEvent->exception.TrapFrame.Eax = a2->Frame.Eax;	// Eax
 	pDbgEvent->exception.TrapFrame.Ebx = a2->Frame.Ebx;	// Ebx
 	pDbgEvent->exception.TrapFrame.Ebp = a2->Frame.Ebp;	// Ebp
 
@@ -132,7 +132,7 @@ ULONG __cdecl ExcEv2DbgEv(PDBG_EVENT pDbgEvent, PTRC_EXCEPTION_EVENT a2)
 	pDbgEvent->exception.TrapFrame.Eip = a2->Frame.Eip;	// Eip
 	pDbgEvent->exception.TrapFrame.HardwareEsp = a2->Frame.Esp;	// Eip
 
-	
+
 	pDbgEvent->exception.TrapFrame.EFlags = a2->Frame.EFlags;	// EFlags
 	return 0;
 }
@@ -148,17 +148,17 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 {
 	PSESSION_INFO pSessData; // esi@1
 
-	PTHREAD_DATA pCurThrd; // eax@6	
-	PDBG_EVENT pDbgEvent; // edi@6	
+	PTHREAD_DATA pCurThrd; // eax@6
+	PDBG_EVENT pDbgEvent; // edi@6
 	PTRC_PROC_EVT term_callback; // eax@11
 	PTRC_PROC_EVT proc_callback; // eax@22
-	PTHREAD_DATA exit_thrd; // eax@24	
-	PMODULE_LIST new_mod; // eax@28	
+	PTHREAD_DATA exit_thrd; // eax@24
+	PMODULE_LIST new_mod; // eax@28
 	PVOID hDbg_file; // eax@30
 	PVOID ep_addr; // ebp@31
-	PMODULE_LIST unload_mod; // eax@36	
-	PTRC_PROC_EVT unload_callback; // eax@37	
-	PTHREAD_DATA_EX pNew_thrd; // eax@14	
+	PMODULE_LIST unload_mod; // eax@36
+	PTRC_PROC_EVT unload_callback; // eax@37
+	PTHREAD_DATA_EX pNew_thrd; // eax@14
 
 	PVOID unload_mod_base; // eax@36
 	TRC_EXCEPTION_EVENT ExceptEvent; // [sp+28h] [bp-718h]@6
@@ -174,38 +174,38 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 		return RES_NOT_HANDLED;
 
 	OutputDebugString("\n\tEvent arrived******************\n");
-		
+
 	memset(&ExceptEvent, 0, sizeof(ExceptEvent));
 	memset(&ProcEvent, 0, sizeof(ProcEvent));
 	memset(&Context, 0, sizeof(Context));
 	Context.ContextFlags = CONTEXT_DEBUG_REGISTERS;
-	pDbgEvent = pDbg;	
-	
+	pDbgEvent = pDbg;
+
 
 	switch ( pDbgEvent->event_code )
 	{
 	case DBG_EXCEPTION:
 		OutputDebugString("DBG_EXCEPTION\n");
-		
+
 		wsprintf(pBuffer, "Exception code = %X\n", pDbg->exception.ExceptionRecord.ExceptionCode);
 		OutputDebugString(pBuffer);
 
-		pCurThrd = get_thrd_by_tid(pSessData, pDbg->thread_id);		
+		pCurThrd = get_thrd_by_tid(pSessData, pDbg->thread_id);
 
 		DbgEv2ExcEv(pDbgEvent, &ExceptEvent);
-		
+
 #ifndef  QUICK_CONTEXT
 		CONTEXT Con;
 		dbg_get_thread_ctx(pCurThrd->dbg_handle, &Con);
-		Con2TrcFrame(&ExceptEvent.Frame, &Con);		
-		
+		Con2TrcFrame(&ExceptEvent.Frame, &Con);
+
 #endif
 
 		pCurThrd->pFastContext = &ExceptEvent.Frame;
 		res = ProcessException(pDbgEvent, pSessData, &ExceptEvent);
 
-		
-		
+
+
 		if (pSessData->options & TRC_OPT_ONCE_BREAK)
 		{
 			PBREAKPOINT_LIST pBp = find_soft_bp_by_addr(pSessData->pSoftBps, (PVOID)ExceptEvent.Frame.Eip);
@@ -222,24 +222,24 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 					&& (pCurThrd->breakpoint[i].type == TRC_HWBP_EXECUTE))
 				{
 					pCurThrd->EnableDrAddr = (PVOID)ExceptEvent.Frame.Eip;
-					trc_enable_bp(pSessData->SessionId, TRC_HWBP_EXECUTE, (PVOID)ExceptEvent.Frame.Eip, pCurThrd->trc_thrd.TID, FALSE);				
+					trc_enable_bp(pSessData->SessionId, TRC_HWBP_EXECUTE, (PVOID)ExceptEvent.Frame.Eip, pCurThrd->trc_thrd.TID, FALSE);
 					set_tf_shadow(pSessData, &ExceptEvent);
 					break;
 				}
 			}
 		}
-		
+
 		wsprintf(pBuffer, "dr7=%X, dr0=%X\n", ExceptEvent.Frame.Dr7, ExceptEvent.Frame.Dr0);
 		OutputDebugString(pBuffer);
 
 		pCurThrd->pFastContext = 0;
-		ExcEv2DbgEv(pDbgEvent, &ExceptEvent);		
-//#ifndef  QUICK_CONTEXT		
+		ExcEv2DbgEv(pDbgEvent, &ExceptEvent);
+//#ifndef  QUICK_CONTEXT
 //		TrcFrame2Con(&Con, &ExceptEvent.Frame);
-//		dbg_set_thread_ctx(pCurThrd->dbg_handle, &Con);		
-//#endif		
-		
-		//pCurThrd = get_thrd_list(pSessData, pDbg->thread_id);		
+//		dbg_set_thread_ctx(pCurThrd->dbg_handle, &Con);
+//#endif
+
+		//pCurThrd = get_thrd_list(pSessData, pDbg->thread_id);
 
 		/*
 		if (pCurThrd->bNextTraceCmd)
@@ -280,7 +280,7 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 	case DBG_START_THREAD:
 		OutputDebugString("DBG_START_THREAD\n");
 		ProcEvent.EventCode = TRC_EVENT_THREAD_START;
-		pNew_thrd = add_thread(pSessData, &pDbgEvent->thread_start);		
+		pNew_thrd = add_thread(pSessData, &pDbgEvent->thread_start);
 		if ( !pNew_thrd )
 			return RES_CONTINUE;
 
@@ -315,11 +315,11 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 	case DBG_LOAD_DLL:
 		OutputDebugString("DBG_LOAD_DLL\n");
 		ProcEvent.EventCode = TRC_EVENT_LOAD_MODULE;
-		new_mod = add_module(pSessData, &pDbgEvent->dll_load);		
+		new_mod = add_module(pSessData, &pDbgEvent->dll_load);
 		if ( !new_mod )
 			return 0;
 		//OutputDebugString("Mod added ok!");
-		
+
 		if ( (pSessData->options & TRC_OPT_BREAK_ON_MOD_EP) && (UINT_PTR)pSessData->pDbgContext)
 		{
 			wsprintf(pBuffer, "dbg_open_file(%X, %s, %X, %X)", pSessData->pDbgContext, &pDbgEvent->dll_load.file_name, GENERIC_READ, OPEN_EXISTING);
@@ -333,16 +333,16 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 				ep_addr = (PVOID)(get_ep_rva(&pBuffer) + (UINT_PTR)pDbgEvent->dll_load.image_base);
 
 				OutputDebugString("trc_set_bp on mod ep\n");
-				
+
 				set_bp_one_shot(pSessData, ep_addr);
-				
+
 				dbg_close_file(hDbg_file);
 				OutputDebugString("Bp set on module EP.\n");
 			} else
 				OutputDebugString("dbg_open_file returned 0\n");
-			
+
 		}
-		
+
 		ProcEvent.LoadedModule  = &new_mod->data;
 		//LABEL_22:
 		OutputDebugString("Callback calling...\n");
@@ -372,40 +372,40 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 		OutputDebugString("DBG_RDTSC\n");
 		wsprintf(pBuffer, "At addr = %X\n", pDbgEvent->rdtsc.addr);
 		OutputDebugString(pBuffer);
-	
+
 		pDbgEvent->rdtsc.eax = pDbgEvent->rdtsc.edx = 0;
 		return RES_CONTINUE;
 
 	case DBG_CONTINUE_CALL:
 		OutputDebugString("DBG_CONTINUE_CALL\n");
-		pCurThrd = get_thrd_by_tid(pSessData, (ULONG)pDbg->thread_id);	
+		pCurThrd = get_thrd_by_tid(pSessData, (ULONG)pDbg->thread_id);
 		OutputDebugString("1\n");
 		if ( !pCurThrd ) // 85
 			return RES_CONTINUE;
 		OutputDebugString("2\n");
 
 		OutputDebugString(" continue...\n");
-		
+
 		CONTEXT *con;
 		con = &pDbg->seh_continue.context;
 		if (pSessData->options & TRC_OPT_PROTECT_DRS)
 		{
-			
+
 			pCurThrd->DrProc.dr0 = con->Dr0;
 			pCurThrd->DrProc.dr1 = con->Dr1;
 			pCurThrd->DrProc.dr2 = con->Dr2;
-			pCurThrd->DrProc.dr3 = con->Dr3;		
+			pCurThrd->DrProc.dr3 = con->Dr3;
 			pCurThrd->DrProc.dr7 = con->Dr7;
 
 			con->Dr0 = pCurThrd->DrDbg.dr0;
 			con->Dr1 = pCurThrd->DrDbg.dr1;
 			con->Dr2 = pCurThrd->DrDbg.dr2;
-			con->Dr3 = pCurThrd->DrDbg.dr3;		
+			con->Dr3 = pCurThrd->DrDbg.dr3;
 			con->Dr7 = pCurThrd->DrDbg.dr7;
 		}
 		PEXCEP_FRAME pCurFrame;
 		pCurFrame = pCurThrd->pExcFrames;
-		
+
 		wsprintf(pBuffer, "EFlags = %X\n", con->EFlags);
 		OutputDebugString(pBuffer);
 
@@ -414,7 +414,7 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 
 		//wsprintf(pBuffer, "bProg = %X\n, bDbg = %X, CallRes = %X\n", pCurThrd->bProgTrace, pCurThrd->bDbgTraced, );
 		//OutputDebugString(pBuffer);
-		
+
 
 		OutputDebugString("3\n");
 		if (pCurFrame)
@@ -432,10 +432,10 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 				pCurThrd->bDbgTraced = 0;
 			}
 			OutputDebugString("4\n");
-			
+
 			for (ULONG i=0; i<pCurFrame->pSehs->count; i++)
 				delete_bp(pSessData, (PVOID)pCurFrame->pSehs->seh[i].handler, TRC_BP_THREAD, pDbg->thread_id);
-				
+
 			pCurThrd->pExcFrames = pCurFrame->pPrev;
 			FREE(pCurFrame->pSehs);
 			FREE(pCurFrame);
@@ -447,12 +447,12 @@ ULONG __stdcall OnEventProc(PDBG_EVENT pDbg, ULONG SessId)
 				for (ULONG i=0; i<pCurFrame->pSehs->count; i++)
 					set_bp_ex(pSessData, (PVOID)pCurFrame->pSehs->seh[i].handler, TRC_BP_THREAD, pDbg->thread_id, TRC_EVENT_BREAKPOINT);
 					//set_bp_tid(pSessData, (PVOID)pCurFrame->pSehs->seh[i].handler, pDbg->thread_id);
-			}			
+			}
 		}
 
 		OutputDebugString(" all ok!\n");
 	default:
-		
+
 
 		return RES_CONTINUE | RES_CORRECT_FRAME;
 	}
@@ -484,7 +484,7 @@ ULONG process_callback(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExceptEvent)
 	OutputDebugString("======Enter callback======\n");
 	wsprintf(sz, "callback = %X\n", callback);
 	OutputDebugString(sz);
-	res = (callback) ? (callback(pExceptEvent, pSess->DbgEvent.arg)) : TRC_RUN;		
+	res = (callback) ? (callback(pExceptEvent, pSess->DbgEvent.arg)) : TRC_RUN;
 	OutputDebugString("======Leave callback======\n");
 	wsprintf(sz, "res = %X\n", res);
 	OutputDebugString(sz);
@@ -551,10 +551,10 @@ void set_tf_shadow(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExcepEvent)
 	if (IsUntraceableCmd(buffer) && (!IsChainCmd(buffer)))
 	{
 		over_step_addr = pExcepEvent->Frame.Eip + Get_code_size(pSess, (PVOID)pExcepEvent->Frame.Eip);
-		set_bp_ex(pSess, (PVOID)over_step_addr, TRC_BP_SHADOW, (ULONG)pExcepEvent->CurrentThread->TID, TRC_EVENT_SINGLE_STEP);				
+		set_bp_ex(pSess, (PVOID)over_step_addr, TRC_BP_SHADOW, (ULONG)pExcepEvent->CurrentThread->TID, TRC_EVENT_SINGLE_STEP);
 	} else
 	{
-		pExcepEvent->Frame.EFlags |= 0x100;			
+		pExcepEvent->Frame.EFlags |= 0x100;
 		PTHREAD_DATA pThrd = get_thrd_by_tid(pSess, pExcepEvent->CurrentThread->TID);
 		pThrd->bDbgTraced = TRUE;
 		if (!pThrd->TraceMode)
@@ -573,10 +573,10 @@ void set_tf_till_ret(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExcepEvent)
 	if (IsUntraceableCmd(buffer))
 	{
 		over_step_addr = pExcepEvent->Frame.Eip + Get_code_size(pSess, (PVOID)pExcepEvent->Frame.Eip);
-		set_bp_ex(pSess, (PVOID)over_step_addr, TRC_BP_TIL_RET, (ULONG)pExcepEvent->CurrentThread->TID, TRC_EVENT_SINGLE_STEP);				
+		set_bp_ex(pSess, (PVOID)over_step_addr, TRC_BP_TIL_RET, (ULONG)pExcepEvent->CurrentThread->TID, TRC_EVENT_SINGLE_STEP);
 	} else
 	{
-		pExcepEvent->Frame.EFlags |= 0x100;			
+		pExcepEvent->Frame.EFlags |= 0x100;
 		PTHREAD_DATA pThrd = get_thrd_by_tid(pSess, pExcepEvent->CurrentThread->TID);
 		pThrd->bDbgTraced = TRUE;
 		if (pThrd->TraceMode != TRC_BP_USER)
@@ -594,11 +594,11 @@ void set_tf_user(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExcepEvent)
 	if (IsUntraceableCmd(buffer))
 	{
 		over_step_addr = pExcepEvent->Frame.Eip + Get_code_size(pSess, (PVOID)pExcepEvent->Frame.Eip);
-		set_bp_ex(pSess, (PVOID)over_step_addr, TRC_BP_THREAD, (ULONG)pExcepEvent->CurrentThread->TID, TRC_EVENT_SINGLE_STEP);				
+		set_bp_ex(pSess, (PVOID)over_step_addr, TRC_BP_THREAD, (ULONG)pExcepEvent->CurrentThread->TID, TRC_EVENT_SINGLE_STEP);
 	} else
 	{
 		OutputDebugString("Setting TF for trace...");
-		pExcepEvent->Frame.EFlags |= 0x100;			
+		pExcepEvent->Frame.EFlags |= 0x100;
 		PTHREAD_DATA pThrd = get_thrd_by_tid(pSess, pExcepEvent->CurrentThread->TID);
 		pThrd->bDbgTraced = TRUE;
 		pThrd->TraceMode = TRC_BP_USER;
@@ -616,11 +616,11 @@ VOID set_step_over(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExcepEvent, PDBG_E
 {
 	UINT_PTR over_step_addr, except_addr;
 	except_addr = (UINT_PTR)pDbgEvent->exception.ExceptionRecord.ExceptionAddress;
-	
+
 
 	if (IsTraceOverCmd(pSess, (PVOID)except_addr))
-	{					
-		over_step_addr = except_addr + Get_code_size(pSess, (PVOID)except_addr);		
+	{
+		over_step_addr = except_addr + Get_code_size(pSess, (PVOID)except_addr);
 		set_bp_ex(pSess, (PVOID)over_step_addr, TRC_BP_THREAD, (ULONG)pDbgEvent->thread_id, TRC_EVENT_SINGLE_STEP);
 	}
 	else
@@ -643,8 +643,8 @@ VOID set_trace_till_retn(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExcepEvent, 
 
 
 	if (IsTraceOverCmd(pSess, (PVOID)except_addr))
-	{					
-		over_step_addr = except_addr + Get_code_size(pSess, (PVOID)except_addr);		
+	{
+		over_step_addr = except_addr + Get_code_size(pSess, (PVOID)except_addr);
 		set_bp_ex(pSess, (PVOID)over_step_addr, TRC_BP_TIL_RET, (ULONG)pDbgEvent->thread_id, TRC_EVENT_SINGLE_STEP);
 	}
 	else
@@ -691,7 +691,7 @@ ULONG process_bp(PSESSION_INFO pSess, PTRC_EXCEPTION_EVENT pExcepEvent, PDBG_EVE
 
 	switch (process_bp_break(pSess, (PVOID)except_addr, pDbgEvent->thread_id, &pExcepEvent->EventCode))
 	{
-	case TRC_BP_USER:		
+	case TRC_BP_USER:
 		OutputDebugString("Really TRC_BP_USER\n");
 		res = process_callback(pSess, pExcepEvent);
 		break;
@@ -720,14 +720,14 @@ signed long __cdecl ProcessException(PDBG_EVENT pDbgEvent, PSESSION_INFO pSessDa
 {
 	ULONG SessId; // esi@1
 	signed long except_code; // eax@4
-	PBREAKPOINT_LIST pBpBreaked; // eax@10	
-	ULONG except_callback_res; // eax@84	
-	PMODULE_LIST pModule; // eax@2		
+	PBREAKPOINT_LIST pBpBreaked; // eax@10
+	ULONG except_callback_res; // eax@84
+	PMODULE_LIST pModule; // eax@2
 	PTHREAD_DATA pThreadData; // [sp+1Ch] [bp-3FCh]@1
-	unsigned long temp; // [sp+24h] [bp-3F4h]@1	
-	PVOID except_addr; // [sp+18h] [bp-400h]@4	
-	UCHAR Buffer16[16]; // [sp+28h] [bp-3F0h]@26	
-	CHAR OutputString[256]; // [sp+314h] [bp-104h]@44	
+	unsigned long temp; // [sp+24h] [bp-3F4h]@1
+	PVOID except_addr; // [sp+18h] [bp-400h]@4
+	UCHAR Buffer16[16]; // [sp+28h] [bp-3F0h]@26
+	CHAR OutputString[256]; // [sp+314h] [bp-104h]@44
 	EXCEPTION_REGISTRATION ExcepFrame;
 	ULONG call_res;
 
@@ -738,23 +738,23 @@ signed long __cdecl ProcessException(PDBG_EVENT pDbgEvent, PSESSION_INFO pSessDa
 
 	pThreadData = get_thrd_by_tid(pSessData, (ULONG)pDbgEvent->thread_id);
 	//if (pThreadData)
-	//	pThreadData->pFastContext = &pExcepEvent->Frame;	
+	//	pThreadData->pFastContext = &pExcepEvent->Frame;
 
 	pModule = (except_addr) ? get_module_by_addr(pSessData, (UINT_PTR)except_addr) : NULL;
-	
+
 	pExcepEvent->EventCode = pDbgEvent->exception.ExceptionRecord.ExceptionCode;
 	pExcepEvent->CurrentProcess = &pSessData->trc_process;
 	pExcepEvent->CurrentModule = (pModule) ? &pModule->data : NULL;	//	dw_60
-	pExcepEvent->CurrentThread = &pThreadData->trc_thrd;	
+	pExcepEvent->CurrentThread = &pThreadData->trc_thrd;
 
 	wsprintf(OutputString, "ProcessException: addr=%X, code=%X\n", except_addr, except_code);
 	OutputDebugString(OutputString);
 	wsprintf(OutputString, "pModule = %X, CurrentModule = %X\n", pModule, pExcepEvent->CurrentModule);
 	OutputDebugString(OutputString);
 
-	
 
-	//CONTEXT con;		
+
+	//CONTEXT con;
 	//con.ContextFlags = CONTEXT_FULL;
 	//dbg_get_thread_ctx(pThreadData->dbg_handle, &con);
 	wsprintf(OutputString, "EFLAGS = %X\n", pExcepEvent->Frame.EFlags);
@@ -765,7 +765,7 @@ signed long __cdecl ProcessException(PDBG_EVENT pDbgEvent, PSESSION_INFO pSessDa
 	{
 		pBpBreaked = find_soft_bp_by_addr(pSessData->pSoftBps, (PVOID)except_addr);
 		if (!pBpBreaked)
-			goto l_exep;		
+			goto l_exep;
 		dbg_read_memory(pSessData->pDbgContext, (PVOID)except_addr, &Buffer16, 1, 1);
 		if (Buffer16[0] != 0xCC)
 			goto l_exep;
@@ -775,16 +775,16 @@ signed long __cdecl ProcessException(PDBG_EVENT pDbgEvent, PSESSION_INFO pSessDa
 
 		OutputDebugString("EXCEPTION_BREAKPOINT\n");
 		pDbgEvent->exception.TrapFrame.Eip--; // Eip
-		pExcepEvent->Frame.Eip--; // 4C	
+		pExcepEvent->Frame.Eip--; // 4C
 		restore_bp(pSessData, pThreadData, (PVOID)pExcepEvent->Frame.Eip);
-		
+
 		call_res = process_bp(pSessData, pExcepEvent, pDbgEvent);
 
 		//pThreadData->LastCallbackRet = call_res;
 		if (!pThreadData->bDbgTraced)
 			pThreadData->bProgTrace = ((pExcepEvent->Frame.EFlags & 0x100) != 0);
 
-		process_call_res(pSessData, pExcepEvent, pDbgEvent, call_res);		
+		process_call_res(pSessData, pExcepEvent, pDbgEvent, call_res);
 
 		if (bRaiseEx)
 			goto l_exep;
@@ -799,13 +799,13 @@ signed long __cdecl ProcessException(PDBG_EVENT pDbgEvent, PSESSION_INFO pSessDa
 			pExcepEvent->Frame.Dr0 = pThreadData->DrDbg.dr0;
 			pExcepEvent->Frame.Dr1 = pThreadData->DrDbg.dr1;
 			pExcepEvent->Frame.Dr2 = pThreadData->DrDbg.dr2;
-			pExcepEvent->Frame.Dr3 = pThreadData->DrDbg.dr3;		
+			pExcepEvent->Frame.Dr3 = pThreadData->DrDbg.dr3;
 			pExcepEvent->Frame.Dr7 = pThreadData->DrDbg.dr7;
 
 			pThreadData->bNeedCopyDr = FALSE;
 		}
-		
-		OutputDebugString("EXCEPTION_SINGLE_STEP\n");	
+
+		OutputDebugString("EXCEPTION_SINGLE_STEP\n");
 		restore_bp(pSessData, pThreadData, (PVOID)pExcepEvent->Frame.Eip);
 
 		ExcepFrame.prev = (PEXCEPTION_REGISTRATION)(pExcepEvent->Frame.Dr6 & 0xF);
@@ -813,15 +813,15 @@ signed long __cdecl ProcessException(PDBG_EVENT pDbgEvent, PSESSION_INFO pSessDa
 		{
 			if (!pThreadData->bDbgTraced) // it is not our trace step => by program
 			{
-				goto l_exep;		
+				goto l_exep;
 			}
 			pThreadData->bDbgTraced = 0;
 
 			ULONG bProcTF = pThreadData->bProgTrace;// || (pExcepEvent->Frame.EFlags & 0x100);
 			pExcepEvent->EventCode = TRC_EVENT_SINGLE_STEP;
 			temp = 0;
-			
-			switch(pThreadData->TraceMode) {			
+
+			switch(pThreadData->TraceMode) {
 			case TRC_BP_USER:
 				call_res = process_callback(pSessData, pExcepEvent);
 				//call_res = process_trace_till_retn(pSessData, pExcepEvent, pDbgEvent);
@@ -830,14 +830,14 @@ signed long __cdecl ProcessException(PDBG_EVENT pDbgEvent, PSESSION_INFO pSessDa
 				call_res = process_trace_till_retn(pSessData, pExcepEvent, pDbgEvent);
 				break;
 			default:
-				call_res = TRC_RUN;				
+				call_res = TRC_RUN;
 			}
-		
+
 			pThreadData->bDbgTraced = 0;
 			pThreadData->TraceMode = 0;
 			pThreadData->bProgTrace = ((pExcepEvent->Frame.EFlags & 0x100) != 0);
 			//pThreadData->LastCallbackRet = call_res;
-			process_call_res(pSessData, pExcepEvent, pDbgEvent, call_res);	
+			process_call_res(pSessData, pExcepEvent, pDbgEvent, call_res);
 
 			wsprintf(OutputString, "pThreadData->bProgTrace is %X\n", pThreadData->bProgTrace);
 			OutputDebugString(OutputString);
@@ -870,21 +870,21 @@ signed long __cdecl ProcessException(PDBG_EVENT pDbgEvent, PSESSION_INFO pSessDa
 				(pThreadData->breakpoint[dr_num].type == TRC_HWBP_EXECUTE))
 			{
 				pThreadData->EnableDrAddr = (PVOID)except_addr;
-				trc_enable_bp(pSessData->SessionId, TRC_HWBP_EXECUTE, (PVOID)except_addr, pThreadData->trc_thrd.TID, FALSE);				
+				trc_enable_bp(pSessData->SessionId, TRC_HWBP_EXECUTE, (PVOID)except_addr, pThreadData->trc_thrd.TID, FALSE);
 				set_tf_shadow(pSessData, pExcepEvent);
-			}	
+			}
 		}
 
 		wsprintf(OutputString, "Trace mode = %X\n", pThreadData->TraceMode);
 		OutputDebugString(OutputString);
-		
+
 		//pThreadData->pFastContext = NULL;
 		return RES_CONTINUE;
 	}	//	if (except_code == EXCEPTION_SINGLE_STEP_
 	else
 	{
 l_exep:
-		OutputDebugString("EXCEPTION\n");	
+		OutputDebugString("EXCEPTION\n");
 		restore_bp(pSessData, pThreadData, (PVOID)pExcepEvent->Frame.Eip);
 
 		//delete old ones
@@ -905,13 +905,13 @@ l_exep:
 			if (!pThreadData->bProgTrace)
 			{
 				pExcepEvent->Frame.EFlags &= 0x100;
-			} else 
+			} else
 			{
 				pExcepEvent->Frame.EFlags |= 0x100;
 			}
 		}
 		PEXCEP_FRAME pFrame = create_except_frame(pSessData, pThreadData);
-		
+
 
 		if (pSessData->options & TRC_OPT_BREAK_ON_KI_USER_EX_DISP)
 		{ // trace from KiUserExceptionDispatch
@@ -922,7 +922,7 @@ l_exep:
 			pExcepEvent->Frame.EFlags &= ~0x100;
 			pThreadData->bDbgTraced = FALSE;
 		}
-		pThreadData->bProgTrace = FALSE;		
+		pThreadData->bProgTrace = FALSE;
 
 		wsprintf(OutputString, "In SEH, bDbg = %X, CallRes = %X\n", pFrame->bDebugTraced, pFrame->CallRes);
 		OutputDebugString(OutputString);
@@ -954,7 +954,7 @@ l_exep:
 				set_bp_tid(pSessData, (PVOID)pFrame->pSehs->seh[i].handler, pExcepEvent->CurrentThread->TID);
 			}
 
-		}	//	if (l_pSessData->options & TRC_OPT_BREAK_ON_SEH_HANDLER)				
+		}	//	if (l_pSessData->options & TRC_OPT_BREAK_ON_SEH_HANDLER)
 
 		if (pSessData->options & TRC_OPT_PROTECT_DRS)
 		{
@@ -968,7 +968,7 @@ l_exep:
 			pDbgEvent->exception.TrapFrame.Dr1 = pThreadData->DrProc.dr1;
 			pDbgEvent->exception.TrapFrame.Dr2 = pThreadData->DrProc.dr2;
 			pDbgEvent->exception.TrapFrame.Dr3 = pThreadData->DrProc.dr3;
-			pDbgEvent->exception.TrapFrame.Dr7 = pThreadData->DrProc.dr7;				
+			pDbgEvent->exception.TrapFrame.Dr7 = pThreadData->DrProc.dr7;
 
 			/*
 			pThreadData->bNeedCopyDr = TRUE;
@@ -986,4 +986,4 @@ l_exep:
 		return RES_CORRECT_FRAME | RES_NOT_HANDLED;
 	}
 }
-/**/
+

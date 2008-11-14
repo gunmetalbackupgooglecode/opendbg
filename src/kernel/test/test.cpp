@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
     *
 
@@ -50,7 +50,7 @@ CALLBACK get_symbols_callback(
 
 		if (strcmp(sym_name, "ZwTerminateThread") == 0) {
 			return 0x102;
-		}		
+		}
 	}
 
 	if (sym_type == SYM_OFFSET)
@@ -65,12 +65,12 @@ CALLBACK get_symbols_callback(
 
 		if (strcmp(sym_name, "_KiDispatchException@20") == 0) {
 			return 0x2578e;
-		}	
+		}
 	}
 
 	if (sym_type == SYM_STRUCT_OFFSET)
 	{
-		if (strcmp(sym_name, "_ETHREAD") == 0) 
+		if (strcmp(sym_name, "_ETHREAD") == 0)
 		{
 			if (strcmp(sym_subname, "ThreadListEntry") == 0) {
 				return 0x22c;
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 	event_filt filter;
 	HANDLE     pid;
 	dbg_msg    msg;
-	
+
 	printf("dbgapi test tool started\n");
 
 	do
@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 			{
 				printf("DBG_START_THREAD %x by %x, teb: %x\n",
 					msg.thread_start.thread_id,
-					msg.process_id, 
+					msg.process_id,
 					msg.thread_start.teb_addr
 					);
 
@@ -171,12 +171,12 @@ int main(int argc, char* argv[])
 					);
 
 				dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-			}			
+			}
 
 		} while (1);
 
 	} while (0);
-	
+
 
 	Sleep(INFINITE);
 

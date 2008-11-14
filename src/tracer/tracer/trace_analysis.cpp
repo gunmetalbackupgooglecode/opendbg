@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * Hobleen
     *
 
@@ -57,7 +57,7 @@ bool IsTraceOverCmd(PSESSION_INFO pSess, PVOID addr)
 
 
 bool IsUntraceableCmd(PUCHAR pBuffer)
-{	
+{
 	if (pBuffer[0] == 0x17) //pop ss
 		return TRUE;
 	if (pBuffer[0] == 0x9D) //popfd
@@ -72,11 +72,11 @@ bool IsUntraceableCmd(PUCHAR pBuffer)
 
 //----- (10004BC0) --------------------------------------------------------
 DWORD get_ep_rva(PVOID pModBase)
-{	
+{
 	PIMAGE_DOS_HEADER pDos = (PIMAGE_DOS_HEADER)pModBase;
 	PIMAGE_NT_HEADERS pNt = (PIMAGE_NT_HEADERS)(pDos->e_lfanew + (DWORD)pDos);
 
-	return pNt->OptionalHeader.AddressOfEntryPoint;	
+	return pNt->OptionalHeader.AddressOfEntryPoint;
 }
 
 DWORD get_tls_dir(PVOID pModBase, ULONG num)
