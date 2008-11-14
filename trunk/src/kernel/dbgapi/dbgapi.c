@@ -34,7 +34,7 @@ static struct {
     char *sym_subname;
 } req_symbols[] =
 {
-    { SYM_TIMESTAMP,     "timestamp",               NULL },
+    //{ SYM_TIMESTAMP,     "timestamp",               NULL },
     { SYM_NTAPI_NUM,     "ZwTerminateProcess",      NULL },
     { SYM_NTAPI_NUM,     "ZwCreateThread",          NULL },
     { SYM_NTAPI_NUM,     "ZwTerminateThread",       NULL },
@@ -116,7 +116,7 @@ int dbg_build_start_params(
     char *s_name, *s_subname;
     int   s_type;
     u32   sym;
-    
+
     /* build registry key path */
     _snprintf(
         name, sizeof(name),
@@ -136,7 +136,7 @@ int dbg_build_start_params(
             s_type    = req_symbols[i].sym_type;
             s_name    = req_symbols[i].sym_name;
             s_subname = req_symbols[i].sym_subname;
-            
+
             if ( (sym = sym_callback(s_type, s_name, s_subname)) == 0 ) break;
 
             if (s_type != SYM_STRUCT_OFFSET)
@@ -145,7 +145,7 @@ int dbg_build_start_params(
                     name, sizeof(name),
                     "sym_%s", s_name
                     );
-            } 
+            }
             else
             {
                 _snprintf(
@@ -165,7 +165,7 @@ int dbg_build_start_params(
     } while (0);
 
     if (h_key != NULL) RegCloseKey(h_key);
-    
+
     return succs;
 }
 
@@ -230,7 +230,7 @@ int dbg_terminate_process(
 
     do
     {
-        if ( (h_proc = dbg_open_process(proc_id)) == NULL ) {            
+        if ( (h_proc = dbg_open_process(proc_id)) == NULL ) {
             break;
         }
 
@@ -242,7 +242,7 @@ int dbg_terminate_process(
     if (h_proc != NULL) {
         CloseHandle(h_proc);
     }
-    
+
     return succs;
 }
 
@@ -316,7 +316,7 @@ int dbg_set_filter(
     int             succs = 0;
 
     set_data.process = proc_id;
-    
+
     memcpy(
         &set_data.filter, filter, sizeof(event_filt)
         );
@@ -516,7 +516,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
-            enable_debug_privilegies();    
+            enable_debug_privilegies();
         break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
@@ -703,3 +703,4 @@ int dbg_hook_page(
 {
     return -1;
 }
+

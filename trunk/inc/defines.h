@@ -11,7 +11,7 @@ typedef unsigned short   u16;
 typedef unsigned char    u8;
 
 typedef __int64		s64;
-typedef int 		s32;
+typedef int		s32;
 typedef short		s16;
 typedef char		s8;
 typedef const char  cs8;
@@ -40,12 +40,12 @@ typedef const char  cs8;
  #define ROR32(x,y)     (_rotr((x), (y)))
  #define bsf(x,y)       (_BitScanForward((x),(y)))
  #define bsr(x,y)       (_BitScanReverse((x),(y)))
-#else 
+#else
  #define GETU32(pt) (((u32)(pt)[0] << 24) ^ ((u32)(pt)[1] << 16) ^ ((u32)(pt)[2] <<  8) ^ ((u32)(pt)[3]))
  #define PUTU32(ct, st) { (ct)[0] = (u8)((st) >> 24); (ct)[1] = (u8)((st) >> 16); (ct)[2] = (u8)((st) >>  8); (ct)[3] = (u8)(st); }
 #endif
 
-#ifdef _M_IX86 
+#ifdef _M_IX86
  #define ASM_CRYPTO
 #endif
 
@@ -58,7 +58,7 @@ typedef const char  cs8;
 #define p32(x) ((u32*)(x))
 #define p64(x) ((u64*)(x))
 #define pv(x)  ((void*)(x))
-#define ppv(x) ((void**)(x)) 
+#define ppv(x) ((void**)(x))
 
 #define in_reg(a,base,size) ( (a >= base) && (a < base+size)  )
 #define addof(a,o)          pv(p8(a)+o)
@@ -72,7 +72,7 @@ typedef const char  cs8;
 #define xor128(d,x,y) { \
 	p64(d)[0] = p64(x)[0] ^ p64(y)[0], \
 	p64(d)[1] = p64(x)[1] ^ p64(y)[1]; \
-   } 
+   }
 
 #else
 
@@ -81,7 +81,7 @@ typedef const char  cs8;
 	p32(d)[1] = p32(x)[1] ^ p32(y)[1], \
 	p32(d)[2] = p32(x)[2] ^ p32(y)[2], \
 	p32(d)[3] = p32(x)[3] ^ p32(y)[3]; \
-   } 
+   }
 
 #endif
 
@@ -120,7 +120,7 @@ typedef const char  cs8;
 #ifdef NTDDI_VERSION
  #define mem_alloc(x) ExAllocatePool(NonPagedPool, x)
  #define mem_free(x)  ExFreePool(x)
-#else 
+#else
  #define mem_alloc(x) malloc(x)
  #define mem_free(x)  free(x)
 #endif
@@ -130,11 +130,11 @@ void debug_out(char *format, ...);
 #endif
 
 /* define memcpy for 64 bit aligned blocks */
-#ifdef _M_IX86 
+#ifdef _M_IX86
  #define fastcpy(a,b,c) __movsd(pv(a), pv(b), (size_t)(c) / 4)
 #else
  #define fastcpy(a,b,c) __movsq(pv(a), pv(b), (size_t)(c) / 8)
-#endif  
+#endif
 
 #define memcpy(a,b,c) __movsb((char*)(a), (char*)(b), (size_t)(c))
 #define memset(a,b,c) __stosb((char*)(a),(char)(b),(size_t)(c))

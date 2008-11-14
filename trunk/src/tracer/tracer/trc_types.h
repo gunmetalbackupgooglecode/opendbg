@@ -12,7 +12,7 @@ typedef struct _EXCEPTION_REGISTRATION {
 
 
 typedef struct _MODULE_LIST {
-	struct _MODULE_LIST* pNext;	
+	struct _MODULE_LIST* pNext;
 	TRC_MODULE data;
 	BYTE	by_118;	//	118h
 	BYTE	ep_bp_break;	//not reads?...
@@ -34,7 +34,7 @@ typedef struct _EXCEP_FRAME {
 	ULONG	CallRes;
 	BYTE	TraceMode;
 	BOOL	bDebugTraced;
-	PSEH_LIST pSehs;	//zero if no seh chains =)	
+	PSEH_LIST pSehs;	//zero if no seh chains =)
 } EXCEP_FRAME, *PEXCEP_FRAME;
 
 typedef struct _THREAD_DATA {
@@ -45,7 +45,7 @@ typedef struct _THREAD_DATA {
 		ULONG		bEnabled;	// 10 + 10*x
 		PVOID		addr;		// 14 + 10*x
 		ULONG		type;		// 18 + 10*x
-		ULONG		range;		// 1C + 10*x		
+		ULONG		range;		// 1C + 10*x
 	} breakpoint[4];
 	PVOID	EnableDrAddr;
 	BYTE	UnchangedContext;				//	50
@@ -67,9 +67,9 @@ typedef struct _THREAD_DATA {
 } THREAD_DATA, *PTHREAD_DATA;
 
 typedef struct _THREAD_DATA_EX {
-	struct _THREAD_DATA_EX* 	pNext;	// 00
+	struct _THREAD_DATA_EX*         pNext;	// 00
 	//struct _THREAD_DATA_EX*		pPrev;	// 04
-	THREAD_DATA					data;	// 08
+	THREAD_DATA         data;	// 08
 } THREAD_DATA_EX, *PTHREAD_DATA_EX;
 
 typedef struct _LST {
@@ -81,7 +81,7 @@ typedef struct _LST {
 
 typedef struct _CALLBACK_INFO {
 	LPVOID	lpCallback;		// 00
-	PVOID	arg;			// 04	
+	PVOID	arg;			// 04
 } CALLBACK_INFO, *PCALLBACK_INFO;
 
 
@@ -102,13 +102,13 @@ typedef struct _TID_EX {
 
 typedef struct _BREAKPOINT_LIST {
 	struct _BREAKPOINT_LIST* pNext; // 00
-		
-	CHAR  	SavedByte;      // 0C	
-	LPVOID 	pHookedMem;		// 13	
 
-	PVOID 	addr;			// 04	
+	CHAR	SavedByte;      // 0C
+	LPVOID	pHookedMem;		// 13
+
+	PVOID	addr;			// 04
 	CHAR	Kind;
-	PTID_EX	pTidList;	
+	PTID_EX	pTidList;
 	PTID_EX pTilRetTidList;
 	PTID_EX pShadowTidList;
 	ULONG	event_code;
@@ -120,18 +120,18 @@ typedef struct _BP_EX {
 } BP_EX, *PBP_EX;
 
 typedef struct _SESSION_INFO {
-	ULONG 		SessionId;  // 00
+	ULONG		SessionId;  // 00
 	ULONG		bTerminated;  // 04
 	UINT_PTR	remote_id;  // 08
 	ULONG       options;    // 0C
-	CALLBACK_INFO DbgEvent; // 10    
-	CALLBACK_INFO ProcEvent;// 18    
-	CALLBACK_INFO ExcEvent; // 20    
+	CALLBACK_INFO DbgEvent; // 10
+	CALLBACK_INFO ProcEvent;// 18
+	CALLBACK_INFO ExcEvent; // 20
 	PTHREAD_DATA_EX pThreads;  // 28 - threads?
 	PMODULE_LIST pModules;  // 2C - modules?
 	PBREAKPOINT_LIST pSoftBps; // 30
 	PBP_EX		pDisabledBps;
-	PDBG_CONTEXT pDbgContext;// 34	
+	PDBG_CONTEXT pDbgContext;// 34
 	CRITICAL_SECTION	SyncCS;
 	char		image_name[265];
 	PVOID	CC_need_addr;

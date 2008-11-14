@@ -296,8 +296,8 @@ typedef struct _EVENT_FILTER
 typedef 
 uintptr_t (CALLBACK *dbg_sym_get)(
         int  sym_type,
-        char *sym_name,
-        char *sym_subname
+        const char *sym_name,
+        const char *sym_subname
         );
 
 DBGAPI_API

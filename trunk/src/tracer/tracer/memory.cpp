@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * Hobleen
     *
 
@@ -48,7 +48,7 @@ ULONG read_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size,BOOLEAN code_pa
 		return 0;
 
 	lpCurrBp = CurrSessItem->pSoftBps;
-	while (lpCurrBp)	
+	while (lpCurrBp)
 	{
 		if (((UINT_PTR)lpCurrBp->addr >= (UINT_PTR)addr) && ((UINT_PTR)lpCurrBp->addr < (size + (UINT_PTR)addr)))
 		{
@@ -74,11 +74,11 @@ TRACERAPI PTHREAD_LIST trc_get_thread_list(ULONG sesId)
 	if (!CurrSessItem )
 		return 0;
 
-	result = 0;	
+	result = 0;
 
 	pCurThread = CurrSessItem->pThreads;
 	pFirstThread = CurrSessItem->pThreads;
-	
+
 	thrd_count = 0;
 	while (pCurThread)
 	{
@@ -87,10 +87,10 @@ TRACERAPI PTHREAD_LIST trc_get_thread_list(ULONG sesId)
 	}
 	if (!thrd_count)
 		return 0;
-	
+
 	pThreadList = (PTHREAD_LIST)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(TRC_THREAD)*thrd_count + 4);
 	pThreadList->count = thrd_count;
-	
+
 	pCurThread = pFirstThread;
 	do {
 		//char sz[256];
@@ -99,9 +99,9 @@ TRACERAPI PTHREAD_LIST trc_get_thread_list(ULONG sesId)
 
 		pThreadList->thread[thrd_count-1].TID = pCurThread->data.trc_thrd.TID;
 		pThreadList->thread[thrd_count-1].teb_addr = pCurThread->data.trc_thrd.teb_addr;
-		pCurThread = pCurThread->pNext;												
+		pCurThread = pCurThread->pNext;
 		--thrd_count;
-	}  while ( thrd_count );	
+	}  while ( thrd_count );
 	return pThreadList;
 }
 
@@ -122,10 +122,10 @@ ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOLEAN co
 
 	pBuffer = VirtualAlloc(0, size, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 	if (!pBuffer)
-		return 0;	
+		return 0;
 
-	//try 
-	{	
+	//try
+	{
 		memcpy(pBuffer, pBuffer, size);
 
 		lpCurrBp = CurrSessItem->pSoftBps;
@@ -137,7 +137,7 @@ ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOLEAN co
 				((unsigned char*)pBuffer)[(UINT_PTR)lpCurrBp->addr - (UINT_PTR)addr] = 0xCC;
 			}
 			lpCurrBp = lpCurrBp->pNext;
-		} while (lpCurrBp);					
+		} while (lpCurrBp);
 		res = dbg_write_memory(CurrSessItem->pDbgContext, addr, pBuffer, size, code_page);
 	}
 	/*
@@ -148,7 +148,7 @@ ULONG write_memory(ULONG sesId, PVOID addr, PVOID buffer, ULONG size, BOOLEAN co
 	*/
 	VirtualFree(pBuffer, size, MEM_FREE);
 
-	return res;	
+	return res;
 }
 
 //------------------------------------------------------------------------
@@ -160,3 +160,4 @@ ULONG trc_write_memory(ULONG sesId,PVOID addr,PVOID buffer,ULONG size)
 
 	return write_memory(sesId,addr,buffer,size,TRUE);
 }
+

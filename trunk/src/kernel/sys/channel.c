@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
     *
 
@@ -75,7 +75,7 @@ int channel_send_recv(channel *chan, void *send_msg, void *recv_msg)
 			FALSE, NULL
 			);
 
-		if ( (status == STATUS_USER_APC) || (chan->error != 0) ) {			
+		if ( (status == STATUS_USER_APC) || (chan->error != 0) ) {
 			channel_release(chan);
 			break;
 		}
@@ -87,7 +87,7 @@ int channel_send_recv(channel *chan, void *send_msg, void *recv_msg)
 
 		/* clear send event */
 		KeClearEvent(&chan->send_event);
-		
+
 		/* copy sent data to buffer */
 		memcpy(&chan->data, send_msg, chan->snd_size);
 
@@ -102,7 +102,7 @@ int channel_send_recv(channel *chan, void *send_msg, void *recv_msg)
 			FALSE, NULL
 			);
 
-		if ( (status != STATUS_USER_APC) && (chan->error == 0) ) {			
+		if ( (status != STATUS_USER_APC) && (chan->error == 0) ) {
 			succs = 1;
 		} else {
 			channel_release(chan);
@@ -123,7 +123,7 @@ int channel_send_recv(channel *chan, void *send_msg, void *recv_msg)
 		/* indicate ready for next transaction */
 		KeSetEvent(
 			&chan->send_event, IO_NO_INCREMENT, FALSE
-			);		
+			);
 		break;
 	} while (0);
 
@@ -151,7 +151,7 @@ int channel_recv(channel *chan, void *msg)
 			channel_release(chan);
 			break;
 		}
-		
+
 		/* change channel state */
 		if (lock_cmpxchg(&chan->state, CH_RECVED, CH_SENT) != CH_SENT) {
 			continue;
@@ -218,7 +218,7 @@ int channel_send(channel *chan, void *msg)
 		/* copy replay data */
 		memcpy(
 			chan->data + chan->snd_size, msg, chan->rcv_size
-			);	
+			);
 
 		/* indicate for replay sent */
 		KeSetEvent(
@@ -264,9 +264,9 @@ DbgMsg("channel_free\n");
 		&delay_event, NotificationEvent, FALSE
 		);
 
-	short_time.QuadPart = -10000 * 10;	
+	short_time.QuadPart = -10000 * 10;
 
-	while (chan->waiters != 0) 
+	while (chan->waiters != 0)
 	{
 		DbgMsg("channel_free wait %d\n", chan->waiters);
 
@@ -278,3 +278,4 @@ DbgMsg("channel_free\n");
 
 	mem_free(chan);
 }
+

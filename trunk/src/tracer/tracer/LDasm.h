@@ -21,3 +21,4 @@ char __fastcall IsRelativeCmd(unsigned char *pOpcode);
 #endif
 
 #endif
+

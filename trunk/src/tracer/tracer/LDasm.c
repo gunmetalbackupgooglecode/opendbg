@@ -27,8 +27,8 @@
 #define BOOLEAN char
 #define FALSE 0
 #define TRUE  1
- 
-UCHAR OpcodeFlags[256] = 
+
+UCHAR OpcodeFlags[256] =
 {
 	OP_MODRM,                      // 00
     OP_MODRM,                      // 01
@@ -489,7 +489,7 @@ UCHAR OpcodeFlagsExt[256] =
     OP_MODRM,                      // C3
     OP_MODRM | OP_DATA_I8,         // C4
     OP_MODRM | OP_DATA_I8,         // C5
-    OP_MODRM | OP_DATA_I8,         // C6 
+    OP_MODRM | OP_DATA_I8,         // C6
     OP_MODRM,                      // C7
     OP_NONE,                       // C8
     OP_NONE,                       // C9
@@ -538,7 +538,7 @@ UCHAR OpcodeFlagsExt[256] =
     OP_MODRM,                      // F4
     OP_MODRM,                      // F5
     OP_MODRM,                      // F6
-    OP_MODRM,                      // F7 
+    OP_MODRM,                      // F7
     OP_MODRM,                      // F8
     OP_MODRM,                      // F9
     OP_MODRM,                      // FA
@@ -567,50 +567,50 @@ unsigned long __fastcall SizeOfCode(void *Code, unsigned char **pOpcode)
 	cPtr = (PUCHAR)Code;
 	/*определяем размер преффиксов*/
 	while ( (*cPtr == 0x2E) || (*cPtr == 0x3E) || (*cPtr == 0x36) ||
-		    (*cPtr == 0x26) || (*cPtr == 0x64) || (*cPtr == 0x65) || 
+		    (*cPtr == 0x26) || (*cPtr == 0x64) || (*cPtr == 0x65) ||
 			(*cPtr == 0xF0) || (*cPtr == 0xF2) || (*cPtr == 0xF3) ||
-			(*cPtr == 0x66) || (*cPtr == 0x67) ) 
+			(*cPtr == 0x66) || (*cPtr == 0x67) )
 	{
 		if (*cPtr == 0x66) PFX66 = TRUE;
 		if (*cPtr == 0x67) PFX67 = TRUE;
 		cPtr++;
-		if (cPtr > (PUCHAR)Code + 16) return 0; 
+		if (cPtr > (PUCHAR)Code + 16) return 0;
 	}
 	Opcode = *cPtr;
-	if (pOpcode) *pOpcode = cPtr; 
+	if (pOpcode) *pOpcode = cPtr;
 	/*определяем размер опкода и получаем флаги*/
 	if (*cPtr == 0x0F)
 	{
 		cPtr++;
 		Flags = OpcodeFlagsExt[*cPtr];
-	} else 
+	} else
 	{
 		Flags = OpcodeFlags[Opcode];
 		/*для опкодов A0 - A3 преффикс 66 = 67*/
 		if (Opcode >= 0xA0 && Opcode <= 0xA3) PFX66 = PFX67;
 	}
 	cPtr++;
-	if (Flags & OP_WORD) cPtr++;	
+	if (Flags & OP_WORD) cPtr++;
 	/*обрабатываем MOD r/m*/
 	if (Flags & OP_MODRM)
 	{
 		iMod = *cPtr >> 6;
-		iReg = (*cPtr & 0x38) >> 3;  
+		iReg = (*cPtr & 0x38) >> 3;
 		iRM  = *cPtr &  7;
 		cPtr++;
 		/*опкоды F6 и F7 - Immediate присутствует только при iReg = 0*/
-		if ((Opcode == 0xF6) && !iReg) Flags |= OP_DATA_I8;    
-		if ((Opcode == 0xF7) && !iReg) Flags |= OP_DATA_PRE66_67; 
+		if ((Opcode == 0xF6) && !iReg) Flags |= OP_DATA_I8;
+		if ((Opcode == 0xF7) && !iReg) Flags |= OP_DATA_PRE66_67;
 		/*обрабатываем SIB и Offset*/
 		SibPresent = !PFX67 & (iRM == 4);
 		switch (iMod)
 		{
-			case 0: 
+			case 0:
 			  if ( PFX67 && (iRM == 6)) OffsetSize = 2;
-			  if (!PFX67 && (iRM == 5)) OffsetSize = 4; 
+			  if (!PFX67 && (iRM == 5)) OffsetSize = 4;
 			 break;
 			case 1: OffsetSize = 1;
-			 break; 
+			 break;
 			case 2: if (PFX67) OffsetSize = 2; else OffsetSize = 4;
 			 break;
 			case 3: SibPresent = FALSE;
@@ -654,7 +654,8 @@ unsigned long __fastcall SizeOfProc(void *Proc)
 char __fastcall IsRelativeCmd(unsigned char *pOpcode)
 {
 	UCHAR Flags;
-	if (*pOpcode == 0x0F) Flags = OpcodeFlagsExt[*(PUCHAR)((ULONG)pOpcode + 1)]; 
+	if (*pOpcode == 0x0F) Flags = OpcodeFlagsExt[*(PUCHAR)((ULONG)pOpcode + 1)];
 	    else Flags = OpcodeFlags[*pOpcode];
 	return (Flags & OP_REL32);
 }
+

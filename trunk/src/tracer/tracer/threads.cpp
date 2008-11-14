@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * Hobleen
     *
 
@@ -23,21 +23,21 @@
 
 /**/
 void __cdecl create_threads(SESSION_INFO* pSessData, PTHREAD_INFO_EX pThreadInfoEx)
-{		
+{
 	THREAD_START thrd_start;
 	ULONG i;
 	char sz[256];
 
 	OutputDebugString("==create_threads==\n");
 	for (i = 0; i < pThreadInfoEx->thrd_count; i++)
-	{		
-		
+	{
+
 		wsprintf(sz, " add thread tid:%X, teb:%X", pThreadInfoEx->threads[i].thread_id, pThreadInfoEx->threads[i].teb_addr);
 		OutputDebugString(sz);
 
 		thrd_start.teb_addr = pThreadInfoEx->threads[i].teb_addr;
 		thrd_start.thread_id = pThreadInfoEx->threads[i].thread_id;
-		add_thread(pSessData, &thrd_start);		
+		add_thread(pSessData, &thrd_start);
 	}
 }
 /**/
@@ -81,7 +81,7 @@ PTHREAD_DATA __cdecl get_thrd_by_tid(PSESSION_INFO pSessDataStruct, ULONG tid)
 	while (pCur)
 	{
 		wsprintf(OutputStr, "%x - %x\n", pCur->data.trc_thrd.TID, tid);
-		//OutputDebugString(OutputStr);			
+		//OutputDebugString(OutputStr);
 		if (pCur->data.trc_thrd.TID == tid)
 		{
 			OutputDebugString("  Thread Found\n");
@@ -98,13 +98,13 @@ PTHREAD_DATA __cdecl get_thrd_by_tid(PSESSION_INFO pSessDataStruct, ULONG tid)
 //----- (10001A70) --------------------------------------------------------
 ULONG __cdecl delete_thread(PSESSION_INFO pSessData, PTHREAD_EXIT thrd_exit)
 {
-	PTHREAD_DATA_EX pCurThread; // esi@1	
+	PTHREAD_DATA_EX pCurThread; // esi@1
 	PTHREAD_DATA_EX *pPrev; // ecx@5
 
 	pCurThread = pSessData->pThreads;
 	pPrev = &pSessData->pThreads;
 	while (pCurThread)
-	{		
+	{
 		if ( pCurThread->data.trc_thrd.TID == thrd_exit->thread_id)
 			break;
 		pCurThread = pCurThread->pNext;
@@ -115,20 +115,20 @@ ULONG __cdecl delete_thread(PSESSION_INFO pSessData, PTHREAD_EXIT thrd_exit)
 
 	*pPrev = pCurThread->pNext;
 	dbg_close_thread(pCurThread->data.dbg_handle);
-	HeapFree(hHeap, 0, pCurThread);	
+	HeapFree(hHeap, 0, pCurThread);
 	return 0;
 }
 
 void delete_all_threads(PSESSION_INFO pSess)
 {
 	PTHREAD_DATA_EX pOld, pCurThrd = pSess->pThreads;
-	
+
 	while (pCurThrd)
 	{
 		pOld = pCurThrd;
 		pCurThrd = pOld->pNext;
 		dbg_close_thread(pOld->data.dbg_handle);
-		HeapFree(hHeap, 0, pOld);	
+		HeapFree(hHeap, 0, pOld);
 	}
 	pSess->pThreads = NULL;
 }
@@ -137,7 +137,7 @@ void delete_all_threads(PSESSION_INFO pSess)
 //------------------------------------------------------------------------
 TRACERAPI PTHREAD_INFO_EX trc_enum_threads(ULONG sesId, ULONG PID)
 {
-	PSESSION_INFO CurrSessItem = get_sess_by_id(sesId);	
+	PSESSION_INFO CurrSessItem = get_sess_by_id(sesId);
 	if (!CurrSessItem)
 		return 0;
 
@@ -268,7 +268,7 @@ TRACERAPI ULONG trc_suspend_thread(ULONG sesId, ULONG TID)
 	PTHREAD_DATA CurThrd = get_thrd_by_tid(pSess, TID);
 	if (!CurThrd)
 		return 0;
-	
+
 	dbg_suspend_thread(CurThrd->dbg_handle);
 	return 1;
 }
@@ -303,7 +303,7 @@ PEXCEP_FRAME create_except_frame(PSESSION_INFO pSess, PTHREAD_DATA pThread)
 	char sz[256];
 	pFrame = ALLOC(EXCEP_FRAME);
 
-	pFrame->bDebugTraced = pThread->bDbgTraced;	
+	pFrame->bDebugTraced = pThread->bDbgTraced;
 	pFrame->TraceMode = pThread->TraceMode;
 	wsprintf(sz, "Frame: bDbg=%X, mode=%X\n", pFrame->bDebugTraced, pFrame->TraceMode);
 	//OutputDebugString(sz);
@@ -311,14 +311,14 @@ PEXCEP_FRAME create_except_frame(PSESSION_INFO pSess, PTHREAD_DATA pThread)
 	pFrame->pSehs = trc_get_seh_chain(pSess->SessionId, pThread->trc_thrd.TID);
 	if (!pFrame->pSehs)
 	{
-		pFrame->pSehs = ALLOC(SEH_LIST);		
+		pFrame->pSehs = ALLOC(SEH_LIST);
 	}
 
-	
+
 	wsprintf(sz, "trc_get_seh_chain returned %X\n", pFrame->pSehs);
 //	OutputDebugString(sz);
 
 	pFrame->pPrev = pThread->pExcFrames;
-	pThread->pExcFrames = pFrame;	
+	pThread->pExcFrames = pFrame;
 	return pFrame;
 }

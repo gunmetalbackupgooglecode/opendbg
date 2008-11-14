@@ -72,7 +72,7 @@ extern "C" {
 
 // constants for RtlDetermineDosPathNameType_U
 #define DOS_PATHTYPE_UNC				0x00000001	// \\COMPUTER1
-#define DOS_PATHTYPE_ROOTDRIVE			0x00000002	// C:\ 
+#define DOS_PATHTYPE_ROOTDRIVE			0x00000002	// C:\
 #define DOS_PATHTYPE_STREAM				0x00000003	// X:X or C:
 #define DOS_PATHTYPE_NT					0x00000004	// \\??\\C:
 #define DOS_PATHTYPE_NAME				0x00000005	// C
@@ -269,7 +269,7 @@ typedef STRING OEM_STRING;
 typedef PSTRING POEM_STRING;
 
 
-typedef struct _UNICODE_STRING 
+typedef struct _UNICODE_STRING
 {
     USHORT Length;
     USHORT MaximumLength;
@@ -439,7 +439,7 @@ typedef struct _PEB
 	PVOID				ImageBaseAddress;					// 8
 	PPEB_LDR_DATA		Ldr;								// C
 	PPROCESS_PARAMETERS	ProcessParameters;					// 10
-	PVOID				SubSystemData;						// 14  
+	PVOID				SubSystemData;						// 14
 	PVOID				ProcessHeap;						// 18
 	KSPIN_LOCK			FastPebLock;						// 1C
 	PPEBLOCKROUTINE		FastPebLockRoutine;					// 20
@@ -500,63 +500,63 @@ typedef struct _PEB
 
 typedef struct _TEB
 {
-	NT_TIB			Tib;                         
-	PVOID			EnvironmentPointer;           
-	CLIENT_ID		Cid;                      
-	PVOID			ActiveRpcInfo;                
-	PVOID			ThreadLocalStoragePointer;    
-	PPEB			Peb;                           
-	ULONG			LastErrorValue;               
-	ULONG			CountOfOwnedCriticalSections; 
-	PVOID			CsrClientThread;              
-	PVOID			Win32ThreadInfo;              
-	ULONG			Win32ClientInfo[0x1F];        
-	PVOID			WOW32Reserved;                
-	ULONG			CurrentLocale;                
-	ULONG			FpSoftwareStatusRegister;     
-	PVOID			SystemReserved1[0x36];        
-	PVOID			Spare1;                       
-	LONG			ExceptionCode;                 
-	ULONG			SpareBytes1[0x28];            
-	PVOID			SystemReserved2[0xA];         
-	ULONG			gdiRgn;                       
-	ULONG			gdiPen;                       
-	ULONG			gdiBrush;                     
-	CLIENT_ID		RealClientId;             
-	PVOID			GdiCachedProcessHandle;       
-	ULONG			GdiClientPID;                 
-	ULONG			GdiClientTID;                 
-	PVOID			GdiThreadLocaleInfo;          
-	PVOID			UserReserved[5];              
-	PVOID			glDispatchTable[0x118];       
-	ULONG			glReserved1[0x1A];            
-	PVOID			glReserved2;                  
-	PVOID			glSectionInfo;                
-	PVOID			glSection;                    
-	PVOID			glTable;                      
-	PVOID			glCurrentRC;                  
-	PVOID			glContext;                    
-	NTSTATUS		LastStatusValue;           
-	UNICODE_STRING	StaticUnicodeString; 
-	WCHAR			StaticUnicodeBuffer[0x105];   
-	PVOID			DeallocationStack;            
-	PVOID			TlsSlots[0x40];               
-	LIST_ENTRY		TlsLinks;                
-	PVOID			Vdm;                          
-	PVOID			ReservedForNtRpc;             
-	PVOID			DbgSsReserved[0x2];           
-	ULONG			HardErrorDisabled;            
-	PVOID			Instrumentation[0x10];        
-	PVOID			WinSockData;                  
-	ULONG			GdiBatchCount;                
-	ULONG			Spare2;                       
-	ULONG			Spare3;                       
-	ULONG			Spare4;                       
-	PVOID			ReservedForOle;               
-	ULONG			WaitingOnLoaderLock;          
-	PVOID			StackCommit;                  
-	PVOID			StackCommitMax;               
-	PVOID			StackReserve;                 
+	NT_TIB			Tib;
+	PVOID			EnvironmentPointer;
+	CLIENT_ID		Cid;
+	PVOID			ActiveRpcInfo;
+	PVOID			ThreadLocalStoragePointer;
+	PPEB			Peb;
+	ULONG			LastErrorValue;
+	ULONG			CountOfOwnedCriticalSections;
+	PVOID			CsrClientThread;
+	PVOID			Win32ThreadInfo;
+	ULONG			Win32ClientInfo[0x1F];
+	PVOID			WOW32Reserved;
+	ULONG			CurrentLocale;
+	ULONG			FpSoftwareStatusRegister;
+	PVOID			SystemReserved1[0x36];
+	PVOID			Spare1;
+	LONG			ExceptionCode;
+	ULONG			SpareBytes1[0x28];
+	PVOID			SystemReserved2[0xA];
+	ULONG			gdiRgn;
+	ULONG			gdiPen;
+	ULONG			gdiBrush;
+	CLIENT_ID		RealClientId;
+	PVOID			GdiCachedProcessHandle;
+	ULONG			GdiClientPID;
+	ULONG			GdiClientTID;
+	PVOID			GdiThreadLocaleInfo;
+	PVOID			UserReserved[5];
+	PVOID			glDispatchTable[0x118];
+	ULONG			glReserved1[0x1A];
+	PVOID			glReserved2;
+	PVOID			glSectionInfo;
+	PVOID			glSection;
+	PVOID			glTable;
+	PVOID			glCurrentRC;
+	PVOID			glContext;
+	NTSTATUS		LastStatusValue;
+	UNICODE_STRING	StaticUnicodeString;
+	WCHAR			StaticUnicodeBuffer[0x105];
+	PVOID			DeallocationStack;
+	PVOID			TlsSlots[0x40];
+	LIST_ENTRY		TlsLinks;
+	PVOID			Vdm;
+	PVOID			ReservedForNtRpc;
+	PVOID			DbgSsReserved[0x2];
+	ULONG			HardErrorDisabled;
+	PVOID			Instrumentation[0x10];
+	PVOID			WinSockData;
+	ULONG			GdiBatchCount;
+	ULONG			Spare2;
+	ULONG			Spare3;
+	ULONG			Spare4;
+	PVOID			ReservedForOle;
+	ULONG			WaitingOnLoaderLock;
+	PVOID			StackCommit;
+	PVOID			StackCommitMax;
+	PVOID			StackReserve;
 } TEB, *PTEB;
 
 typedef enum _POOL_TYPE
@@ -1996,7 +1996,7 @@ typedef struct _DIRECTORY_CONTENTS
 
 NTSYSAPI
 NTSTATUS
-NTAPI 
+NTAPI
 NtQueryDirectoryObject(
 	IN HANDLE				DirectoryHandle,
 	OUT PDIRECTORY_CONTENTS	Buffer,
@@ -2152,23 +2152,23 @@ typedef struct _FILE_BOTH_DIR_INFORMATION
 } FILE_BOTH_DIR_INFORMATION, *PFILE_BOTH_DIR_INFORMATION;
 
 typedef struct _FILE_BASIC_INFORMATION
-{                    
-    LARGE_INTEGER	CreationTime;                             
-    LARGE_INTEGER	LastAccessTime;                           
-    LARGE_INTEGER	LastWriteTime;                            
-    LARGE_INTEGER	ChangeTime;                               
-    ULONG			FileAttributes;                                   
-} FILE_BASIC_INFORMATION, *PFILE_BASIC_INFORMATION;         
+{
+    LARGE_INTEGER	CreationTime;
+    LARGE_INTEGER	LastAccessTime;
+    LARGE_INTEGER	LastWriteTime;
+    LARGE_INTEGER	ChangeTime;
+    ULONG			FileAttributes;
+} FILE_BASIC_INFORMATION, *PFILE_BASIC_INFORMATION;
 
 typedef struct _FILE_STANDARD_INFORMATION
-{                 
-    LARGE_INTEGER	AllocationSize;                           
-    LARGE_INTEGER	EndOfFile;                                
-    ULONG			NumberOfLinks;                                    
-    BOOLEAN			DeletePending;                                  
-    BOOLEAN			Directory;                                      
-} FILE_STANDARD_INFORMATION, *PFILE_STANDARD_INFORMATION;   
-                                                            
+{
+    LARGE_INTEGER	AllocationSize;
+    LARGE_INTEGER	EndOfFile;
+    ULONG			NumberOfLinks;
+    BOOLEAN			DeletePending;
+    BOOLEAN			Directory;
+} FILE_STANDARD_INFORMATION, *PFILE_STANDARD_INFORMATION;
+
 typedef struct _FILE_INTERNAL_INFORMATION
 {
     LARGE_INTEGER	IndexNumber;
@@ -2908,9 +2908,9 @@ typedef struct _OBJECT_BASIC_INFORMATION
 } OBJECT_BASIC_INFORMATION, *POBJECT_BASIC_INFORMATION;
 
 typedef struct _OBJECT_NAME_INFORMATION
-{               
-	UNICODE_STRING	Name;                                
-} OBJECT_NAME_INFORMATION, *POBJECT_NAME_INFORMATION;   
+{
+	UNICODE_STRING	Name;
+} OBJECT_NAME_INFORMATION, *POBJECT_NAME_INFORMATION;
 
 typedef struct _OBJECT_TYPE_INFORMATION
 {
@@ -3523,3 +3523,4 @@ RtlAdjustPrivilege(
 
 #endif
 #endif
+

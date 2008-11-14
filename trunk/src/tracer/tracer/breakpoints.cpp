@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * Hobleen
     *
 
@@ -77,7 +77,7 @@ void delete_tid(PTID_EX* pBp, ULONG TID)
 			*pPred = pCur->pNext;
 			HeapFree(hHeap, 0, pCur);
 			return;
-		}	
+		}
 		pPred = &pCur->pNext;
 		pCur = pCur->pNext;
 	}
@@ -109,13 +109,13 @@ PBREAKPOINT_LIST create_bp(PSESSION_INFO pSess, PVOID addr)
 
 	wsprintf(sz, "bp created: pCur = %X, pNext = %X, addr = %X\n", pCur, pCur->pNext, pCur->addr);
 	OutputDebugString(sz);
-	
+
 
 	//OutputDebugString("Try to set bp...");
 	// FIXME: OLOLO! sucky condition, sucky code?
 	/*
 	if ((pSess->options | TRC_OPT_HIDE_BREAKPOINTS) && 0)
-	{		
+	{
 		pCur->pHookedMem = VirtualAlloc(0, 0x1000, 0x3000, PAGE_EXECUTE_READWRITE);
 
 		if (pCur->pHookedMem)
@@ -132,7 +132,7 @@ PBREAKPOINT_LIST create_bp(PSESSION_INFO pSess, PVOID addr)
 					}
 				}  else OutputDebugString("dbg_write_memory returned 0\n");
 			} else OutputDebugString("dbg_write_memory returned 0\n");
-			
+
 			VirtualFree(pCur->pHookedMem, 0x1000, MEM_RELEASE);
 		}
 
@@ -165,12 +165,12 @@ PBREAKPOINT_LIST create_bp(PSESSION_INFO pSess, PVOID addr)
 
 bool set_bp_user(PSESSION_INFO pSess, PVOID addr)
 {
-	return set_bp_ex(pSess, addr, TRC_BP_USER, 0, TRC_EVENT_BREAKPOINT);	
+	return set_bp_ex(pSess, addr, TRC_BP_USER, 0, TRC_EVENT_BREAKPOINT);
 }
 
 bool set_bp_one_shot(PSESSION_INFO pSess, PVOID addr)
 {
-	return set_bp_ex(pSess, addr, TRC_BP_ONE_SHOT, 0, TRC_EVENT_BREAKPOINT);	
+	return set_bp_ex(pSess, addr, TRC_BP_ONE_SHOT, 0, TRC_EVENT_BREAKPOINT);
 }
 
 
@@ -212,7 +212,7 @@ void delete_all_breakpoints(PSESSION_INFO pSess)
 {
 	PBREAKPOINT_LIST pOld, pCur = pSess->pSoftBps;
 	char sz[256];
-	
+
 	while (pCur)
 	{
 		wsprintf(sz, "delete bp at %X\n", pCur->addr);
@@ -220,7 +220,7 @@ void delete_all_breakpoints(PSESSION_INFO pSess)
 		pOld = pCur;
 		dbg_write_memory(pSess->pDbgContext, (PVOID)pOld->addr, &pOld->SavedByte, sizeof(BYTE), 1);
 		pCur = pOld->pNext;
-		HeapFree(hHeap, 0, pOld);		
+		HeapFree(hHeap, 0, pOld);
 	}
 }
 
@@ -236,7 +236,7 @@ TRACERAPI ULONG trc_set_bp(ULONG sesId,ULONG bp_type,ULONG TID,PVOID addr,ULONG 
 	OutputDebugString(str);
 
 	switch (bp_type) {
-	case TRC_BP_SOFTWARE:		
+	case TRC_BP_SOFTWARE:
 		return set_bp_user(pSess, addr);
 	case TRC_HWBP_READWRITE:
 	case TRC_HWBP_WRITE:
@@ -256,7 +256,7 @@ void restore_bp(PSESSION_INFO pSessData, PTHREAD_DATA pThrd, PVOID addr)
 	if ( (pSessData->CC_need_addr) && (pSessData->CC_need_addr != addr))	// step after int3 break to rewrite CC
 	{
 		dbg_write_memory(pSessData->pDbgContext, (PVOID)pSessData->CC_need_addr, &byCC, 1, 1);
-		pSessData->CC_need_addr = 0;	
+		pSessData->CC_need_addr = 0;
 	}
 
 	if ( (pThrd->EnableDrAddr) && (pThrd->EnableDrAddr != addr))
@@ -267,7 +267,7 @@ void restore_bp(PSESSION_INFO pSessData, PTHREAD_DATA pThrd, PVOID addr)
 }
 
 TRACERAPI ULONG trc_delete_bp(ULONG sesId,ULONG TID,PVOID addr, ULONG bp_type_mask)
-{	
+{
 	PSESSION_INFO pSess = get_sess_by_id(sesId);
 	if (!pSess)
 		return 0;
@@ -296,7 +296,7 @@ TRACERAPI PBP_LST trc_get_bp_list(ULONG sesId,ULONG TID)
 	PBP_LST pSoft = get_soft_bp_lst(sesId);
 	PBP_LST pHard = get_hard_bp_lst(sesId, TID);
 	PBP_LST pBpList;
-	ULONG size = 0, i, j;	
+	ULONG size = 0, i, j;
 
 	char sz[256];
 	wsprintf(sz, "got bps: %X, %X\n", pSoft, pHard);
@@ -321,13 +321,13 @@ TRACERAPI PBP_LST trc_get_bp_list(ULONG sesId,ULONG TID)
 	if (pSoft)
 	{
 		for (; i < pSoft->count; i++)
-		{	
+		{
 			pBpList->bp[i].TID = pSoft->bp[i].TID;
 			pBpList->bp[i].type = pSoft->bp[i].type;
 			pBpList->bp[i].addr = pSoft->bp[i].addr;
 			pBpList->bp[i].range = pSoft->bp[i].range;
 		}
-		pBpList->count = i;		
+		pBpList->count = i;
 		HeapFree(hHeap, 0, pSoft);
 	}
 
@@ -361,14 +361,14 @@ PBP_LST get_soft_bp_lst(ULONG SessId)
 		return 0;
 
 	//enums bp count
-	pBpList = pSessItem->pSoftBps;	
+	pBpList = pSessItem->pSoftBps;
 	for (bp_count = 0; pBpList; pBpList = pBpList->pNext)
 	{
 		//if (pBpList->bEngineBp) // enabled?
-		bp_count++;		
+		bp_count++;
 	}
 	if (bp_count == 0)	//no bps
-		return 0;	
+		return 0;
 
 	//create list
 	pList = (PBP_LST)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, bp_count*16 + 4);
@@ -386,8 +386,8 @@ PBP_LST get_soft_bp_lst(ULONG SessId)
 			pList->bp[i].type = pBpList->Kind;
 			i++;
 			pList->count++;
-		}		
-	}	
+		}
+	}
 
 	return pList;
 }
@@ -409,17 +409,17 @@ PBP_LST get_hard_bp_lst(ULONG SessId, ULONG tid)
 	if (res == NULL) // no thread with such tid
 		return 0;
 
-	return get_local_hws(res);	
+	return get_local_hws(res);
 }
 
 
 //----- (10001970) --------------------------------------------------------
 PBREAKPOINT_LIST find_soft_bp_by_addr(PBREAKPOINT_LIST pBps, PVOID addr)
 {
-	PBREAKPOINT_LIST pCurBp;	
+	PBREAKPOINT_LIST pCurBp;
 	CHAR OutputString[256];
 
-	pCurBp = pBps;	
+	pCurBp = pBps;
 	wsprintf(OutputString, "FindBP(%X,%X);\n", pBps, addr);
 	OutputDebugString(OutputString);
 	while (pCurBp)
@@ -430,7 +430,7 @@ PBREAKPOINT_LIST find_soft_bp_by_addr(PBREAKPOINT_LIST pBps, PVOID addr)
 		{
 			OutputDebugString("  Found\n");
 			return pCurBp;
-		}	
+		}
 		pCurBp = pCurBp->pNext;
 	}
 
@@ -455,7 +455,7 @@ void add_disable_bp(PSESSION_INFO pSess, ULONG bp_type, PVOID addr, ULONG TID, U
 	pBp->data.addr = addr;
 	pBp->data.range = range;
 	pBp->data.TID = TID;
-	pBp->data.type = bp_type;	
+	pBp->data.type = bp_type;
 }
 
 BOOL set_disabled_bp(PSESSION_INFO pSess, ULONG bp_type, PVOID addr, ULONG TID)
@@ -499,7 +499,7 @@ void disable_thread_hw(PSESSION_INFO pSess, PTHREAD_DATA pThrd, ULONG bp_type, P
 		{
 			OutputDebugString("Found hard bp to disable.\n");
 			add_disable_bp(pSess, pThrd->breakpoint[i].type, addr, pThrd->trc_thrd.TID, pThrd->breakpoint[i].range);
-			trc_delete_bp(pSess->SessionId, pThrd->trc_thrd.TID, addr, pThrd->breakpoint[i].type);										
+			trc_delete_bp(pSess->SessionId, pThrd->trc_thrd.TID, addr, pThrd->breakpoint[i].type);
 		}
 	}
 }
@@ -525,15 +525,15 @@ TRACERAPI void trc_enable_bp(ULONG SessId, ULONG bp_type, PVOID addr, ULONG TID,
 			if (find_soft_bp_by_addr(pSess->pSoftBps, addr))
 			{
 				OutputDebugString("Found soft bp to disable.\n");
-				add_disable_bp(pSess, TRC_BP_SOFTWARE, addr, 0, 0);				
-				trc_delete_bp(SessId, 0, addr, TRC_BP_SOFTWARE);				
+				add_disable_bp(pSess, TRC_BP_SOFTWARE, addr, 0, 0);
+				trc_delete_bp(SessId, 0, addr, TRC_BP_SOFTWARE);
 			}
 		}
-		
-		
+
+
 		if (TID == 0)
-		{ // all threads				
-			PTHREAD_DATA_EX pThrd;			
+		{ // all threads
+			PTHREAD_DATA_EX pThrd;
 			pThrd = pSess->pThreads;
 			while (pThrd)
 			{
@@ -549,8 +549,8 @@ TRACERAPI void trc_enable_bp(ULONG SessId, ULONG bp_type, PVOID addr, ULONG TID,
 			{
 				disable_thread_hw(pSess, pThrd, bp_type, addr, TID);
 			}
-		}		
-	}	
+		}
+	}
 }
 
 TRACERAPI PBP_LST trc_get_disabled_bp_list(ULONG SessId, ULONG TID)
@@ -561,7 +561,7 @@ TRACERAPI PBP_LST trc_get_disabled_bp_list(ULONG SessId, ULONG TID)
 	if (!pSess)
 		return 0;
 
-		
+
 	//get count
 	pCurBp = pSess->pDisabledBps;
 	while (pCurBp)
@@ -580,8 +580,8 @@ TRACERAPI PBP_LST trc_get_disabled_bp_list(ULONG SessId, ULONG TID)
 	while (pCurBp)
 	{
 		if ((pCurBp->data.TID == TID) || (!TID))
-		{			
-			memcpy(&pList->bp[--count], &pCurBp->data, sizeof(BP));			
+		{
+			memcpy(&pList->bp[--count], &pCurBp->data, sizeof(BP));
 		}
 		pCurBp = pCurBp->pNext;
 	}
@@ -635,7 +635,7 @@ ULONG process_bp_break(PSESSION_INFO pSess, PVOID addr, ULONG tid, PULONG lpEvCo
 
 	//////////////////////////////////////////////////////////////////////////
 	//user break || one-shot
-	res = (Kind & TRC_BP_USER) || (Kind & TRC_BP_ONE_SHOT);	
+	res = (Kind & TRC_BP_USER) || (Kind & TRC_BP_ONE_SHOT);
 	delete_bp(pSess, addr, tid, TRC_BP_ONE_SHOT);
 	//trace bp - on thread
 	if (Kind & TRC_BP_THREAD)
@@ -644,7 +644,7 @@ ULONG process_bp_break(PSESSION_INFO pSess, PVOID addr, ULONG tid, PULONG lpEvCo
 		delete_bp(pSess, addr, tid, TRC_BP_THREAD);
 		if (result)
 		{
-			OutputDebugString("  TRC_BP_USER\n");		
+			OutputDebugString("  TRC_BP_USER\n");
 			return TRC_BP_USER;
 		}
 	}
@@ -666,7 +666,7 @@ ULONG process_bp_break(PSESSION_INFO pSess, PVOID addr, ULONG tid, PULONG lpEvCo
 		OutputDebugString("  TRC_BP_SHADOW\n");
 		return TRC_BP_SHADOW;
 	}
-	
+
 	return 0;
 }
 
@@ -674,7 +674,7 @@ void delete_bp(PSESSION_INFO pSess, PVOID addr, ULONG tid, ULONG type_mask)
 {
 	PBREAKPOINT_LIST pBp = find_soft_bp_by_addr(pSess->pSoftBps, addr);
 	if (!pBp)
-		return;	
+		return;
 
 	pBp->Kind &= ~(type_mask & (TRC_BP_USER | TRC_BP_ONE_SHOT));
 
@@ -719,10 +719,10 @@ void delete_bp(PSESSION_INFO pSess, PVOID addr, ULONG tid, ULONG type_mask)
 
 ULONG set_hard_bp(ULONG SessId, ULONG tid, int bp_type, ULONG range, PVOID addr)
 {
-	PSESSION_INFO pSessItem;	
+	PSESSION_INFO pSessItem;
 	PTHREAD_DATA_EX pThrd;
 	OutputDebugString("set_hard_bp\n");
-	
+
 	pSessItem = get_sess_by_id(SessId);
 	if (!pSessItem)
 		return 0;
@@ -741,7 +741,7 @@ ULONG set_hard_bp(ULONG SessId, ULONG tid, int bp_type, ULONG range, PVOID addr)
 	}
 
 	//set hws on all threads
-	int res = 0;		
+	int res = 0;
 	pThrd = pSessItem->pThreads;
 	while (pThrd)
 	{
@@ -809,7 +809,7 @@ void set_dr7(PULONG pDr7, ULONG num, ULONG type, ULONG range)
 	case 1:	val = 0; break;
 	case 2:	val = 1; break;
 	case 4:	val = 3; break;
-	case 8:	val = 2; break;	
+	case 8:	val = 2; break;
 	}
 
 	wsprintf(sz, "Dr7 3 = %X\n", dr7);
@@ -838,7 +838,7 @@ bool do_set_dr(PSESSION_INFO pSess, PTHREAD_DATA pThrd, int dr_num)
 			set_dr7(&con.Dr7, dr_num, pThrd->breakpoint[dr_num].type, pThrd->breakpoint[dr_num].range);
 		}
 
-	} else 
+	} else
 	{
 		(&con.Dr0)[dr_num] = (UINT_PTR)pThrd->breakpoint[dr_num].addr;
 		set_dr7(&con.Dr7, dr_num, pThrd->breakpoint[dr_num].type, pThrd->breakpoint[dr_num].range);
@@ -871,7 +871,7 @@ bool do_delete_dr(PSESSION_INFO pSess, PTHREAD_DATA pThrd, ULONG num)
 {
 	CONTEXT con;
 	char sz[256];
-	OutputDebugString("do_delete_dr");	
+	OutputDebugString("do_delete_dr");
 	dbg_suspend_thread(pThrd->dbg_handle);
 	if (!trc_get_thread_ctx(pSess->SessionId, pThrd->trc_thrd.TID, &con))
 	{
@@ -885,7 +885,7 @@ bool do_delete_dr(PSESSION_INFO pSess, PTHREAD_DATA pThrd, ULONG num)
 	{
 		memset(&con.Dr0, 0, 4*sizeof(ULONG));
 		con.Dr7 &= 0xFFAA;
-	} else 
+	} else
 	{
 		(&con.Dr0)[num] = 0;
 		con.Dr7 &= ~((15 << (16 + (4*num))) | (1 << (2*num)));
@@ -901,7 +901,7 @@ bool do_delete_dr(PSESSION_INFO pSess, PTHREAD_DATA pThrd, ULONG num)
 	}
 	dbg_resume_thread(pThrd->dbg_handle);
 
-	
+
 	wsprintf(sz, "dr7 = %x\n", con.Dr7);
 	OutputDebugString(sz);
 	return 1;
@@ -951,3 +951,4 @@ bool delete_hard_bp(PSESSION_INFO pSess, ULONG tid, PVOID addr, ULONG type, ULON
 	}
 	return res;
 }
+

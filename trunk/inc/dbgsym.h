@@ -51,6 +51,7 @@ public:
 	static ulong_type sym_load_module(string_type const& modname);
 	static ulong_type sym_unload_module(ulong_type modbase);
 	static ulong_type sym_enum_symbols(ulong_type modbase, string_type const& search_mask, enum_callback_type callback, void* arg);
+	static ulong_type sym_enum_types(ulong_type modbase, enum_callback_type callback, void* arg);
 };
 
 template <>
@@ -122,9 +123,16 @@ public:
 		return ::SymUnloadModule64(get_current_process(), modbase);
 	}
 
+	// FIXME: why NULL is used instead of search_mask? (comment is done to fix warning)
+	// In widechar version search_mask.c_str is used...
 	static ulong_type sym_enum_symbols(ulong_type modbase, string_type const& /*search_mask*/, void* callback, void* arg)
 	{
 		return ::SymEnumSymbols(get_current_process(), modbase, NULL, static_cast<enum_callback_type>(callback), arg);
+	}
+
+	static ulong_type sym_enum_types(ulong_type modbase, void* callback, void* arg)
+	{
+		return ::SymEnumTypes(get_current_process(), modbase, static_cast<enum_callback_type>(callback), arg);
 	}
 
 	static module_info_type sym_get_module_info(ulong_type modbase)
@@ -211,6 +219,11 @@ public:
 	{
 		return ::SymEnumSymbolsW(get_current_process(), modbase, search_mask.c_str(), reinterpret_cast<enum_callback_type>(callback), arg);
 	}
+	
+	static ulong_type sym_enum_types(ulong_type modbase, void* callback, void* arg)
+	{
+		return ::SymEnumTypesW(get_current_process(), modbase, reinterpret_cast<enum_callback_type>(callback), arg);
+	}
 
 	static module_info_type sym_get_module_info(ulong_type modbase)
 	{
@@ -290,12 +303,12 @@ public:
 	{
 		return m_options;
 	}
-
+/*
 	ulong_type get_timestamp()
 	{
 		return m_modbase.TimeDateStamp;
 	}
-
+*/
 private:
 	ulong_type        m_modbase;
 	string_type       m_modname;
@@ -400,11 +413,17 @@ public:
 
 		if (!traits_type::sym_enum_symbols(mod_info.get_modbase(), "", reinterpret_cast<traits_type::enum_callback_type>(enum_sym_callback), this))
 			throw std::runtime_error("Error: sym_enum_symblos");
+
+		if (!traits_type::sym_enum_types(mod_info.get_modbase(), reinterpret_cast<traits_type::enum_callback_type>(enum_sym_callback), this))
+			throw std::runtime_error("Error: sym_enum_symblos");
 	}
 
 	dbgsym_sequence(module_properties& mod_info)
 	{
 		if (!traits_type::sym_enum_symbols(mod_info.get_modbase(), "", reinterpret_cast<traits_type::enum_callback_type>(enum_sym_callback), this))
+			throw std::runtime_error("Error: sym_enum_symblos");
+
+		if (!traits_type::sym_enum_types(mod_info.get_modbase(), reinterpret_cast<traits_type::enum_callback_type>(enum_sym_callback), this))
 			throw std::runtime_error("Error: sym_enum_symblos");
 	}
 

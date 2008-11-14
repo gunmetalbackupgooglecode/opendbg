@@ -36,15 +36,13 @@ typedef struct _dbg_msg {
 	HANDLE thread_id;
 	u32    event_code;
 
-	union 
+	union
 	{
 		dbg_terminated   terminated;
 		dbg_start_thread thread_start;
 		dbg_exit_thread  thread_exit;
 		dbg_exception    exception;
 	};
-
-	
 
 } dbg_msg;
 
@@ -61,7 +59,7 @@ typedef struct _except_filt {
 	u32 filtr_from;
 	u32 filtr_to;
 
-} except_filt; 
+} except_filt;
 
 typedef struct _event_filt {
 	u32         event_mask;
@@ -79,7 +77,7 @@ typedef struct _set_filter_data {
 #pragma pack (pop)
 
 #define DBG_EXCEPTION     1
-#define DBG_TERMINATED    2 
+#define DBG_TERMINATED    2
 #define DBG_START_THREAD  4
 #define DBG_EXIT_THREAD   8
 #define DBG_LOAD_DLL      16

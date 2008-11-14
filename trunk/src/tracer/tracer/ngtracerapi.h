@@ -1,5 +1,5 @@
 
-#define TRACERAPI	extern "C" __declspec(dllexport) 
+#define TRACERAPI	extern "C" __declspec(dllexport)
 
 
 #ifndef DBGAPI_API
@@ -230,3 +230,4 @@ TRACERAPI	ULONG				trc_terminate_process(ULONG sesId, ULONG PID);
 #define		TRC_STEP_OVER				4
 #define		TRC_RUN_TIL_RET				8
 #define		TRC_STEALTH_TRACE			16
+

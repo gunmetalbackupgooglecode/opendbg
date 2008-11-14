@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
     *
 
@@ -36,7 +36,7 @@ void *hook_code(void *src_proc, void *new_proc)
 
 	if ( (dst_addr = mem_alloc(100)) == NULL ) {
 		return NULL;
-	}	
+	}
 
 	old_proc = dst_addr; src_addr = src_proc;
 
@@ -76,4 +76,4 @@ void *hook_code(void *src_proc, void *new_proc)
 	mem_close(cr0);
 
 	return old_proc;
-} 
+}

@@ -1,6 +1,6 @@
 /*
-    *    
-    * Copyright (c) 2008 
+    *
+    * Copyright (c) 2008
     * Hobleen
     *
 
@@ -24,7 +24,7 @@
 
 //sub_10001D30 - set modules?
 ULONG create_modules(PSESSION_INFO pSessData, PMODULE_INFO_EX pModuleInfoEx)
-{	
+{
 	DLL_LOAD_INFO tmp;
 
 	for (ULONG i=0; i<pModuleInfoEx->mod_count ; i++)
@@ -41,13 +41,13 @@ ULONG create_modules(PSESSION_INFO pSessData, PMODULE_INFO_EX pModuleInfoEx)
 //sub_10001C70 - add module?
 MODULE_LIST* __cdecl add_module(PSESSION_INFO pSessData, PDLL_LOAD_INFO pSmth)
 {
-	
+
 	MODULE_LIST* pFirst, *pMem;
 	char str[256];
-	
+
 	wsprintf(str, "add_module(%X, %X)", pSessData, pSmth);
 	//OutputDebugString(str);
-	pMem = (PMODULE_LIST)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(MODULE_LIST)); 
+	pMem = (PMODULE_LIST)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(MODULE_LIST));
 	if (pMem == NULL)
 		return 0;
 
@@ -61,7 +61,7 @@ MODULE_LIST* __cdecl add_module(PSESSION_INFO pSessData, PDLL_LOAD_INFO pSmth)
 	OutputDebugString(pMem->data.ModName);
 	OutputDebugString(str);
 	OutputDebugString("\n==================\n");
-	
+
 	pMem->pNext = pSessData->pModules;
 	pSessData->pModules = pMem;
 
@@ -74,13 +74,13 @@ MODULE_LIST* __cdecl add_module(PSESSION_INFO pSessData, PDLL_LOAD_INFO pSmth)
 PMODULE_LIST __cdecl get_module_by_base(PSESSION_INFO pSessData, PVOID image_base)
 {
 	PMODULE_LIST pCurModule; // eax@1
-	
+
 	pCurModule = pSessData->pModules;
 	while (pCurModule)
-	{		
+	{
 		if (pCurModule->data.ImageBase == image_base)
 		{
-			return pCurModule;			
+			return pCurModule;
 		}
 		pCurModule = pCurModule->pNext;
 	}
@@ -90,20 +90,20 @@ PMODULE_LIST __cdecl get_module_by_base(PSESSION_INFO pSessData, PVOID image_bas
 
 //----- (10001DA0) --------------------------------------------------------
 signed long __cdecl delete_module(PSESSION_INFO pSessData, PDLL_UNLOAD_INFO unload_info)
-{	
-	PMODULE_LIST pCurMod; // esi@1	
+{
+	PMODULE_LIST pCurMod; // esi@1
 	PMODULE_LIST *pPrev; // ecx@5
 //	CHAR OutputString[256]; // [sp+4h] [bp-40h]@8
 
 	pCurMod = pSessData->pModules;
 	pPrev = &pSessData->pModules;
 	while ( pCurMod )
-	{		
+	{
 		if (pCurMod->data.ImageBase == unload_info->image_base)
 			break;
 		pPrev = &pCurMod->pNext;
 		pCurMod = pCurMod->pNext;
-	}		
+	}
 
 	if (!pCurMod)
 		return 0;
@@ -116,13 +116,13 @@ signed long __cdecl delete_module(PSESSION_INFO pSessData, PDLL_UNLOAD_INFO unlo
 void delete_all_modules(PSESSION_INFO pSess)
 {
 	PMODULE_LIST pOld, pCur = pSess->pModules;
-	
+
 	while (pCur)
 	{
 		pOld = pCur;
 		pCur = pOld->pNext;
-		HeapFree(hHeap, 0, pOld);	
-	} 
+		HeapFree(hHeap, 0, pOld);
+	}
 
 	pSess->pModules = NULL;
 }
@@ -134,24 +134,24 @@ TRACERAPI PMOD_LIST trc_get_module_list(ULONG sesId)
 	ULONG mod_count;
 	PMODULE_LIST pFirstModule, pCurModule;
 	PMOD_LIST pModList;
-	
+
 	CurrSessItem = get_sess_by_id(sesId);
 	if (!CurrSessItem)
 		return 0;
-	
-	pCurModule = pFirstModule = CurrSessItem->pModules; //v5 = *(_DWORD *)(v1 + 44);	
-	
+
+	pCurModule = pFirstModule = CurrSessItem->pModules; //v5 = *(_DWORD *)(v1 + 44);
+
 	mod_count = 0;
 	while (pCurModule)
-	{		
+	{
 		++mod_count;
 		pCurModule = pCurModule->pNext;
 	}
 	if (!mod_count)
-		return 0;	
+		return 0;
 
 	pModList = (PMOD_LIST)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(TRC_MODULE)*mod_count + 4);
-	
+
 	char sz[256];;
 	wsprintf(sz, "Create list with %x length: %x\n", sizeof(TRC_MODULE)*mod_count + 4, pModList);
 	OutputDebugString(sz);
@@ -167,5 +167,6 @@ TRACERAPI PMOD_LIST trc_get_module_list(ULONG sesId)
 			mod_count--;
 		}
 	}
-	return pModList;	
+	return pModList;
 }
+
