@@ -22,8 +22,6 @@
 #include <stdio.h>
 #include <tlhelp32.h>
 #include <psapi.h>
-#include "defines.h"
-#include "dbgconst.h"
 #include "dbgapi.h"
 #include "ntdll.h"
 #include "..\sys\syscall.h"
