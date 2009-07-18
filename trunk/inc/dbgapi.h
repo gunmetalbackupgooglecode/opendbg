@@ -1,6 +1,7 @@
 #define DBGAPI_API __declspec(dllexport) 
 
-#include <dbg_def.h>
+#include "dbg_def.h"
+#include "dbgconst.h"
 
 typedef struct _OPT_DATA
 {
