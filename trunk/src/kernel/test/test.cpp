@@ -26,7 +26,7 @@
 //#include "stdint.h"
 //#include "dbgsym.h"
 
-
+// modified version for xp sp3
 static uintptr_t
 CALLBACK get_symbols_callback(
 		int sym_type, char * sym_name, char * sym_subname
@@ -56,15 +56,15 @@ CALLBACK get_symbols_callback(
 	if (sym_type == SYM_OFFSET)
 	{
 		if (strcmp(sym_name, "_NtTerminateProcess@8") == 0) {
-			return 0xf076c;
+			return 0xAB2E0;
 		}
 
 		if (strcmp(sym_name, "_NtResumeThread@8") == 0) {
-			return 0xf2764;
+			return 0xB7CB2;
 		}
 
 		if (strcmp(sym_name, "_KiDispatchException@20") == 0) {
-			return 0x2578e;
+			return 0x2BC9F;
 		}
 	}
 
@@ -73,7 +73,7 @@ CALLBACK get_symbols_callback(
 		if (strcmp(sym_name, "_ETHREAD") == 0)
 		{
 			if (strcmp(sym_subname, "ThreadListEntry") == 0) {
-				return 0x22c;
+				return 0x1B0;
 			}
 		}
 	}
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 
 	do
 	{
-		if (dbg_initialize_api(0x1234, get_symbols_callback) == 0) {
+		if (dbg_initialize_api(0x1234, (dbg_sym_get)get_symbols_callback) == 0) {
 			printf("dbgapi initialization error\n");
 			break;
 		}
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 		printf("dbgapi initialized\n");
 		printf("dbgapi version as %d\n", dbg_drv_version());
 
-		if ( (pid = dbg_create_process(NULL, "\"C:\\Program Files\\EXECryptor\\EXECryptor.exe\"", 0)) == NULL) {
+		if ( (pid = dbg_create_process(NULL, "\"C:\\Windows\\System32\\calc.exe\"", 0)) == NULL) {
 			printf("process not started\n");
 			break;
 		}
