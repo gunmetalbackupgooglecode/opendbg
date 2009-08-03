@@ -52,7 +52,7 @@ channel *channel_alloc(int snd_size, int rcv_size)
 		chan->state    = CH_NULL;
 		chan->snd_size = snd_size;
 		chan->rcv_size = rcv_size;
-		chan->error    = 0;
+		chan->released    = 0;
 		chan->waiters  = 0;
 		chan->thread   = NULL;
 	}
@@ -75,8 +75,7 @@ int channel_send_recv(channel *chan, void *send_msg, void *recv_msg)
 			FALSE, NULL
 			);
 
-		if ( (status == STATUS_USER_APC) || (chan->error != 0) ) {
-			channel_release(chan);
+		if ( (status == STATUS_USER_APC) || (chan->released != 0) ) {
 			break;
 		}
 
@@ -102,10 +101,8 @@ int channel_send_recv(channel *chan, void *send_msg, void *recv_msg)
 			FALSE, NULL
 			);
 
-		if ( (status != STATUS_USER_APC) && (chan->error == 0) ) {
+		if ( (status != STATUS_USER_APC) && (chan->released == 0) ) {
 			succs = 1;
-		} else {
-			channel_release(chan);
 		}
 
 		/* copy recived data */
@@ -147,8 +144,7 @@ int channel_recv(channel *chan, void *msg)
 			FALSE, NULL
 			);
 
-		if ( (status == STATUS_USER_APC) || (chan->error != 0) ) {
-			channel_release(chan);
+		if ( (status == STATUS_USER_APC) || (chan->released != 0) ) {
 			break;
 		}
 
@@ -198,8 +194,7 @@ int channel_send(channel *chan, void *msg)
 			FALSE, NULL
 			);
 
-		if ( (status == STATUS_USER_APC) || (chan->error != 0) ) {
-			channel_release(chan);
+		if ( (status == STATUS_USER_APC) || (chan->released != 0) ) {
 			break;
 		}
 
@@ -236,8 +231,10 @@ int channel_send(channel *chan, void *msg)
 
 void channel_release(channel *chan)
 {
-	chan->error = 1;
-DbgMsg("channel_release\n");
+	chan->released = 1;
+	
+	DbgMsg("channel_release\n");
+	
 	KeSetEvent(
 		&chan->send_event, IO_NO_INCREMENT, FALSE
 		);
@@ -259,7 +256,9 @@ void channel_free(channel *chan)
 {
 	LARGE_INTEGER short_time;
 	KEVENT        delay_event;
-DbgMsg("channel_free\n");
+	
+	DbgMsg("channel_free\n");
+	
 	KeInitializeEvent(
 		&delay_event, NotificationEvent, FALSE
 		);

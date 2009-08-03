@@ -700,6 +700,69 @@ int dbg_countinue(syscall *data)
 	return succs;
 }
 
+void  
+load_image_notify_routine(
+	PUNICODE_STRING  FullImageName,
+	HANDLE  ProcessId,
+	PIMAGE_INFO  ImageInfo
+	)
+{
+	dbg_item  *	debug	= NULL;
+	dbg_msg		msg;
+	cont_dat	cont;
+	PEPROCESS 	dbgd;
+	NTSTATUS	status;
+	
+	DbgMsg("load_image_notify_routine 0x%p %ws \n",ProcessId, FullImageName->Buffer);
+	
+	do
+	{
+		status = PsLookupProcessByProcessId(ProcessId,&dbgd) != STATUS_SUCCESS;
+		if ( NT_SUCCESS(status) == FALSE ){
+			break;
+		}
+		
+		if ( (debug = dbg_find_item(NULL, dbgd)) == NULL ) {
+			break;
+		}
+		
+		/* check event mask */
+		if ( (debug->filter.event_mask & DBG_LOAD_DLL) == 0 ) {
+			break;
+		}
+		
+		/* setup debug message */
+		msg.process_id             = ProcessId;
+		msg.thread_id              = PsGetCurrentThreadId(); 
+		msg.event_code             = DBG_LOAD_DLL;
+		
+		/* copy image info */
+		msg.dll_load.dll_image_base = ImageInfo->ImageBase;
+		msg.dll_load.dll_image_size = ImageInfo->ImageSize;
+		
+		memset(&msg.dll_load.dll_name, 0, MAX_PATH * sizeof(WCHAR));
+		
+		/* copy full image name */
+		memcpy (
+				&msg.dll_load.dll_name, 
+				FullImageName->Buffer, 
+				FullImageName->Length > MAX_PATH * sizeof(WCHAR) ? MAX_PATH * sizeof(WCHAR) : FullImageName->Length
+				);
+		
+		/* send debug message and recive replay */
+		if (channel_send_recv(debug->chan, &msg, &cont) == 0) {
+			break;
+		}
+		
+	} while (0);
+	
+	if (debug != NULL) {
+		dbg_deref_item(debug);
+	}
+	
+	return;
+}
+
 int init_debug(HANDLE h_key)
 {
 	int succs = 0;
@@ -764,6 +827,8 @@ int init_debug(HANDLE h_key)
 		OldKiDispatchException = hook_code(
 			addof(ntkrn_base, offs2), NewKiDispatchException
 			);
+		
+		PsSetLoadImageNotifyRoutine(&load_image_notify_routine);
 
 		succs = 1;
 	} while (0);

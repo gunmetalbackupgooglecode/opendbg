@@ -9,11 +9,10 @@ typedef struct _channel {
 	PETHREAD thread;
 	u32      state;
 	u32      waiters;
-	int      error;
+	int      released;
 	int      snd_size;
 	int      rcv_size;
 	u8       data[];
-
 } channel;
 
 channel *channel_alloc(int snd_size, int rcv_size);
