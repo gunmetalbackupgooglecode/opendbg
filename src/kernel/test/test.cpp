@@ -56,15 +56,15 @@ CALLBACK get_symbols_callback(
 	if (sym_type == SYM_OFFSET)
 	{
 		if (strcmp(sym_name, "_NtTerminateProcess@8") == 0) {
-			return 0xAB2E0;
+			return 0xf04c8;
 		}
 
 		if (strcmp(sym_name, "_NtResumeThread@8") == 0) {
-			return 0xB7CB2;
+			return 0xf24c0;
 		}
 
 		if (strcmp(sym_name, "_KiDispatchException@20") == 0) {
-			return 0x2BC9F;
+			return 0x255c2;
 		}
 	}
 
@@ -73,7 +73,7 @@ CALLBACK get_symbols_callback(
 		if (strcmp(sym_name, "_ETHREAD") == 0)
 		{
 			if (strcmp(sym_subname, "ThreadListEntry") == 0) {
-				return 0x1B0;
+				return 0x22c;
 			}
 		}
 	}
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 		printf("dbgapi initialized\n");
 		printf("dbgapi version as %d\n", dbg_drv_version());
 
-		if ( (pid = dbg_create_process(NULL, "\"C:\\Windows\\System32\\calc.exe\"", 0)) == NULL) {
+		if ( (pid = dbg_create_process(NULL, "\"C:\\Windows\\system32\\calc.exe\"", 0)) == NULL) {
 			printf("process not started\n");
 			break;
 		}
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 
 		printf("debugger attached\n");
 
-		filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD;
+		filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
 		filter.filtr_count = 0;
 
 		if (dbg_set_filter(NULL, pid, &filter) == 0) {
@@ -170,6 +170,19 @@ int main(int argc, char* argv[])
 					msg.process_id
 					);
 
+				dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+			}
+			
+			if (msg.event_code == DBG_LOAD_DLL)
+			{
+				printf("DBG_LOAD_DLL %ws adr 0x%p sz 0x%x in %x:%x\n",
+					   msg.dll_load.dll_name,
+					   msg.dll_load.dll_image_base,
+					   msg.dll_load.dll_image_size,
+					   msg.thread_id,
+					   msg.process_id
+					   );
+				
 				dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 			}
 

@@ -31,6 +31,12 @@ typedef struct _dbg_exception {
 
 } dbg_exception;
 
+typedef struct _dbg_dll_load {
+	PVOID       dll_image_base;
+	SIZE_T      dll_image_size;
+	WCHAR		dll_name[MAX_PATH];
+} dbg_dll_load;
+
 typedef struct _dbg_msg {
 	HANDLE process_id;
 	HANDLE thread_id;
@@ -42,6 +48,7 @@ typedef struct _dbg_msg {
 		dbg_start_thread thread_start;
 		dbg_exit_thread  thread_exit;
 		dbg_exception    exception;
+		dbg_dll_load	 dll_load;
 	};
 
 } dbg_msg;
