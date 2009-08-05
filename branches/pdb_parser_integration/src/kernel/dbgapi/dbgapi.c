@@ -102,11 +102,7 @@ HANDLE dbg_create_process(
 }
 
 
-static
-int dbg_build_start_params(
-       cs8 *drv_name, u32 acc_key,
-       dbg_sym_get sym_callback
-       )
+int dbg_build_start_params( cs8 *drv_name, u32 acc_key, const char* pdb_path, dbg_sym_get sym_callback )
 {
     char  name[MAX_PATH];
     HKEY  h_key = NULL;
@@ -114,6 +110,7 @@ int dbg_build_start_params(
     char *s_name, *s_subname;
     int   s_type;
     u32   sym;
+    pdb::pdb_parser pdb(pdb_path);
 
     /* build registry key path */
     _snprintf(
@@ -135,7 +132,7 @@ int dbg_build_start_params(
             s_name    = req_symbols[i].sym_name;
             s_subname = req_symbols[i].sym_subname;
 
-            if ( (sym = sym_callback(s_type, s_name, s_subname)) == 0 ) break;
+            if ( (sym = sym_callback(s_type, s_name, s_subname, &pdb)) == 0 ) break;
 
             if (s_type != SYM_STRUCT_OFFSET)
             {
@@ -152,13 +149,13 @@ int dbg_build_start_params(
                     );
             }
 
-            if (RegSetValueEx(h_key, name, 0, REG_DWORD, pv(&sym), sizeof(sym)) != 0) break;
+            if (RegSetValueEx(h_key, name, 0, REG_DWORD, (BYTE*)pv(&sym), sizeof(sym)) != 0) break;
         }
 
         if (i != NUM_SYM) break;
 
         /* save access key */
-        if (RegSetValueEx(h_key, "sc_key", 0, REG_DWORD, pv(&acc_key), sizeof(u32)) != 0) break;
+        if (RegSetValueEx(h_key, "sc_key", 0, REG_DWORD, (BYTE*)pv(&acc_key), sizeof(u32)) != 0) break;
         succs = 1;
     } while (0);
 
@@ -451,6 +448,7 @@ int dbg_set_context(
 DBGAPI_API
 int dbg_initialize_api(
        u_long      access_key,
+       const char* pdb_path,
        dbg_sym_get sym_callback
        )
 {
@@ -475,7 +473,7 @@ int dbg_initialize_api(
 
     if (h_svc = dbg_install_sc(drv_path, driver_name))
     {
-        if (dbg_build_start_params(driver_name, acc_key, sym_callback) != 0)
+        if (dbg_build_start_params(driver_name, acc_key, pdb_path, sym_callback) != 0)
         {
             succs = StartService(h_svc, 0, NULL);
         }

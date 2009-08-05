@@ -23,13 +23,11 @@
 
 #include "test.h"
 #include "dbgapi.h"
-//#include "stdint.h"
-//#include "dbgsym.h"
 
 // modified version for xp sp3
 static uintptr_t
 CALLBACK get_symbols_callback(
-		int sym_type, char * sym_name, char * sym_subname
+		int sym_type, char * sym_name, char * sym_subname, pdb::pdb_parser *pdb
 		)
 {
 
@@ -54,29 +52,10 @@ CALLBACK get_symbols_callback(
 	}
 
 	if (sym_type == SYM_OFFSET)
-	{
-		if (strcmp(sym_name, "_NtTerminateProcess@8") == 0) {
-			return 0xf04c8;
-		}
-
-		if (strcmp(sym_name, "_NtResumeThread@8") == 0) {
-			return 0xf24c0;
-		}
-
-		if (strcmp(sym_name, "_KiDispatchException@20") == 0) {
-			return 0x255c2;
-		}
-	}
+		return pdb->get_symbol(sym_name).get_rva();
 
 	if (sym_type == SYM_STRUCT_OFFSET)
-	{
-		if (strcmp(sym_name, "_ETHREAD") == 0)
-		{
-			if (strcmp(sym_subname, "ThreadListEntry") == 0) {
-				return 0x22c;
-			}
-		}
-	}
+		return pdb->get_type(sym_name).get_member(sym_subname).get_offset();
 
 	return 0;
 }
@@ -89,107 +68,110 @@ int main(int argc, char* argv[])
 
 	printf("dbgapi test tool started\n");
 
-	do
-	{
-		if (dbg_initialize_api(0x1234, (dbg_sym_get)get_symbols_callback) == 0) {
-			printf("dbgapi initialization error\n");
-			break;
-		}
-
-		printf("dbgapi initialized\n");
-		printf("dbgapi version as %d\n", dbg_drv_version());
-
-		if ( (pid = dbg_create_process(NULL, "\"C:\\Windows\\system32\\calc.exe\"", 0)) == NULL) {
-			printf("process not started\n");
-			break;
-		}
-
-		printf("process started with pid %x\n", pid);
-
-		if (dbg_attach_debugger(NULL, pid) == 0) {
-			printf("debugger not attached\n");
-			break;
-		}
-
-		printf("debugger attached\n");
-
-		filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
-		filter.filtr_count = 0;
-
-		if (dbg_set_filter(NULL, pid, &filter) == 0) {
-			printf("dbg_set_filter error\n");
-			break;
-		}
-
-		printf("debug events filter setuped\n");
-
+	try {
 		do
 		{
-			if (dbg_get_msg_event(NULL, pid, &msg) == 0) {
-				printf("get debug message error\n");
+			if (dbg_initialize_api(0x1234, _T("c:\\ntoskrnl.pdb"), (dbg_sym_get)get_symbols_callback) == 0) {
+				printf("dbgapi initialization error\n");
+				break;
+			}
+			throw pdb::pdb_error("all is good");
+			printf("dbgapi initialized\n");
+			printf("dbgapi version as %d\n", dbg_drv_version());
+
+			if ( (pid = dbg_create_process(NULL, "\"C:\\Windows\\system32\\calc.exe\"", 0)) == NULL) {
+				printf("process not started\n");
 				break;
 			}
 
-			if (msg.event_code == DBG_TERMINATED)
-			{
-				printf("DBG_TERMINATED %x by %x\n",
-					msg.terminated.proc_id,
-					msg.process_id
-					);
+			printf("process started with pid %x\n", pid);
 
-				dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+			if (dbg_attach_debugger(NULL, pid) == 0) {
+				printf("debugger not attached\n");
+				break;
 			}
 
-			if (msg.event_code == DBG_START_THREAD)
-			{
-				printf("DBG_START_THREAD %x by %x, teb: %x\n",
-					msg.thread_start.thread_id,
-					msg.process_id,
-					msg.thread_start.teb_addr
-					);
+			printf("debugger attached\n");
 
-				dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+			filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
+			filter.filtr_count = 0;
+
+			if (dbg_set_filter(NULL, pid, &filter) == 0) {
+				printf("dbg_set_filter error\n");
+				break;
 			}
 
-			if (msg.event_code == DBG_EXIT_THREAD)
-			{
-				printf("DBG_EXIT_THREAD %x in %x by %x\n",
-					msg.thread_exit.thread_id,
-					msg.thread_exit.proc_id,
-					msg.process_id
-					);
+			printf("debug events filter setuped\n");
 
-				dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-			}
-
-			if (msg.event_code == DBG_EXCEPTION)
+			do
 			{
-				printf("DBG_EXCEPTION %0.8x in %x:%x\n",
-					msg.exception.except_record.ExceptionCode,
-					msg.thread_id,
-					msg.process_id
-					);
+				if (dbg_get_msg_event(NULL, pid, &msg) == 0) {
+					printf("get debug message error\n");
+					break;
+				}
 
-				dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-			}
-			
-			if (msg.event_code == DBG_LOAD_DLL)
-			{
-				printf("DBG_LOAD_DLL %ws adr 0x%p sz 0x%x in %x:%x\n",
-					   msg.dll_load.dll_name,
-					   msg.dll_load.dll_image_base,
-					   msg.dll_load.dll_image_size,
-					   msg.thread_id,
-					   msg.process_id
-					   );
+				if (msg.event_code == DBG_TERMINATED)
+				{
+					printf("DBG_TERMINATED %x by %x\n",
+						msg.terminated.proc_id,
+						msg.process_id
+						);
+
+					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+				}
+
+				if (msg.event_code == DBG_START_THREAD)
+				{
+					printf("DBG_START_THREAD %x by %x, teb: %x\n",
+						msg.thread_start.thread_id,
+						msg.process_id,
+						msg.thread_start.teb_addr
+						);
+
+					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+				}
+
+				if (msg.event_code == DBG_EXIT_THREAD)
+				{
+					printf("DBG_EXIT_THREAD %x in %x by %x\n",
+						msg.thread_exit.thread_id,
+						msg.thread_exit.proc_id,
+						msg.process_id
+						);
+
+					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+				}
+
+				if (msg.event_code == DBG_EXCEPTION)
+				{
+					printf("DBG_EXCEPTION %0.8x in %x:%x\n",
+						msg.exception.except_record.ExceptionCode,
+						msg.thread_id,
+						msg.process_id
+						);
+
+					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+				}
 				
-				dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-			}
+				if (msg.event_code == DBG_LOAD_DLL)
+				{
+					printf("DBG_LOAD_DLL %ws adr 0x%p sz 0x%x in %x:%x\n",
+							 msg.dll_load.dll_name,
+							 msg.dll_load.dll_image_base,
+							 msg.dll_load.dll_image_size,
+							 msg.thread_id,
+							 msg.process_id
+							 );
+					
+					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+				}
 
-		} while (1);
+			} while (1);
 
-	} while (0);
-
+		} while (0);
+	} catch (pdb::pdb_error& e) {
+		std::cout << e.what() << "\n";
+	}
 
 	Sleep(INFINITE);
 
