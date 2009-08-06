@@ -234,25 +234,25 @@ pdb_parser::pdb_parser(const string_type& filename)
 												(void **) &pSource);
 
 	if (FAILED(hr))
-		throw pdb_error(_T("CoCreateInstance failed - HRESULT"));
+		throw pdb_error("CoCreateInstance failed - HRESULT");
 
 	if ( FAILED( pSource->loadDataForExe(filename.c_str(), NULL, NULL) ) )
 		if ( FAILED( pSource->loadDataFromPdb(filename.c_str()) ) )
-			throw pdb_error("symbols are not loaded from " + filename);
+			throw pdb_error("symbols are not loaded from");
 
 	if (FAILED(hr))
-		throw pdb_error(_T("loadDataFromPdb failed - HRESULT"));
+		throw pdb_error("loadDataFromPdb failed - HRESULT");
 
 	hr = pSource->openSession(&pSession);
 
 	if (FAILED(hr))
-		throw pdb_error(_T("openSession failed - HRESULT"));
+		throw pdb_error("openSession failed - HRESULT");
 	
 	// Retrieve a reference to the global scope
 	hr = pSession->get_globalScope(&pGlobal);
 
 	if (FAILED(hr))
-		throw pdb_error(_T("openSession failed - HRESULT"));
+		throw pdb_error("openSession failed - HRESULT");
 
 	init_symbols(pGlobal);
 	init_types(pGlobal);
@@ -354,7 +354,7 @@ void pdb_parser::init_types(IDiaSymbol* global)
 {
 	IDiaEnumSymbols *pEnumSymbols;
 	if (FAILED(global->findChildren(SymTagUDT, 0, nsNone, &pEnumSymbols)))
-		throw pdb_error(_T("child is not founded"));
+		throw pdb_error("child is not founded");
 
 	IDiaSymbol *pSymbol;
 	ulong celt = 0;

@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DBGAPI_EXPORTS;_CRT_SECURE_NO_WARNINGS;OLE2ANSI"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DBGAPI_EXPORTS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"

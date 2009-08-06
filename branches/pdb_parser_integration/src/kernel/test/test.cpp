@@ -27,7 +27,7 @@
 // modified version for xp sp3
 static uintptr_t
 CALLBACK get_symbols_callback(
-		int sym_type, char * sym_name, char * sym_subname, pdb::pdb_parser *pdb
+		int sym_type, char * sym_name, char * sym_subname, pdb::pdb_parser& pdb
 		)
 {
 
@@ -51,11 +51,26 @@ CALLBACK get_symbols_callback(
 		}
 	}
 
-	if (sym_type == SYM_OFFSET)
-		return pdb->get_symbol(sym_name).get_rva();
+	wchar_t sym_name_w[255];
+	MultiByteToWideChar(
+		CP_ACP, 0, sym_name, strlen(sym_name)+1,
+		sym_name_w, sizeof(sym_name_w)/sizeof(sym_name_w[0])
+	);
+
+	wchar_t sym_subname_w[255];
+	if (sym_subname && strlen(sym_subname)) {
+		MultiByteToWideChar(
+			CP_ACP, 0, sym_subname, strlen(sym_subname)+1,
+			sym_subname_w, sizeof(sym_subname_w)/sizeof(sym_subname_w[0])
+		);
+	}
+
+	if (sym_type == SYM_OFFSET) {
+		return pdb.get_symbol(sym_name_w).get_rva();
+	}
 
 	if (sym_type == SYM_STRUCT_OFFSET)
-		return pdb->get_type(sym_name).get_member(sym_subname).get_offset();
+		return pdb.get_type(sym_name_w).get_member(sym_subname_w).get_offset();
 
 	return 0;
 }
@@ -71,11 +86,11 @@ int main(int argc, char* argv[])
 	try {
 		do
 		{
-			if (dbg_initialize_api(0x1234, _T("c:\\ntoskrnl.pdb"), (dbg_sym_get)get_symbols_callback) == 0) {
+			if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) == 0) {
 				printf("dbgapi initialization error\n");
 				break;
 			}
-			throw pdb::pdb_error("all is good");
+
 			printf("dbgapi initialized\n");
 			printf("dbgapi version as %d\n", dbg_drv_version());
 

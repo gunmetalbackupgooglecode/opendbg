@@ -437,7 +437,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\dbg_def.h"
+				RelativePath="..\..\..\inc\dbg_def.h"
 				>
 			</File>
 			<File

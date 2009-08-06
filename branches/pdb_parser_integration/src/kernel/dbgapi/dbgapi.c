@@ -102,7 +102,7 @@ HANDLE dbg_create_process(
 }
 
 
-int dbg_build_start_params( cs8 *drv_name, u32 acc_key, const char* pdb_path, dbg_sym_get sym_callback )
+int dbg_build_start_params( cs8 *drv_name, u32 acc_key, const wchar_t* pdb_path, dbg_sym_get sym_callback )
 {
     char  name[MAX_PATH];
     HKEY  h_key = NULL;
@@ -132,7 +132,7 @@ int dbg_build_start_params( cs8 *drv_name, u32 acc_key, const char* pdb_path, db
             s_name    = req_symbols[i].sym_name;
             s_subname = req_symbols[i].sym_subname;
 
-            if ( (sym = sym_callback(s_type, s_name, s_subname, &pdb)) == 0 ) break;
+            if ( (sym = sym_callback(s_type, s_name, s_subname, pdb)) == 0 ) break;
 
             if (s_type != SYM_STRUCT_OFFSET)
             {
@@ -448,7 +448,7 @@ int dbg_set_context(
 DBGAPI_API
 int dbg_initialize_api(
        u_long      access_key,
-       const char* pdb_path,
+       const wchar_t* pdb_path,
        dbg_sym_get sym_callback
        )
 {
