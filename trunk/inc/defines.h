@@ -131,13 +131,13 @@ void debug_out(char *format, ...);
 
 /* define memcpy for 64 bit aligned blocks */
 #ifdef _M_IX86
- #define fastcpy(a,b,c) __movsd(pv(a), pv(b), (size_t)(c) / 4)
+ #define fastcpy(a,b,c) __movsd((ULONG*)(a), (ULONG*)(b), (size_t)(c) / 4)
 #else
- #define fastcpy(a,b,c) __movsq(pv(a), pv(b), (size_t)(c) / 8)
+ #define fastcpy(a,b,c) __movsq((UCHAR*)(a), (UCHAR*)(b), (size_t)(c) / 8)
 #endif
 
-#define memcpy(a,b,c) __movsb((char*)(a), (char*)(b), (size_t)(c))
-#define memset(a,b,c) __stosb((char*)(a),(char)(b),(size_t)(c))
+#define memcpy(a,b,c) __movsb((UCHAR*)(a), (const UCHAR*)(b), (size_t)(c))
+#define memset(a,b,c) __stosb((UCHAR*)(a),(UCHAR)(b),(size_t)(c))
 
 #define lock_inc(x)             ( _InterlockedIncrement(x) )
 #define lock_dec(x)             ( _InterlockedDecrement(x) )
