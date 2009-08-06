@@ -51,7 +51,7 @@
 #undef STATUS_REG_NAT_CONSUMPTION
 #undef DBG_EXCEPTION_HANDLED
 
-#include "ntstatus.h"
+#include <ntstatus.h>
 
 #if (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED)
 #define NTAPI __stdcall
