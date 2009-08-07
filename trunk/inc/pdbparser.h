@@ -2,6 +2,7 @@
 #define PDBPARSER_H__
 
 #include <windows.h>
+#include <stdio.h>
 
 #include <vector>
 #include <exception>
@@ -9,7 +10,9 @@
 #include <iterator>
 #include <algorithm>
 #include <iostream>
+#include <xstring>
 #include <utility>
+
 #include <map>
 
 #include "dia2.h"
@@ -18,6 +21,21 @@ typedef unsigned long ulong;
 
 namespace pdb
 {
+
+#ifdef OLE2ANSI
+	#ifndef _T
+			#define _T(x)      x
+	#endif
+
+	typedef char char_type;
+#else
+	#ifndef _T
+			#define _T(x)      L ## x
+	#endif
+	typedef wchar_t char_type;
+#endif
+
+typedef std::basic_string<char_type> string_type;
 
 class pdb_error : public std::exception
 {
@@ -49,7 +67,7 @@ public:
 	{
 	}
 
-	sym_info(const std::wstring& name, ulong rva, ulong offset, ulong section)
+	sym_info(const string_type& name, ulong rva, ulong offset, ulong section)
 	 : m_name(name),
 	   m_rva(rva),
 	   m_offset(offset),
@@ -57,7 +75,7 @@ public:
 	{
 	}
 
-	sym_info(const std::wstring& name, ulong relative_offset)
+	sym_info(const string_type& name, ulong relative_offset)
 	 : m_name(name),
 	   m_rva(0),
 	   m_offset(0),
@@ -65,8 +83,28 @@ public:
 	{
 	}
 
+	string_type get_name()
+	{
+		return m_name;
+	}
+
+	ulong get_rva()
+	{
+		return m_rva;
+	}
+
+	ulong get_offset()
+	{
+		return m_offset;
+	}
+
+	ulong get_section()
+	{
+		return m_section;
+	}
+
 private:
-	std::wstring m_name;
+	string_type  m_name;
 	ulong        m_rva;
 	ulong        m_offset;
 	ulong        m_section;
@@ -81,13 +119,13 @@ public:
 	{
 	}
 
-	member_info(const std::wstring& name, ulong offset)
+	member_info(const string_type& name, ulong offset)
 	 : m_name(name),
 	   m_offset(offset)
 	{
 	}
 
-	const std::wstring get_name()
+	string_type get_name()
 	{
 		return m_name;
 	}
@@ -98,14 +136,14 @@ public:
 	}
 
 private:
-	std::wstring m_name;
+	string_type  m_name;
 	ulong        m_offset;
 };
 
 class type_info
 {
-	typedef std::pair<std::wstring, member_info> member_info_pair;
-	typedef std::map<std::wstring, member_info> member_info_map;
+	typedef std::pair<string_type, member_info> member_info_pair;
+	typedef std::map<string_type, member_info> member_info_map;
 
 public:
 	type_info()
@@ -114,19 +152,19 @@ public:
 	{
 	}
 
-	type_info(const std::wstring& name)
+	type_info(const string_type& name)
 	 : m_name(name),
 	   m_members()
 	{
 	}
 
-	type_info(const std::wstring& name, const member_info_map& members)
+	type_info(const string_type& name, const member_info_map& members)
 	 : m_name(name),
 	   m_members(members)
 	{
 	}
 
-	const std::wstring get_name()
+	const string_type get_name()
 	{
 		return m_name;
 	}
@@ -136,40 +174,40 @@ public:
 		return m_members;
 	}
 
-	member_info& get_member(const std::wstring& name)
+	member_info& get_member(const string_type& name)
 	{
 		return m_members[name];
 	}
 
 private:
-	std::wstring               m_name;
+	string_type               m_name;
 	member_info_map            m_members;
 };
 
 class pdb_parser
 {
-	typedef std::pair<std::wstring, sym_info> sym_info_pair;
-	typedef std::map<std::wstring, sym_info> sym_info_map;
-	typedef std::pair<std::wstring, type_info> type_info_pair;
-	typedef std::map<std::wstring, type_info> type_info_map;
+	typedef std::pair<string_type, sym_info> sym_info_pair;
+	typedef std::map<string_type, sym_info> sym_info_map;
+	typedef std::pair<string_type, type_info> type_info_pair;
+	typedef std::map<string_type, type_info> type_info_map;
 
-	typedef std::pair<std::wstring, member_info> member_info_pair;
-	typedef std::map<std::wstring, member_info> member_info_map;
+	typedef std::pair<string_type, member_info> member_info_pair;
+	typedef std::map<string_type, member_info> member_info_map;
 
 public:
-	pdb_parser(const std::wstring& filename);
+	pdb_parser(const string_type& filename);
 
 	void init_symbols(IDiaSymbol* global);
 	void init_types(IDiaSymbol* global);
 	member_info_map get_type_detail(IDiaSymbol* sym, int deep);
 	member_info get_type_location(IDiaSymbol* sym);
 
-	type_info& get_type(const std::wstring& name)
+	type_info& get_type(const string_type& name)
 	{
 		return m_types[name];
 	}
 
-	sym_info& get_symbol(const std::wstring& name)
+	sym_info& get_symbol(const string_type& name)
 	{
 		return m_symbols[name];
 	}
@@ -179,7 +217,7 @@ private:
 	type_info_map m_types;
 };
 
-pdb_parser::pdb_parser(const std::wstring& filename)
+pdb_parser::pdb_parser(const string_type& filename)
 {
 	IDiaDataSource *pSource;
 	IDiaSession *pSession;
@@ -200,7 +238,7 @@ pdb_parser::pdb_parser(const std::wstring& filename)
 
 	if ( FAILED( pSource->loadDataForExe(filename.c_str(), NULL, NULL) ) )
 		if ( FAILED( pSource->loadDataFromPdb(filename.c_str()) ) )
-			throw pdb_error("symbols are not loaded");
+			throw pdb_error("symbols are not loaded from");
 
 	if (FAILED(hr))
 		throw pdb_error("loadDataFromPdb failed - HRESULT");
@@ -265,7 +303,7 @@ member_info pdb_parser::get_type_location(IDiaSymbol* sym)
 				return member_info(name, offset);
 	}
 
-	return member_info(L"", 0);
+	return member_info(_T(""), 0);
 }
 
 pdb_parser::member_info_map pdb_parser::get_type_detail(IDiaSymbol* sym, int deep)
