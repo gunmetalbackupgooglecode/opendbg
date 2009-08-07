@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="test"
 	ProjectGUID="{A38C04C7-B172-4897-8471-E3478903035E}"
 	RootNamespace="test"
@@ -28,7 +28,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="2"
-			CharacterSet="0"
+			CharacterSet="1"
 			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
 			>
 			<Tool
@@ -65,7 +65,7 @@
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 				CallingConvention="2"
-				CompileAs="1"
+				CompileAs="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -78,10 +78,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="dbgapi.lib dbghelp.lib  Advapi32.lib"
+				AdditionalOptions="dbgapi.lib dbghelp.lib  Advapi32.lib ole32.lib oleaut32.lib uuid.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;"
+				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"

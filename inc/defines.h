@@ -10,11 +10,12 @@ typedef unsigned long    u32;
 typedef unsigned short   u16;
 typedef unsigned char    u8;
 
-typedef __int64		s64;
-typedef int		s32;
-typedef short		s16;
-typedef char		s8;
+typedef __int64     s64;
+typedef int         s32;
+typedef short       s16;
+typedef char        s8;
 typedef const char  cs8;
+typedef const u8    cu8;
 
 #pragma pack (push, 1)
 
@@ -54,6 +55,7 @@ typedef const char  cs8;
 #define aligned  __declspec(align(32))
 
 #define p8(x)  ((u8*)(x))
+#define pcu8(x) ((cu8*)(x))
 #define p16(x) ((u16*)(x))
 #define p32(x) ((u32*)(x))
 #define p64(x) ((u64*)(x))
@@ -131,13 +133,13 @@ void debug_out(char *format, ...);
 
 /* define memcpy for 64 bit aligned blocks */
 #ifdef _M_IX86
- #define fastcpy(a,b,c) __movsd((ULONG*)(a), (ULONG*)(b), (size_t)(c) / 4)
+ #define fastcpy(a,b,c) __movsd(p32(a), p32(b), (size_t)(c) / 4)
 #else
- #define fastcpy(a,b,c) __movsq((UCHAR*)(a), (UCHAR*)(b), (size_t)(c) / 8)
+ #define fastcpy(a,b,c) __movsq(p8(a), p8(b), (size_t)(c) / 8)
 #endif
 
-#define memcpy(a,b,c) __movsb((UCHAR*)(a), (const UCHAR*)(b), (size_t)(c))
-#define memset(a,b,c) __stosb((UCHAR*)(a),(UCHAR)(b),(size_t)(c))
+#define memcpy(a,b,c) __movsb(p8(a), pcu8(b), (size_t)(c))
+#define memset(a,b,c) __stosb(p8(a),(u8)(b),(size_t)(c))
 
 #define lock_inc(x)             ( _InterlockedIncrement(x) )
 #define lock_dec(x)             ( _InterlockedDecrement(x) )

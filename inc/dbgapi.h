@@ -1,5 +1,6 @@
 #define DBGAPI_API __declspec(dllexport) 
 
+#include "pdbparser.h"
 #include "dbg_def.h"
 #include "dbgconst.h"
 
@@ -298,12 +299,14 @@ typedef
 uintptr_t (CALLBACK *dbg_sym_get)(
         int  sym_type,
         const char *sym_name,
-        const char *sym_subname
+        const char *sym_subname,
+        pdb::pdb_parser& pdb
         );
 
 DBGAPI_API
 int dbg_initialize_api(
         u_long      access_key,
+        const wchar_t* pdb_path,
         dbg_sym_get sym_callback
         );
 
