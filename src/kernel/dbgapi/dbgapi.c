@@ -39,6 +39,8 @@ static struct {
     { SYM_NTAPI_NUM,     "ZwTerminateThread",       NULL },
     { SYM_OFFSET,        "_NtTerminateProcess@8",   NULL },
     { SYM_OFFSET,        "_NtResumeThread@8",       NULL },
+    { SYM_OFFSET,        "_NtCreateThread@32",      NULL },
+    { SYM_OFFSET,        "_NtTerminateThread@8",    NULL },
     { SYM_OFFSET,        "_KiDispatchException@20", NULL },
     { SYM_STRUCT_OFFSET, "_ETHREAD",                "ThreadListEntry" }
 };

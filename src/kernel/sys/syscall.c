@@ -23,12 +23,13 @@
 #include "syscall.h"
 #include "regio.h"
 #include "extdef.h"
-#include "sdt_hook.h"
+#include "code_hook.h"
 #include "misc.h"
 #include "driver.h"
 #include "debug.h"
 
 static PZWTERMINATEPROCESS old_zw_term_proc;
+static PZWTERMINATEPROCESS old_nt_term_proc;
 static u32                 sc_key; /* syscall access key */
 
 static scproc syscall_table[] = {
@@ -125,29 +126,122 @@ NTSTATUS
 	return status;
 }
 
+static
+NTSTATUS
+new_nt_term_proc(
+				 HANDLE   h_process,
+				 NTSTATUS exit_status
+				 )
+{
+	NTSTATUS status;
+	buf_lock in_lock;
+	buf_lock out_lock;	
+	syscall  call;
+	
+	if ( (ExGetPreviousMode() == UserMode) && (exit_status == sc_key) ) 
+	{
+		status = STATUS_UNSUCCESSFUL;
+		in_lock.data = NULL; out_lock.data = NULL;
+		
+		do
+		{
+			__try
+			{
+				ProbeForRead(h_process, sizeof(syscall), 1);
+				
+				/* capture syscall data */
+				fastcpy(&call, h_process, sizeof(syscall));
+			}
+			__except(EXCEPTION_EXECUTE_HANDLER) 
+			{
+				status = GetExceptionCode();
+				break;			
+			}
+			
+			if ( (call.number   >= SC_MAX)   || 
+				(call.in_size  > SC_DAT_LIMIT) ||
+				(call.out_size > SC_DAT_LIMIT) ) 
+			{				
+				break;
+			}
+			
+			/* lock syscall buffers */
+			if (call.in_data != NULL) 
+			{
+				if (dbg_lock_um_buff(&in_lock, call.in_data, call.in_size) == 0) {
+					break;
+				}
+				
+				call.in_data = in_lock.data;
+			}
+			
+			if (call.out_data != NULL)
+			{
+				if (dbg_lock_um_buff(&out_lock, call.out_data, call.out_size) == 0) {
+					break;
+				}
+				
+				call.out_data = out_lock.data;
+			}
+			
+			/* execute syscall handler */
+			if (syscall_table[call.number](&call) != 0) {
+				status = STATUS_SUCCESS;
+			}
+		} while (0);
+		
+		if (in_lock.data != NULL) {
+			dbg_unlock_um_buff(&in_lock);
+		}
+		
+		if (out_lock.data != NULL) {
+			dbg_unlock_um_buff(&out_lock);
+		}
+	} else 
+	{
+		status = old_nt_term_proc(
+								  h_process, exit_status
+								  );
+	}
+	
+	return status;
+}
 
 int init_syscall(HANDLE h_key)
 {
-	u32 num;
+	u32 offset;
 	int succs = 0;
 
 	do
 	{
-		/* get index of ZwTerminateProcess */
-		if (reg_query_val(h_key, L"sym_ZwTerminateProcess", &num, sizeof(num)) == 0) {
-			break;
-		}
+//		/* get index of ZwTerminateProcess */
+//		if (reg_query_val(h_key, L"sym_ZwTerminateProcess", &num, sizeof(num)) == 0) {
+//			break;
+//		}
+//
+//		/* get syscall key */
+//		if (reg_query_val(h_key, L"sc_key", &sc_key, sizeof(sc_key)) == 0) {
+//			break;
+//		}
+//
+//		set_sdt_hook(
+//			num, new_zw_term_proc, &old_zw_term_proc
+//			);
+//
+//		DbgMsg("num %d, sc_key %x\n", num, sc_key);
 
 		/* get syscall key */
 		if (reg_query_val(h_key, L"sc_key", &sc_key, sizeof(sc_key)) == 0) {
 			break;
 		}
-
-		set_sdt_hook(
-			num, new_zw_term_proc, &old_zw_term_proc
-			);
-
-		DbgMsg("num %d, sc_key %x\n", num, sc_key);
+		
+		if (reg_query_val(h_key, L"sym__NtTerminateProcess@8", &offset, sizeof(offset)) == 0) {
+			break;
+		}
+		if ( set_hook(addof(ntkrn_base, offset), new_nt_term_proc, ppv(&old_nt_term_proc)) == 0 ){
+			DbgMsg("ERROR: hot patch failed!");			
+			break;
+		}
 
 		succs = 1;
 	} while (0);

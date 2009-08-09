@@ -33,9 +33,9 @@
 
 static PZWTERMINATEPROCESS  NtTerminateProcess;
 static PZWRESUMETHREAD      NtResumeThread;
-static PZWTERMINATEPROCESS  OldZwTerminateProcess;
-static PZWCREATETHREAD      OldZwCreateThread;
-static PZWTERMINATETHREAD   OldZwTerminateThread;
+static PZWTERMINATEPROCESS	OldNtTerminateProcess;
+static PZWCREATETHREAD      OldNtCreateThread;
+static PZWTERMINATETHREAD   OldNtTerminateThread;
 static PKIDISPATCHEXCEPTION OldKiDispatchException;
 static u32                  thread_enth_offs;
 
@@ -262,41 +262,41 @@ int dbg_get_message(syscall *data)
 
 static
 NTSTATUS
-  NewZwTerminateProcess(
-    HANDLE   h_process,
-    NTSTATUS exit_status
-    )
+NewNtTerminateProcess(
+					  HANDLE   h_process,
+					  NTSTATUS exit_status
+					  )
 {
 	NTSTATUS  status;
 	PEPROCESS process;
 	HANDLE    h_proc;
-
+	
+	DbgMsg("NewNtTerminateProcess\n");
+	
 	if (h_process == NULL) {
 		h_proc = NtCurrentProcess();
 	} else {
 		h_proc = h_process;
 	}
-
+	
 	if (ExGetPreviousMode() == UserMode)
 	{
 		status = ObReferenceObjectByHandle(
-			h_proc, 0x0001, *PsProcessType, UserMode, &process, NULL
-			);
-
+										   h_proc, 0x0001, *PsProcessType, UserMode, &process, NULL
+										   );
+		
 		if (NT_SUCCESS(status))
 		{
 			dbg_process_terminated(
-				process, exit_status
-				);
-
+								   process, exit_status
+								   );
+			
 			ObDereferenceObject(process);
 		}
 	}
-
-	return OldZwTerminateProcess(h_proc, exit_status);
+	
+	return OldNtTerminateProcess(h_proc, exit_status);
 }
-
-
 
 static
 void dbg_delayed_term_event(term_event *t_event)
@@ -384,16 +384,16 @@ void dbg_process_terminated(
 
 static
 NTSTATUS
-  NewZwCreateThread(
-     PHANDLE            ThreadHandle,
-	 ACCESS_MASK        DesiredAccess,
-	 POBJECT_ATTRIBUTES ObjectAttributes,
-	 HANDLE             ProcessHandle,
-	 PCLIENT_ID         ClientId,
-	 PCONTEXT           ThreadContext,
-	 PVOID              UserStack,
-	 BOOLEAN            CreateSuspended
-	 )
+NewNtCreateThread(
+				  PHANDLE            ThreadHandle,
+				  ACCESS_MASK        DesiredAccess,
+				  POBJECT_ATTRIBUTES ObjectAttributes,
+				  HANDLE             ProcessHandle,
+				  PCLIENT_ID         ClientId,
+				  PCONTEXT           ThreadContext,
+				  PVOID              UserStack,
+				  BOOLEAN            CreateSuspended
+				  )
 {
 	THREAD_BASIC_INFORMATION info;
 	PEPROCESS                process = NULL;
@@ -403,13 +403,13 @@ NTSTATUS
 	dbg_msg                  msg;
 	cont_dat                 cont;
 	HANDLE                   h_thread;
-
-	status = OldZwCreateThread(
-		ThreadHandle, DesiredAccess,
-		ObjectAttributes, ProcessHandle,
-		ClientId, ThreadContext, UserStack, TRUE
-		);
-
+	
+	status = OldNtCreateThread(
+							   ThreadHandle, DesiredAccess,
+							   ObjectAttributes, ProcessHandle,
+							   ClientId, ThreadContext, UserStack, TRUE
+							   );
+	
 	if (NT_SUCCESS(status))
 	{
 		do
@@ -421,80 +421,80 @@ NTSTATUS
 				h_thread = NULL;
 				break;
 			}
-
+			
 			statu2 = ObReferenceObjectByHandle(
-				ProcessHandle, 0, *PsProcessType,
-				UserMode, &process, NULL
-				);
-
+											   ProcessHandle, 0, *PsProcessType,
+											   UserMode, &process, NULL
+											   );
+			
 			if (NT_SUCCESS(statu2) == FALSE) {
 				break;
 			}
-
+			
 			if ( (debug = dbg_find_item(NULL, process)) == NULL ) {
 				break;
 			}
-
+			
 			if ( (debug->filter.event_mask & DBG_START_THREAD) == 0 ) {
 				break;
 			}
-
+			
 			zeromem(&info, sizeof(info));
 			zeromem(&msg,  sizeof(msg));
-
+			
 			ZwQueryInformationThread(
-				h_thread, ThreadBasicInformation,
-				&info, sizeof(info), NULL
-				);
-
+									 h_thread, ThreadBasicInformation,
+									 &info, sizeof(info), NULL
+									 );
+			
 			msg.process_id = PsGetCurrentProcessId();
 			msg.thread_id  = PsGetCurrentThreadId();
 			msg.event_code = DBG_START_THREAD;
-
+			
 			__try
 			{
 				msg.thread_start.thread_id = info.ClientId.UniqueThread;
 				msg.thread_start.teb_addr  = info.TebBaseAddress;
-
+				
 				memcpy(
-					&msg.thread_start.initial_context, ThreadContext, sizeof(CONTEXT)
-					);
+					   &msg.thread_start.initial_context, ThreadContext, sizeof(CONTEXT)
+					   );
 			}
 			__except(EXCEPTION_EXECUTE_HANDLER) {
 				break;
 			}
-
+			
 			/* send debug event and wait replay */
 			if (channel_send_recv(debug->chan, &msg, &cont) == 0) {
 				break;
 			}
 		} while (0);
-
+		
 		if (process != NULL) {
 			ObDereferenceObject(process);
 		}
-
+		
 		if (debug != NULL) {
 			dbg_deref_item(debug);
 		}
-
+		
 		if ( (h_thread != NULL) && (CreateSuspended == FALSE) )
 		{
 			NtResumeThread(
-				h_thread, NULL
-				);
+						   h_thread, NULL
+						   );
 		}
 	}
-
+	
 	return status;
 }
 
 static
 NTSTATUS
-  NewZwTerminateThread(
-     HANDLE   ThreadHandle,
-	 NTSTATUS ExitStatus
-	 )
+NewNtTerminateThread(
+					 HANDLE   ThreadHandle,
+					 NTSTATUS ExitStatus
+					 )
 {
 	HANDLE      h_thread;
 	PETHREAD    thread = NULL;
@@ -504,69 +504,69 @@ NTSTATUS
 	dbg_msg     msg;
 	cont_dat    cont;
 	PLIST_ENTRY thr_list;
-
+	
 	if (ThreadHandle == NULL) {
 		h_thread = NtCurrentThread();
 	} else {
 		h_thread = ThreadHandle;
 	}
-
+	
 	do
 	{
 		status = ObReferenceObjectByHandle(
-			h_thread, THREAD_TERMINATE,
-		   *PsThreadType, ExGetPreviousMode(),
-		    &thread, NULL
-			);
-
+										   h_thread, THREAD_TERMINATE,
+										   *PsThreadType, ExGetPreviousMode(),
+										   &thread, NULL
+										   );
+		
 		if (NT_SUCCESS(status) == FALSE) {
 			break;
 		}
-
+		
 		process = IoThreadToProcess(thread);
-
+		
 		if ( (debug = dbg_find_item(NULL, process)) == NULL ) {
 			break;
 		}
-
+		
 		if ( (debug->filter.event_mask & DBG_EXIT_THREAD) == 0 ) {
 			break;
 		}
-
+		
 		msg.process_id = PsGetCurrentProcessId();
 		msg.thread_id  = PsGetCurrentThreadId();
 		msg.event_code = DBG_EXIT_THREAD;
-
+		
 		msg.thread_exit.thread_id = PsGetThreadId(thread);
 		msg.thread_exit.proc_id   = PsGetProcessId(process);
 		msg.thread_exit.exit_code = ExitStatus;
-
+		
 		/* send debug event and wait replay */
 		if (channel_send_recv(debug->chan, &msg, &cont) == 0) {
 			break;
 		}
 	} while (0);
-
+	
 	if (thread != NULL)
 	{
 		/* report for terminate process if last thread terminated */
 		thr_list = addof(thread, thread_enth_offs);
-
+		
 		if (thr_list->Flink->Flink == thr_list)
 		{
 			dbg_process_terminated(
-				process, ExitStatus
-				);
+								   process, ExitStatus
+								   );
 		}
-
+		
 		ObDereferenceObject(thread);
 	}
-
+	
 	if (debug != NULL) {
 		dbg_deref_item(debug);
 	}
-
-	return OldZwTerminateThread(h_thread, ExitStatus);
+	
+	return OldNtTerminateThread(h_thread, ExitStatus);
 }
 
 static
@@ -740,7 +740,7 @@ load_image_notify_routine(
 		msg.dll_load.dll_image_base = ImageInfo->ImageBase;
 		msg.dll_load.dll_image_size = ImageInfo->ImageSize;
 		
-		memset(&msg.dll_load.dll_name, 0, MAX_PATH * sizeof(WCHAR));
+		zeromem(&msg.dll_load.dll_name, MAX_PATH * sizeof(WCHAR));
 		
 		/* copy full image name */
 		memcpy (
@@ -766,67 +766,53 @@ load_image_notify_routine(
 int init_debug(HANDLE h_key)
 {
 	int succs = 0;
-	u32 offs, idx1;
-	u32 idx2, idx3;
-	u32 offs2;
+	u32 offs;
 
 	do
 	{
-		/* get offset of NtTerminateProcess */
-		if (reg_query_val(h_key, L"sym__NtTerminateProcess@8", &offs, sizeof(offs)) == 0) {
-			break;
-		}
-
-		NtTerminateProcess = addof(ntkrn_base, offs);
-
-		/* get offset of NtNtResumeThread */
-		if (reg_query_val(h_key, L"sym__NtResumeThread@8", &offs, sizeof(offs)) == 0) {
-			break;
-		}
-
-		NtResumeThread = addof(ntkrn_base, offs);
-
-		/* get index of ZwTerminateProcess */
-		if (reg_query_val(h_key, L"sym_ZwTerminateProcess", &idx1, sizeof(idx1)) == 0) {
-			break;
-		}
-
-		/* get index of ZwCreateThread */
-		if (reg_query_val(h_key, L"sym_ZwCreateThread", &idx2, sizeof(idx2)) == 0) {
-			break;
-		}
-
-		/* get index of ZwTerminateThread */
-		if (reg_query_val(h_key, L"sym_ZwTerminateThread", &idx3, sizeof(idx3)) == 0) {
-			break;
-		}
-
-		/* get offset of ThreadListEntry in _ETHREAD */
 		if (reg_query_val(h_key, L"sym__ETHREAD.ThreadListEntry",
-			&thread_enth_offs, sizeof(thread_enth_offs)) == 0) {
+						  &thread_enth_offs, sizeof(thread_enth_offs)) == 0) {
+			break;
+		}
+		
+		
+		if (reg_query_val(h_key, L"sym__NtResumeThread@8", &offs, sizeof(offs)) == 0)
+			break;
+		NtResumeThread = addof(ntkrn_base, offs);
+		
+	
+		if (reg_query_val(h_key, L"sym__NtTerminateProcess@8", &offs, sizeof(offs)) == 0)
+			break;
+		NtTerminateProcess = addof(ntkrn_base, offs);
+		if ( set_hook(NtTerminateProcess, NewNtTerminateProcess, ppv(&OldNtTerminateProcess)) == 0 ){
+			DbgMsg("ERROR: hot patch failed!");			
+			break;
+		}
+		
+		
+		if (reg_query_val(h_key, L"sym__NtTerminateThread@8", &offs, sizeof(offs)) == 0) 
+			break;
+		if ( set_hook(addof(ntkrn_base, offs), NewNtTerminateThread, ppv(&OldNtTerminateThread)) == 0 ){
+			DbgMsg("ERROR: hot patch failed!");			
+			break;
+		}
+		
+		
+		if (reg_query_val(h_key, L"sym__NtCreateThread@32", &offs, sizeof(offs)) == 0) 
+			break;
+		if ( set_hook(addof(ntkrn_base, offs), NewNtCreateThread, ppv(&OldNtCreateThread)) == 0 ){
+			DbgMsg("ERROR: hot patch failed!");			
 			break;
 		}
 
-		/* get offset of _KiDispatchException@20 */
-		if (reg_query_val(h_key, L"sym__KiDispatchException@20", &offs2, sizeof(offs2)) == 0) {
+
+		if (reg_query_val(h_key, L"sym__KiDispatchException@20", &offs, sizeof(offs)) == 0) {
 			break;
 		}
-
-		set_sdt_hook(
-			idx1, NewZwTerminateProcess, &OldZwTerminateProcess
-			);
-
-		set_sdt_hook(
-			idx2, NewZwCreateThread, &OldZwCreateThread
-			);
-
-		set_sdt_hook(
-			idx3, NewZwTerminateThread, &OldZwTerminateThread
-			);
-
-		OldKiDispatchException = hook_code(
-			addof(ntkrn_base, offs2), NewKiDispatchException
-			);
+		if ( set_hook(addof(ntkrn_base, offs), NewKiDispatchException, ppv(&OldKiDispatchException)) == 0 ){
+			DbgMsg("ERROR: hot patch failed!");			
+			break;
+		}
 		
 		PsSetLoadImageNotifyRoutine(&load_image_notify_routine);
 

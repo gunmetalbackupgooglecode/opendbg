@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 	try {
 		do
 		{
-			if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) == 0) {
+			if (dbg_initialize_api(0x1234, L"ntkrnlpa.pdb", (dbg_sym_get)get_symbols_callback) == 0) {
 				printf("dbgapi initialization error\n");
 				break;
 			}
