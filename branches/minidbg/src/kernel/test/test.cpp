@@ -172,12 +172,12 @@ int main(int argc, char* argv[])
 				if (msg.event_code == DBG_LOAD_DLL)
 				{
 					printf("DBG_LOAD_DLL %ws adr 0x%p sz 0x%x in %x:%x\n",
-							 msg.dll_load.dll_name,
-							 msg.dll_load.dll_image_base,
-							 msg.dll_load.dll_image_size,
-							 msg.thread_id,
-							 msg.process_id
-							 );
+							msg.dll_load.dll_name,
+							msg.dll_load.dll_image_base,
+							msg.dll_load.dll_image_size,
+							msg.thread_id,
+							msg.process_id
+							);
 					
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
