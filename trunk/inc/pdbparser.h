@@ -15,7 +15,7 @@
 
 #include <map>
 
-#include "dia2.h"
+#include <dia2.h>
 
 typedef unsigned long ulong;
 
