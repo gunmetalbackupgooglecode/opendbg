@@ -250,9 +250,13 @@ int dbg_attach_debugger(
 {
     int succs = 0;
 
-    if (dbg_syscall(SC_DBG_ATTACH, &proc_id, sizeof(proc_id), NULL, 0) != 0) {
+    
+    if (DebugActiveProcess((ulong)proc_id))
         succs = 1;
-    }
+
+    //if (dbg_syscall(SC_DBG_ATTACH, &proc_id, sizeof(proc_id), NULL, 0) != 0) {
+    //    succs = 1;
+    //}
 
     return succs;
 }
@@ -266,9 +270,68 @@ int dbg_get_msg_event(
 {
     int succs = 0;
 
-    if (dbg_syscall(SC_DBG_GET_MSG, &proc_id, sizeof(proc_id), msg, sizeof(dbg_msg)) != 0) {
+    DEBUG_EVENT dbg_event;
+
+    if (WaitForDebugEvent(&dbg_event, INFINITE))
+    {
+        msg->process_id   = (HANDLE)dbg_event.dwProcessId;
+        msg->thread_id    = (HANDLE)dbg_event.dwThreadId;
+        
+        switch (dbg_event.dwDebugEventCode)
+        {
+            case EXCEPTION_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_EXCEPTION;
+                msg->exception.first_chance  = (bool)dbg_event.u.Exception.dwFirstChance;
+                msg->exception.except_record = dbg_event.u.Exception.ExceptionRecord;
+                break;
+            }
+
+            case EXIT_PROCESS_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_TERMINATED;
+                msg->terminated.exit_code = dbg_event.u.ExitProcess.dwExitCode;
+                msg->terminated.proc_id   = (HANDLE)dbg_event.dwProcessId;
+                break;
+            }
+
+            case CREATE_THREAD_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_START_THREAD;
+                GetThreadContext(dbg_event.u.CreateThread.hThread, &msg->thread_start.initial_context);
+                msg->thread_start.thread_id = (HANDLE)dbg_event.dwThreadId;
+                msg->thread_start.teb_addr  = (HANDLE)dbg_event.u.CreateThread.lpThreadLocalBase;
+                break;
+            }
+
+            case EXIT_THREAD_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_EXIT_THREAD;
+                msg->thread_exit.exit_code = dbg_event.u.ExitThread.dwExitCode;
+                msg->thread_exit.proc_id   = (HANDLE)dbg_event.dwProcessId;
+                msg->thread_exit.thread_id = (HANDLE)dbg_event.dwThreadId;
+                break;
+            }
+
+            case LOAD_DLL_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_LOAD_DLL;
+                ulong dwImageBase = (ulong)dbg_event.u.LoadDll.lpBaseOfDll;
+                msg->dll_load.dll_image_base = dbg_event.u.LoadDll.lpBaseOfDll;
+                PIMAGE_NT_HEADERS32 pnt = (PIMAGE_NT_HEADERS32)(dwImageBase+((PIMAGE_DOS_HEADER)dwImageBase)->e_lfanew);
+                msg->dll_load.dll_image_size = pnt->OptionalHeader.SizeOfImage;
+                if (dbg_event.u.LoadDll.fUnicode)
+                    wcsncpy(msg->dll_load.dll_name, (wchar_t*)&dbg_event.u.LoadDll.lpImageName, MAX_PATH);
+                break;
+            }
+        }
+
         succs = 1;
     }
+
+    //if (dbg_syscall(SC_DBG_GET_MSG, &proc_id, sizeof(proc_id), msg, sizeof(dbg_msg)) != 0) {
+    //    succs = 1;
+    //}
 
     return succs;
 }
@@ -308,20 +371,20 @@ int dbg_set_filter(
        event_filt *filter
        )
 {
-    set_filter_data set_data;
+    //set_filter_data set_data;
     int             succs = 0;
 
-    set_data.process = proc_id;
+    //set_data.process = proc_id;
 
-    memcpy(
-        &set_data.filter, filter, sizeof(event_filt)
-        );
+    //memcpy(
+    //    &set_data.filter, filter, sizeof(event_filt)
+    //    );
 
-    if (dbg_syscall(SC_DBG_SET_FILTER, &set_data, sizeof(set_data), NULL, 0) != 0) {
-        succs = 1;
-    }
+    //if (dbg_syscall(SC_DBG_SET_FILTER, &set_data, sizeof(set_data), NULL, 0) != 0) {
+    //    succs = 1;
+    //}
 
-    return succs;
+    return succs = 1;
 }
 
 /* some Win32 API stubs */
@@ -472,18 +535,18 @@ int dbg_initialize_api(
 
     strcpy(p+1, driver_name);
 
-    if (h_svc = dbg_install_sc(drv_path, driver_name))
-    {
-        if (dbg_build_start_params(driver_name, acc_key, pdb_path, sym_callback) != 0)
-        {
-            succs = StartService(h_svc, 0, NULL);
-        }
+    //if (h_svc = dbg_install_sc(drv_path, driver_name))
+    //{
+    //    if (dbg_build_start_params(driver_name, acc_key, pdb_path, sym_callback) != 0)
+    //    {
+    //        succs = StartService(h_svc, 0, NULL);
+    //    }
 
-        DeleteService(h_svc);
-        CloseServiceHandle(h_svc);
-    }
+    //    DeleteService(h_svc);
+    //    CloseServiceHandle(h_svc);
+    //}
 
-    return succs;
+    return succs = 1;
 }
 
 static

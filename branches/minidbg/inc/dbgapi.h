@@ -1,8 +1,13 @@
+#ifndef DBGAPI_H__
+#define DBGAPI_H__
+
 #define DBGAPI_API __declspec(dllexport) 
 
 #include "pdbparser.h"
 #include "dbg_def.h"
 #include "dbgconst.h"
+
+#pragma warning(disable: 4200)
 
 typedef struct _OPT_DATA
 {
@@ -275,7 +280,6 @@ typedef struct _DBG_CONTEXT
 #define DBG_CONTINUE_CALL 64
 #define DBG_RDTSC         128
 
-
 #define RES_NOT_HANDLED   0
 #define RES_CONTINUE      1
 #define RES_CORRECT_FRAME 2
@@ -473,3 +477,6 @@ int dbg_hook_page(
         IN PVOID page_addr,
         IN PVOID code_page
         );
+
+
+#endif // DBGAPI_H__

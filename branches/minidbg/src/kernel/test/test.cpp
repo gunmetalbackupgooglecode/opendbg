@@ -22,7 +22,7 @@
 #include <stdio.h>
 
 #include "test.h"
-#include "dbgapi.h"
+
 
 // modified version for xp sp3
 static uintptr_t
@@ -90,11 +90,12 @@ int main(int argc, char* argv[])
 				printf("dbgapi initialization error\n");
 				break;
 			}
+			trc::tracer t;
 
 			printf("dbgapi initialized\n");
 			printf("dbgapi version as %d\n", dbg_drv_version());
 
-			if ( (pid = dbg_create_process(NULL, "\"C:\\Windows\\system32\\calc.exe\"", 0)) == NULL) {
+			if ( (pid = dbg_create_process(NULL, "C:\\Windows\\system32\\calc.exe", 0)) == NULL) {
 				printf("process not started\n");
 				break;
 			}
@@ -132,7 +133,7 @@ int main(int argc, char* argv[])
 						msg.process_id
 						);
 
-					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
 				if (msg.event_code == DBG_START_THREAD)
@@ -143,7 +144,7 @@ int main(int argc, char* argv[])
 						msg.thread_start.teb_addr
 						);
 
-					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
 				if (msg.event_code == DBG_EXIT_THREAD)
@@ -154,7 +155,7 @@ int main(int argc, char* argv[])
 						msg.process_id
 						);
 
-					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
 				if (msg.event_code == DBG_EXCEPTION)
@@ -165,7 +166,7 @@ int main(int argc, char* argv[])
 						msg.process_id
 						);
 
-					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 				
 				if (msg.event_code == DBG_LOAD_DLL)
@@ -178,9 +179,12 @@ int main(int argc, char* argv[])
 							 msg.process_id
 							 );
 					
-					dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
-
+				
+				int res = 0;
+				res = ContinueDebugEvent((ulong)msg.process_id, (ulong)msg.thread_id, DBG_CONTINUE);
+				std::cout << res << "\n";
 			} while (1);
 
 		} while (0);
@@ -188,7 +192,7 @@ int main(int argc, char* argv[])
 		std::cout << e.what() << "\n";
 	}
 
-	Sleep(INFINITE);
+	//Sleep(INFINITE);
 
 	return 0;
 }

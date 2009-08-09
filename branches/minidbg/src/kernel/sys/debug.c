@@ -177,46 +177,46 @@ int dbg_attach_call(syscall *data)
 
 int dbg_set_filter(syscall *data)
 {
-	PEPROCESS        process = NULL;
-	int              succs   = 0;
-	dbg_item        *debug   = NULL;
-	set_filter_data *filter  = data->in_data;
-	NTSTATUS         status;
+	//PEPROCESS        process = NULL;
+	//int              succs   = 0;
+	//dbg_item        *debug   = NULL;
+	//set_filter_data *filter  = data->in_data;
+	//NTSTATUS         status;
 
-	do
-	{
-		if (data->in_size != sizeof(set_filter_data)) {
-			break;
-		}
+	//do
+	//{
+	//	if (data->in_size != sizeof(set_filter_data)) {
+	//		break;
+	//	}
 
-		status = PsLookupProcessByProcessId(
-			        filter->process, &process
-					);
+	//	status = PsLookupProcessByProcessId(
+	//		        filter->process, &process
+	//				);
 
-		if (NT_SUCCESS(status) == FALSE) {
-			break;
-		}
+	//	if (NT_SUCCESS(status) == FALSE) {
+	//		break;
+	//	}
 
-		if ( (debug = dbg_find_item(IoGetCurrentProcess(), process)) == NULL ) {
-			break;
-		}
+	//	if ( (debug = dbg_find_item(IoGetCurrentProcess(), process)) == NULL ) {
+	//		break;
+	//	}
 
-		memcpy(
-			&debug->filter, &filter->filter, sizeof(event_filt)
-			);
+	//	memcpy(
+	//		&debug->filter, &filter->filter, sizeof(event_filt)
+	//		);
 
-		succs = 1;
-	} while (0);
+	//	succs = 1;
+	//} while (0);
 
-	if (debug != NULL) {
-		dbg_deref_item(debug);
-	}
+	//if (debug != NULL) {
+	//	dbg_deref_item(debug);
+	//}
 
-	if (process != NULL) {
-		ObDereferenceObject(process);
-	}
+	//if (process != NULL) {
+	//	ObDereferenceObject(process);
+	//}
 
-	return succs;
+	return succs = 1;
 }
 
 int dbg_get_message(syscall *data)
