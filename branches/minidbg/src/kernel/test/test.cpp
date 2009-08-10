@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 	try {
 		do
 		{
+
 			if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) == 0) {
 				printf("dbgapi initialization error\n");
 				break;
@@ -95,7 +96,7 @@ int main(int argc, char* argv[])
 			printf("dbgapi initialized\n");
 			printf("dbgapi version as %d\n", dbg_drv_version());
 
-			if ( (pid = dbg_create_process(NULL, "C:\\Windows\\system32\\calc.exe", 0)) == NULL) {
+			if ( (pid = dbg_create_process(NULL, "C:\\Windows\\system32\\calc.exe", CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL) {
 				printf("process not started\n");
 				break;
 			}
@@ -121,6 +122,7 @@ int main(int argc, char* argv[])
 
 			do
 			{
+				ulong continue_status = DBG_CONTINUE;
 				if (dbg_get_msg_event(NULL, pid, &msg) == 0) {
 					printf("get debug message error\n");
 					break;
@@ -133,6 +135,7 @@ int main(int argc, char* argv[])
 						msg.process_id
 						);
 
+					continue_status = DBG_CONTINUE;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
@@ -144,6 +147,7 @@ int main(int argc, char* argv[])
 						msg.thread_start.teb_addr
 						);
 
+					continue_status = DBG_CONTINUE;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
@@ -155,6 +159,7 @@ int main(int argc, char* argv[])
 						msg.process_id
 						);
 
+					continue_status = DBG_CONTINUE;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
@@ -166,6 +171,7 @@ int main(int argc, char* argv[])
 						msg.process_id
 						);
 
+					continue_status = DBG_EXCEPTION_NOT_HANDLED;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 				
@@ -178,13 +184,13 @@ int main(int argc, char* argv[])
 							msg.thread_id,
 							msg.process_id
 							);
-					
+
+					continue_status = DBG_CONTINUE;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 				
-				int res = 0;
-				res = ContinueDebugEvent((ulong)msg.process_id, (ulong)msg.thread_id, DBG_CONTINUE);
-				std::cout << res << "\n";
+				if (!ContinueDebugEvent((ulong)msg.process_id, (ulong)msg.thread_id, continue_status))
+					break;
 			} while (1);
 
 		} while (0);

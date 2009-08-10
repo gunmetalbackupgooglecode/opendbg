@@ -250,7 +250,7 @@ int dbg_attach_debugger(
 {
     int succs = 0;
 
-    if (DebugActiveProcess((ulong)proc_id))
+    //if (DebugActiveProcess((ulong)proc_id))
         succs = 1;
 
     //if (dbg_syscall(SC_DBG_ATTACH, &proc_id, sizeof(proc_id), NULL, 0) != 0) {
@@ -320,21 +320,19 @@ int dbg_get_msg_event(
                 msg->event_code = DBG_LOAD_DLL;
                 ulong dwImageBase = (ulong)dbg_event.u.LoadDll.lpBaseOfDll;
                 msg->dll_load.dll_image_base = dbg_event.u.LoadDll.lpBaseOfDll;
-                
-                PIMAGE_DOS_HEADER dos_header        = (PIMAGE_DOS_HEADER)dwImageBase;
-                PIMAGE_NT_HEADERS pe_header         = (PIMAGE_NT_HEADERS)(dwImageBase + dos_header->e_lfanew);
-                PIMAGE_EXPORT_DIRECTORY export_dir  = (PIMAGE_EXPORT_DIRECTORY)(dwImageBase + pe_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
+                msg->dll_load.dll_image_size = dbg_event.u.LoadDll.nDebugInfoSize;
+                if (dbg_event.u.LoadDll.fUnicode)
+                {
+                    WCHAR filename[MAX_PATH];
 
-                char* name = (char*)(dwImageBase + export_dir->Name);
-                msg->dll_load.dll_image_size = pe_header->OptionalHeader.SizeOfImage;
-                
-                wchar_t name_w[255];
-                MultiByteToWideChar(
-                    CP_ACP, 0, name, strlen(name)+1,
-                    name_w, sizeof(name_w)/sizeof(name_w[0])
-                );
+                    ReadProcessMemory(h_proc, dbg_event.u.LoadDll.lpImageName, &dbg_event.u.LoadDll.lpImageName, sizeof(dbg_event.u.LoadDll.lpImageName), 0);
+                    if (dbg_event.u.LoadDll.lpImageName)
+                    {
+                        ReadProcessMemory(h_proc, dbg_event.u.LoadDll.lpImageName, filename, sizeof(filename), 0);
+                        wcsncpy(msg->dll_load.dll_name, filename, sizeof(filename));
+                    }
+                }
 
-                wcsncpy(msg->dll_load.dll_name, name_w, MAX_PATH);
                 break;
             }
         }
