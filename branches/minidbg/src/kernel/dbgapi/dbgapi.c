@@ -206,10 +206,13 @@ static
 HANDLE dbg_open_process(HANDLE pid)
 {
     HANDLE h_proc;
-
-    if (dbg_syscall(SC_OPEN_PROCESS, &pid, sizeof(pid), &h_proc, sizeof(h_proc)) == 0) {
-        h_proc = NULL;
+    if ( (h_proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, (u32)pid)) == NULL) {
+        return 0;
     }
+
+    //if (dbg_syscall(SC_OPEN_PROCESS, &pid, sizeof(pid), &h_proc, sizeof(h_proc)) == 0) {
+    //    h_proc = NULL;
+    //}
 
     return h_proc;
 }
@@ -230,9 +233,10 @@ int dbg_terminate_process(
             break;
         }
 
-        if (dbg_syscall(SC_TERMINATE_PROCESS, &h_proc, sizeof(h_proc), NULL, 0) != 0) {
-            succs = 1;
-        }
+        TerminateProcess(h_proc, 0);
+        //if (dbg_syscall(SC_TERMINATE_PROCESS, &h_proc, sizeof(h_proc), NULL, 0) != 0) {
+        //    succs = 1;
+        //}
     } while (0);
 
     if (h_proc != NULL) {
@@ -250,7 +254,7 @@ int dbg_attach_debugger(
 {
     int succs = 0;
 
-    //if (DebugActiveProcess((ulong)proc_id))
+    //if (DebugActiveProcess((u32)proc_id))
         succs = 1;
 
     //if (dbg_syscall(SC_DBG_ATTACH, &proc_id, sizeof(proc_id), NULL, 0) != 0) {
@@ -275,10 +279,7 @@ int dbg_get_msg_event(
     {
         msg->process_id   = (HANDLE)dbg_event.dwProcessId;
         msg->thread_id    = (HANDLE)dbg_event.dwThreadId;
-        
-        HANDLE h_proc     = OpenProcess(PROCESS_ALL_ACCESS, FALSE, (ulong)msg->process_id);
-        HANDLE h_thread   = OpenThread(THREAD_ALL_ACCESS, FALSE, (ulong)msg->thread_id);
-        
+
         switch (dbg_event.dwDebugEventCode)
         {
             case EXCEPTION_DEBUG_EVENT:
@@ -318,17 +319,17 @@ int dbg_get_msg_event(
             case LOAD_DLL_DEBUG_EVENT:
             {
                 msg->event_code = DBG_LOAD_DLL;
-                ulong dwImageBase = (ulong)dbg_event.u.LoadDll.lpBaseOfDll;
+                u32 dwImageBase = (u32)dbg_event.u.LoadDll.lpBaseOfDll;
                 msg->dll_load.dll_image_base = dbg_event.u.LoadDll.lpBaseOfDll;
                 msg->dll_load.dll_image_size = dbg_event.u.LoadDll.nDebugInfoSize;
                 if (dbg_event.u.LoadDll.fUnicode)
                 {
                     WCHAR filename[MAX_PATH];
 
-                    ReadProcessMemory(h_proc, dbg_event.u.LoadDll.lpImageName, &dbg_event.u.LoadDll.lpImageName, sizeof(dbg_event.u.LoadDll.lpImageName), 0);
+                    dbg_read_memory(0, (HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, &dbg_event.u.LoadDll.lpImageName, sizeof(dbg_event.u.LoadDll.lpImageName), 0);
                     if (dbg_event.u.LoadDll.lpImageName)
                     {
-                        ReadProcessMemory(h_proc, dbg_event.u.LoadDll.lpImageName, filename, sizeof(filename), 0);
+                        dbg_read_memory(0, (HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, filename, sizeof(filename), 0);
                         wcsncpy(msg->dll_load.dll_name, filename, sizeof(filename));
                     }
                 }
@@ -382,14 +383,14 @@ int dbg_set_filter(
        event_filt *filter
        )
 {
-    //set_filter_data set_data;
+    set_filter_data set_data;
     int             succs = 0;
 
-    //set_data.process = proc_id;
+    set_data.process = proc_id;
 
-    //memcpy(
-    //    &set_data.filter, filter, sizeof(event_filt)
-    //    );
+    memcpy(
+        &set_data.filter, filter, sizeof(event_filt)
+        );
 
     //if (dbg_syscall(SC_DBG_SET_FILTER, &set_data, sizeof(set_data), NULL, 0) != 0) {
     //    succs = 1;
@@ -682,18 +683,24 @@ void dbg_close_thread(
         IN PVOID dbg_thread
         )
 {
+    CloseHandle((HANDLE)dbg_thread);
 }
 
 /*!
     Stupid thunk
 */
 DBGAPI_API
-PVOID dbg_open_thread(
+HANDLE dbg_open_thread(
         IN PVOID context,
         IN ULONG thread_id
         )
 {
-    return INVALID_HANDLE_VALUE;
+    HANDLE h_thread;
+    if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL) {
+       return 0;
+    }
+
+    return h_thread;
 }
 
 /*!

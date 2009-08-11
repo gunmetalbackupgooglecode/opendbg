@@ -91,7 +91,6 @@ int main(int argc, char* argv[])
 				printf("dbgapi initialization error\n");
 				break;
 			}
-			trc::tracer t;
 
 			printf("dbgapi initialized\n");
 			printf("dbgapi version as %d\n", dbg_drv_version());
@@ -122,7 +121,7 @@ int main(int argc, char* argv[])
 
 			do
 			{
-				ulong continue_status = DBG_CONTINUE;
+				u32 continue_status = DBG_CONTINUE;
 				if (dbg_get_msg_event(NULL, pid, &msg) == 0) {
 					printf("get debug message error\n");
 					break;
@@ -170,7 +169,6 @@ int main(int argc, char* argv[])
 						msg.thread_id,
 						msg.process_id
 						);
-
 					continue_status = DBG_EXCEPTION_NOT_HANDLED;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
@@ -189,7 +187,7 @@ int main(int argc, char* argv[])
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 				
-				if (!ContinueDebugEvent((ulong)msg.process_id, (ulong)msg.thread_id, continue_status))
+				if (!ContinueDebugEvent((u32)msg.process_id, (u32)msg.thread_id, continue_status))
 					break;
 			} while (1);
 
@@ -197,6 +195,7 @@ int main(int argc, char* argv[])
 	} catch (pdb::pdb_error& e) {
 		std::cout << e.what() << "\n";
 	}
+
 
 	//Sleep(INFINITE);
 

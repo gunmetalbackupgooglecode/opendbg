@@ -434,7 +434,7 @@ void dbg_close_thread(
         );
 
 DBGAPI_API
-PVOID dbg_open_thread(
+HANDLE dbg_open_thread(
         IN PVOID        context,
         IN ULONG        thread_id
         );
