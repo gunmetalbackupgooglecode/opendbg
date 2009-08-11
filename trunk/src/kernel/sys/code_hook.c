@@ -32,17 +32,17 @@ static ULONG dpc_refs;
 static void global_lock_proc(PKDPC dpc, PKDPC *cpu_dpc, void *arg1, void *arg2)
 {
 	_disable();
-	_InterlockedDecrement(&inp_dpcs);
+	lock_dec(&inp_dpcs);
 	
 	while (locked != 0) { 
 		KeStallExecutionProcessor(1);	
 	}
 	_enable();
 	
-	if (_InterlockedDecrement(&dpc_refs) == 0) {
+	if (lock_dec(&dpc_refs) == 0) {
 		ExFreePool(cpu_dpc);
 	}	
-	_InterlockedDecrement(&out_dpcs);
+	lock_dec(&out_dpcs);
 }
 
 KIRQL global_lock()
@@ -100,57 +100,32 @@ int hot_patch(void *src_proc, void *new_proc, void **old_proc)
 	
 	/* check hot patch ability */
 	if ( (p8(src_addr-5)[0] == 0x90 && p32(src_addr-4)[0] == 0x90909090) ||
-		  (p8(src_addr-5)[0] == 0xCC && p32(src_addr-4)[0] == 0xCCCCCCCC) )
+		 (p8(src_addr-5)[0] == 0xCC && p32(src_addr-4)[0] == 0xCCCCCCCC) )
 	{
 		if (p16(src_addr)[0] == 0xFF8B){
 			/* set original proc address */
 			*old_proc = &src_addr[2];
 		} else {
-			u32  cmd_len, flags;
-			u32  all_len  = 0;
-			u8  *opcd, *buf_addr;
+			u32  cmd_len;
+			u8  *opcd;
 			
-			/* if size of first command > 4 byte - hot patch is not working */
-			if (size_of_code(src_addr, &opcd) > 4)
+			/* if size of first command != 2 byte - return */
+			cmd_len = size_of_code(src_addr, &opcd);
+			if ( cmd_len != 2 )
 				return 0;
 			
 			/* alloc buffer */
-			if ( (buf_addr = mem_alloc(32)) == NULL )
+			if ( (dst_addr = mem_alloc(16)) == NULL )
 				return 0;
-			
-			dst_addr = buf_addr;
-			
-			do
-			{
-				cmd_len = size_of_code(src_addr, &opcd);
-				flags   = x_code_flags(src_addr);
-				
-				if (cmd_len == 0 || flags & OP_REL8){
-					mem_free(buf_addr);
-					return 0;
-				}
-				
-				memcpy(dst_addr, src_addr, cmd_len);
-				
-				if (flags & OP_REL32)
-				{
-					if (flags & OP_EXTENDED) {
-						p32(dst_addr+2)[0] += src_addr - dst_addr;
-					} else {
-						p32(dst_addr+1)[0] += src_addr - dst_addr;
-					}
-				}
-				
-				src_addr += cmd_len;
-				dst_addr += cmd_len;
-				all_len  += cmd_len;
-			} while (all_len < 2);
+
+			*old_proc = dst_addr;
+			memcpy(dst_addr, src_addr, cmd_len);
+			dst_addr += cmd_len;
+			src_addr += cmd_len;
 		
 			/* set JMP to original proc */
-			dst_addr[0]            = 0xE9;
-			p32(dst_addr+1)[0]     = src_addr - dst_addr - 5;
+			set_jump(dst_addr,src_addr);
 
-			*old_proc = buf_addr;
 			src_addr = src_proc;
 			dst_addr = new_proc;
 		}
@@ -158,11 +133,10 @@ int hot_patch(void *src_proc, void *new_proc, void **old_proc)
 		cr0 = mem_open();
 		
 		/* set JMP new_proc */
-		p8(src_addr-5)[0] = 0xE9;					
-		p32(src_addr-4)[0] = dst_addr - src_addr;	
+		set_jump(src_addr-5,dst_addr);	
 		
 		/* set JMP SHORT $-5 */
-		lock_xchg(p32(src_addr), (p32(src_addr)[0] & 0xFFFF0000) | 0xF9EB);
+		p16(src_addr)[0] = 0xF9EB;
 		
 		mem_close(cr0);
 		return 1;
@@ -171,7 +145,6 @@ int hot_patch(void *src_proc, void *new_proc, void **old_proc)
 	{
 		/* set original proc address */
 		lock_xchg(p32(old_proc), p32(src_addr-4)[0]);
-		//*old_proc = src_addr + *old_proc;
 		*old_proc = addof(src_addr,(u32)*old_proc);
 		
 		cr0 = mem_open();
@@ -243,8 +216,9 @@ int hook_code(void *src_proc, void *new_proc, void **old_proc)
 	
 	irql = global_lock();
 	cr0 = mem_open();
-	src_addr[0]        = 0xE9;
-	p32(src_addr+1)[0] = dst_addr - src_addr - 5;
+	
+	set_jump(src_addr,dst_addr);
+	
 	mem_close(cr0);
 	global_unlock(irql);
 
