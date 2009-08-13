@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
 {
 	event_filt filter;
 	HANDLE     pid;
-	dbg_msg    msg;
+	dbg_msg    *msg = new dbg_msg;
 
 	printf("dbgapi test tool started\n");
 
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 			printf("dbgapi initialized\n");
 			printf("dbgapi version as %d\n", dbg_drv_version());
 
-			if ( (pid = dbg_create_process(NULL, "C:\\Windows\\system32\\calc.exe", CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL) {
+			if ( (pid = dbg_create_process(NULL, "C:\\Windows\\system32\\notepad.exe", CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL) {
 				printf("process not started\n");
 				break;
 			}
@@ -122,72 +122,87 @@ int main(int argc, char* argv[])
 			do
 			{
 				u32 continue_status = DBG_CONTINUE;
-				if (dbg_get_msg_event(NULL, pid, &msg) == 0) {
+				if (dbg_get_msg_event(NULL, pid, msg) == 0) {
 					printf("get debug message error\n");
 					break;
 				}
 
-				if (msg.event_code == DBG_TERMINATED)
+				if (msg->event_code == DBG_TERMINATED)
 				{
 					printf("DBG_TERMINATED %x by %x\n",
-						msg.terminated.proc_id,
-						msg.process_id
+						msg->terminated.proc_id,
+						msg->process_id
 						);
 
 					continue_status = DBG_CONTINUE;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
-				if (msg.event_code == DBG_START_THREAD)
+				if (msg->event_code == DBG_START_THREAD)
 				{
 					printf("DBG_START_THREAD %x by %x, teb: %x\n",
-						msg.thread_start.thread_id,
-						msg.process_id,
-						msg.thread_start.teb_addr
+						msg->thread_start.thread_id,
+						msg->process_id,
+						msg->thread_start.teb_addr
 						);
 
 					continue_status = DBG_CONTINUE;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
-				if (msg.event_code == DBG_EXIT_THREAD)
+				if (msg->event_code == DBG_EXIT_THREAD)
 				{
 					printf("DBG_EXIT_THREAD %x in %x by %x\n",
-						msg.thread_exit.thread_id,
-						msg.thread_exit.proc_id,
-						msg.process_id
+						msg->thread_exit.thread_id,
+						msg->thread_exit.proc_id,
+						msg->process_id
 						);
 
 					continue_status = DBG_CONTINUE;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
-				if (msg.event_code == DBG_EXCEPTION)
+				if (msg->event_code == DBG_EXCEPTION)
 				{
 					printf("DBG_EXCEPTION %0.8x in %x:%x\n",
-						msg.exception.except_record.ExceptionCode,
-						msg.thread_id,
-						msg.process_id
+						msg->exception.except_record.ExceptionCode,
+						msg->thread_id,
+						msg->process_id
 						);
-					continue_status = DBG_EXCEPTION_NOT_HANDLED;
+
+					switch (msg->exception.except_record.ExceptionCode)
+					{
+						case EXCEPTION_BREAKPOINT :
+						{
+							if ( msg->exception.first_chance )
+								continue_status = DBG_CONTINUE ;
+							else
+								continue_status = DBG_EXCEPTION_NOT_HANDLED ;
+						}
+						break ;
+
+					default:
+						continue_status  = DBG_CONTINUE ;
+						break ;
+					}
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
-				
-				if (msg.event_code == DBG_LOAD_DLL)
+
+				if (msg->event_code == DBG_LOAD_DLL)
 				{
 					printf("DBG_LOAD_DLL %ws adr 0x%p sz 0x%x in %x:%x\n",
-							msg.dll_load.dll_name,
-							msg.dll_load.dll_image_base,
-							msg.dll_load.dll_image_size,
-							msg.thread_id,
-							msg.process_id
+							msg->dll_load.dll_name,
+							msg->dll_load.dll_image_base,
+							msg->dll_load.dll_image_size,
+							msg->thread_id,
+							msg->process_id
 							);
 
 					continue_status = DBG_CONTINUE;
 					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 				
-				if (!ContinueDebugEvent((u32)msg.process_id, (u32)msg.thread_id, continue_status))
+				if (!ContinueDebugEvent((u32)msg->process_id, (u32)msg->thread_id, continue_status))
 					break;
 			} while (1);
 

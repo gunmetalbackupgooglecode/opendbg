@@ -388,9 +388,9 @@ int dbg_set_filter(
 
     set_data.process = proc_id;
 
-    memcpy(
-        &set_data.filter, filter, sizeof(event_filt)
-        );
+    //memcpy(
+    //    &set_data.filter, filter, sizeof(event_filt)
+    //    );
 
     //if (dbg_syscall(SC_DBG_SET_FILTER, &set_data, sizeof(set_data), NULL, 0) != 0) {
     //    succs = 1;
