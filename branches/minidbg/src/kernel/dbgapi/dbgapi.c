@@ -353,7 +353,7 @@ int dbg_get_msg_event(
 }
 
 DBGAPI_API
-int dbg_countinue_event(
+int dbg_continue_event(
         PVOID             remote_id,
         HANDLE            proc_id,
         u32               status,
@@ -566,7 +566,7 @@ int dbg_initialize_api(
 }
 
 static
-void enable_debug_privilegies()
+void enable_debug_privileges()
 {
     HANDLE TTokenHd;
     TOKEN_PRIVILEGES TTokenPvg, rTTokenPvg;
@@ -592,7 +592,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
-            enable_debug_privilegies();
+            enable_debug_privileges();
         break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
