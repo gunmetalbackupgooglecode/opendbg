@@ -5,7 +5,7 @@
 Tools and libraries you need:
  * a compiler (for now, MS Visual Studio 2008 will do)
  * [http://subversion.tigris.org/getting.html#windows Subversion], TortoiseSVN or any other Subversion client
-  # [http://ankhsvn.net/downloads/2.1/ AnkhSVN] Visual Studio Subversion integration _(optional)_
+  * [http://ankhsvn.net/downloads/2.1/ AnkhSVN] Visual Studio Subversion integration _(optional)_
  * [http://www.boost.org/users/download/ Boost]
  * [http://www.microsoft.com/whdc/DevTools/Debugging/default.mspx Debugging Tools for Windows]
  * [http://www.microsoft.com/whdc/DevTools/WDK/WDKpkg.mspx WDK]
