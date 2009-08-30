@@ -1,0 +1,29 @@
+#summary Building instructions
+
+= Introduction =
+
+Tools and libraries you need:
+ * a compiler (for now, MS Visual Studio 2008 will do)
+ * [http://subversion.tigris.org/getting.html#windows Subversion], TortoiseSVN or any other Subversion client
+  # [http://ankhsvn.net/downloads/2.1/ AnkhSVN] Visual Studio Subversion integration _(optional)_
+ * [http://www.boost.org/users/download/ Boost]
+ * [http://www.microsoft.com/whdc/DevTools/Debugging/default.mspx Debugging Tools for Windows]
+ * [http://www.microsoft.com/whdc/DevTools/WDK/WDKpkg.mspx WDK]
+GUI:
+ * [http://www.wxwidgets.org/downloads/ wxWidgets]
+
+= Details =
+
+The following environment variables should be defined:
+||*Variable*||*Example*||
+||BOOST_ROOT||C:\Program Files\Boost||
+||DbgToolsSDK||C:\Program Files\Debugging Tools for Windows (x86)\sdk||
+||WINDDK||C:\WinDDK\7600.16385.0||
+||WXWIN||C:\wxWidgets-2.8.10||
+
+Then open Visual Studio Command Prompt and do the following
+{{{
+$ svn checkout https://opendbg.googlecode.com/svn/branches/minidbg opendbg
+$ devenv /Build Release opendbg\prj\vs90\opendbg.sln
+}}}
+If everything is ok, you are ready to go.
