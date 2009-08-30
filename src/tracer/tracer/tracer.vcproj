@@ -226,10 +226,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\old_ngtracer.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\threads.cpp"
 				>
 			</File>
@@ -248,11 +244,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\inc\dbgutils.h"
+				RelativePath="..\..\..\inc\dbgsym.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\inc\dbgsym.h"
+				RelativePath="..\..\..\inc\dbgutils.h"
 				>
 			</File>
 			<File
