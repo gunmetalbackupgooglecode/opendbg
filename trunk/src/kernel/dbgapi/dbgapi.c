@@ -22,6 +22,10 @@
 #include <stdio.h>
 #include <tlhelp32.h>
 #include <psapi.h>
+// vs2009sp1 memory.h bug workaround
+#if _MSC_FULL_VER == 150030729
+#define _DO_NOT_DECLARE_INTERLOCKED_INTRINSICS_IN_MEMORY
+#endif
 #include <intrin.h>
 #include "dbgapi.h"
 #include "ntdll.h"
