@@ -22,6 +22,10 @@
 #include <stdio.h>
 #include <tlhelp32.h>
 #include <psapi.h>
+// vs2009sp1 memory.h bug workaround
+#if _MSC_FULL_VER == 150030729
+#define _DO_NOT_DECLARE_INTERLOCKED_INTRINSICS_IN_MEMORY
+#endif
 #include <intrin.h>
 #include "dbgapi.h"
 #include "ntdll.h"
@@ -285,7 +289,7 @@ int dbg_get_msg_event(
             case EXCEPTION_DEBUG_EVENT:
             {
                 msg->event_code = DBG_EXCEPTION;
-                msg->exception.first_chance  = (bool)dbg_event.u.Exception.dwFirstChance;
+                msg->exception.first_chance  = (dbg_event.u.Exception.dwFirstChance == 0);
                 msg->exception.except_record = dbg_event.u.Exception.ExceptionRecord;
                 break;
             }
@@ -531,7 +535,7 @@ int dbg_initialize_api(
     char      drv_path[MAX_PATH] = {0};
     char     *p = &drv_path[MAX_PATH];
     int       succs = 0;
-    SC_HANDLE h_svc;
+    //SC_HANDLE h_svc;
 
     acc_key = access_key;
 

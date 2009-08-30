@@ -216,7 +216,8 @@ int dbg_set_filter(syscall *data)
 	//	ObDereferenceObject(process);
 	//}
 
-	return succs = 1;
+	//return succs = 1;
+	return 1;
 }
 
 int dbg_get_message(syscall *data)

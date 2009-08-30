@@ -75,7 +75,11 @@ CALLBACK get_symbols_callback(
 	return 0;
 }
 
-int main(int argc, char* argv[])
+int
+#ifdef _MSC_VER
+__cdecl
+#endif
+main(int argc, char* argv[])
 {
 	event_filt filter;
 	HANDLE     pid;

@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DBGAPI_EXPORTS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
@@ -125,14 +125,14 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
+				Optimization="0"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DBGAPI_EXPORTS;_CRT_SECURE_NO_WARNINGS"
-				ExceptionHandling="0"
+				ExceptionHandling="1"
 				RuntimeLibrary="0"
 				StructMemberAlignment="0"
 				BufferSecurityCheck="false"
@@ -154,7 +154,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="psapi.lib msvcrt.lib ntdll.lib"
+				AdditionalOptions="psapi.lib ntdll.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;;&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
