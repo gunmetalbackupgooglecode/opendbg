@@ -192,7 +192,7 @@ static int dbg_syscall(
 #define SC_DBG_ATTACH         3
 #define SC_DBG_GET_MSG        4
 #define SC_DBG_SET_FILTER     5
-#define SC_DBG_COUNTINUE      6
+#define SC_DBG_continue      6
 
 DBGAPI_API u_long dbg_drv_version()
 {
@@ -373,7 +373,7 @@ int dbg_continue_event(
             );
     }
 
-    if (dbg_syscall(SC_DBG_COUNTINUE, &cont, sizeof(cont), NULL, 0) != 0) {
+    if (dbg_syscall(SC_DBG_continue, &cont, sizeof(cont), NULL, 0) != 0) {
         succs = 1;
     }
 

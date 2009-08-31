@@ -661,7 +661,7 @@ static void
 		);
 }
 
-int dbg_countinue(syscall *data)
+int dbg_continue(syscall *data)
 {
 	cont_dat *msg     = data->in_data;
 	PEPROCESS process = NULL;

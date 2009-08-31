@@ -38,7 +38,7 @@ static scproc syscall_table[] = {
 	dbg_attach_call,       // 0x03
 	dbg_get_message,       // 0x04
 	dbg_set_filter,        // 0x05
-	dbg_countinue          // 0x06
+	dbg_continue          // 0x06
 };
 
 #define SC_MAX       (sizeof(syscall_table)/sizeof(syscall_table[0]))

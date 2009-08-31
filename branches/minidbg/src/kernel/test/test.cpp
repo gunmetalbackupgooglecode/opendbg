@@ -91,7 +91,7 @@ main(int argc, char* argv[])
 		do
 		{
 
-			if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) == 0) {
+			if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) != 1) {
 				printf("dbgapi initialization error\n");
 				break;
 			}
@@ -121,7 +121,7 @@ main(int argc, char* argv[])
 				break;
 			}
 
-			printf("debug events filter setuped\n");
+			printf("debug events filter set up\n");
 
 			do
 			{
@@ -139,7 +139,7 @@ main(int argc, char* argv[])
 						);
 
 					continue_status = DBG_CONTINUE;
-					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
 				if (msg->event_code == DBG_START_THREAD)
@@ -151,7 +151,7 @@ main(int argc, char* argv[])
 						);
 
 					continue_status = DBG_CONTINUE;
-					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
 				if (msg->event_code == DBG_EXIT_THREAD)
@@ -163,7 +163,7 @@ main(int argc, char* argv[])
 						);
 
 					continue_status = DBG_CONTINUE;
-					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
 				if (msg->event_code == DBG_EXCEPTION)
@@ -189,7 +189,7 @@ main(int argc, char* argv[])
 						continue_status  = DBG_CONTINUE ;
 						break ;
 					}
-					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
 				if (msg->event_code == DBG_LOAD_DLL)
@@ -203,7 +203,7 @@ main(int argc, char* argv[])
 							);
 
 					continue_status = DBG_CONTINUE;
-					//dbg_countinue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 				
 				if (!ContinueDebugEvent((u32)msg->process_id, (u32)msg->thread_id, continue_status))
@@ -214,7 +214,6 @@ main(int argc, char* argv[])
 	} catch (pdb::pdb_error& e) {
 		std::cout << e.what() << "\n";
 	}
-
 
 	//Sleep(INFINITE);
 

@@ -2,11 +2,11 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="dbgapi"
-	ProjectGUID="{A383900F-BFF7-4C3C-8B08-360B4D0F1928}"
-	RootNamespace="dbgapi"
+	Name="cli"
+	ProjectGUID="{96CECABD-201C-4E9C-B09B-EB5EF4914DF1}"
+	RootNamespace="cli"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
 		<Platform
@@ -20,9 +20,8 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			CharacterSet="0"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
+			ConfigurationType="1"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -42,17 +41,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DBGAPI_EXPORTS;_CRT_SECURE_NO_WARNINGS"
-				MinimalRebuild="false"
+				AdditionalIncludeDirectories="$(BOOST_ROOT);&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;;&quot;$(SolutionDir)\..\..\src\cli\ext&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
-				CallingConvention="2"
-				CompileAs="2"
+				CallingConvention="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -65,16 +62,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="ntdll.lib psapi.lib ole32.lib oleaut32.lib uuid.lib"
-				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
+				AdditionalDependencies="dbgapi.lib dbghelp.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;;&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
-				GenerateManifest="false"
+				AdditionalLibraryDirectories="$(BOOST_ROOT)\stage\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(TargetName).pdb&quot;"
-				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -97,17 +89,15 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(SolutionDir)..\..\bin\$(ConfigurationName)\dbgapi.dll $(SolutionDir)\$(ConfigurationName)"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			CharacterSet="2"
+			ConfigurationType="1"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -126,23 +116,16 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				InlineFunctionExpansion="2"
+				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DBGAPI_EXPORTS;_CRT_SECURE_NO_WARNINGS"
-				ExceptionHandling="1"
-				RuntimeLibrary="0"
-				StructMemberAlignment="0"
-				BufferSecurityCheck="false"
-				UsePrecompiledHeader="0"
+				AdditionalIncludeDirectories="$(BOOST_ROOT),&quot;$(SolutionDir)../../inc&quot;;;$(SolutionDir)\..\..\src\cli\ext;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
-				CallingConvention="2"
-				CompileAs="2"
+				CallingConvention="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -155,19 +138,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="psapi.lib ntdll.lib"
-				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
+				UseLibraryDependencyInputs="false"
+				AdditionalOptions="dbgapi.lib dbghelp.lib"
+				AdditionalDependencies="dbgapi.lib dbghelp.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;;&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
-				GenerateManifest="false"
+				AdditionalLibraryDirectories="$(BOOST_ROOT)\stage\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(TargetName).pdb&quot;"
-				SubSystem="2"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				LinkTimeCodeGeneration="0"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -190,7 +169,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(SolutionDir)..\..\bin\$(ConfigurationName)\dbgapi.dll $(SolutionDir)\$(ConfigurationName)"
 			/>
 		</Configuration>
 	</Configurations>
@@ -203,8 +181,36 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\dbgapi.c"
+				RelativePath=".\cli.cpp"
 				>
+			</File>
+			<File
+				RelativePath=".\Debugger.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DebuggerCLI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -213,14 +219,36 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\inc\dbgapi.h"
+				RelativePath="..\ext\command_line_interpreter.hpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ntdll.h"
+				RelativePath=".\Debugger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DebuggerCLI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\targetver.h"
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+		</Filter>
+		<File
+			RelativePath=".\ReadMe.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
