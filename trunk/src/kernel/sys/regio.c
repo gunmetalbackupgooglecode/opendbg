@@ -1,7 +1,7 @@
 /*
     *    
-    * Copyright (c) 2008 
-    * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
+	* Copyright (c) 2009
+	* vol4ok <vol4ok@highsecure.ru> PGP key ID - 0x7A1C8BB4A0F34B67
     *
 
     This program is free software: you can redistribute it and/or modify
