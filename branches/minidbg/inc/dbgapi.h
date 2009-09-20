@@ -323,40 +323,34 @@ DBGAPI_API u_long CALLING_CONVENTION dbg_drv_version();
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_terminate_process(
-        IN PVOID  remote_id,
         IN HANDLE proc_id
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_attach_debugger(
-        IN PVOID  remote_id,
         IN HANDLE proc_id
         );
 
 DBGAPI_API
 HANDLE CALLING_CONVENTION dbg_create_process(
-        IN PVOID remote_id,
         IN PCHAR cmd_line,
         IN ULONG create_flags
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_get_msg_event(
-        PVOID    remote_id,
         HANDLE   proc_id, 
         dbg_msg  *msg
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_set_filter(
-        PVOID       remote_id,
         HANDLE      proc_id,
         event_filt  *filter
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_continue_event(
-        PVOID             remote_id,
         HANDLE            proc_id, 
         u32               status,
         PEXCEPTION_RECORD new_record
@@ -364,7 +358,6 @@ int CALLING_CONVENTION dbg_continue_event(
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_read_memory(
-        PVOID       remote_id,
         HANDLE      proc_id,
         PVOID       mem_addr,
         PVOID       loc_buff,
@@ -374,7 +367,6 @@ int CALLING_CONVENTION dbg_read_memory(
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_write_memory(
-        PVOID       remote_id,
         HANDLE      proc_id,
         PVOID       mem_addr,
         PVOID       loc_buff,
@@ -384,14 +376,12 @@ int CALLING_CONVENTION dbg_write_memory(
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_get_context(
-        PVOID       remote_id,
         HANDLE      thread_id,
         PCONTEXT    context
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_set_context(
-        PVOID       remote_id,
         HANDLE      thread_id,
         PCONTEXT    context
         );
@@ -456,7 +446,6 @@ PVOID CALLING_CONVENTION dbg_enum_modules(
 
 DBGAPI_API
 PVOID CALLING_CONVENTION dbg_enum_threads(
-        IN PVOID remote_id,
         IN ULONG process_id
         );
 

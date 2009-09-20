@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "trc_breakpoints.h"
 #include "dbgapi.h"
 
-int breakpoint::set_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type)
+int breakpoint::set_breakpoint (u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type)
 {
 	BYTE buf;
 	u32 readed;
@@ -31,7 +31,7 @@ int breakpoint::set_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u32
 	switch (brk_type)
 	{
 	case BRK_TYPE_INT3:
-		if (!dbg_read_memory(remote_id, proc_id, address, buf, sizeof(buf), &readed))
+		if (!dbg_read_memory(proc_id, address, buf, sizeof(buf), &readed))
 			return 1; // пам€ть не может быть прочитана
 		
 		break;
@@ -43,12 +43,12 @@ int breakpoint::set_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u32
 	return 0;
 }
 
-int breakpoint::delete_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address)
+int breakpoint::delete_breakpoint (u32 proc_id, u32 thread_id, u3264 address)
 {
 	return 0;
 }
 
-int breakpoint::is_breakpoint_exists (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address)
+int breakpoint::is_breakpoint_exists (u32 proc_id, u32 thread_id, u3264 address)
 {
 	// ¬ случае установки soft-брикпойнта (int 3) проверить
 	// чтобы его не было там изначально, а если есть

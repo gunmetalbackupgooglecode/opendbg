@@ -79,7 +79,6 @@ static SC_HANDLE dbg_install_sc(const char *path, const char *name)
 
 DBGAPI_API
 HANDLE dbg_create_process(
-        IN PVOID remote_id,
         IN PCHAR cmd_line,
         IN ULONG create_flags
         )
@@ -224,7 +223,6 @@ HANDLE dbg_open_process(HANDLE pid)
 
 DBGAPI_API
 int dbg_terminate_process(
-        IN PVOID  remote_id,
         IN HANDLE proc_id
         )
 {
@@ -252,7 +250,6 @@ int dbg_terminate_process(
 
 DBGAPI_API
 int dbg_attach_debugger(
-        IN PVOID  remote_id,
         IN HANDLE proc_id
         )
 {
@@ -270,7 +267,6 @@ int dbg_attach_debugger(
 
 DBGAPI_API
 int dbg_get_msg_event(
-        PVOID    remote_id,
         HANDLE   proc_id,
         dbg_msg *msg
         )
@@ -330,10 +326,10 @@ int dbg_get_msg_event(
                 {
                     WCHAR filename[MAX_PATH];
 
-                    dbg_read_memory(0, (HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, &dbg_event.u.LoadDll.lpImageName, sizeof(dbg_event.u.LoadDll.lpImageName), 0);
+                    dbg_read_memory((HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, &dbg_event.u.LoadDll.lpImageName, sizeof(dbg_event.u.LoadDll.lpImageName), 0);
                     if (dbg_event.u.LoadDll.lpImageName)
                     {
-                        dbg_read_memory(0, (HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, filename, sizeof(filename), 0);
+                        dbg_read_memory((HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, filename, sizeof(filename), 0);
                         wcsncpy(msg->dll_load.dll_name, filename, sizeof(filename));
                     }
                 }
@@ -354,7 +350,6 @@ int dbg_get_msg_event(
 
 DBGAPI_API
 int dbg_continue_event(
-        PVOID             remote_id,
         HANDLE            proc_id,
         u32               status,
         PEXCEPTION_RECORD new_record
@@ -382,7 +377,6 @@ int dbg_continue_event(
 
 DBGAPI_API
 int dbg_set_filter(
-       PVOID       remote_id,
        HANDLE      proc_id,
        event_filt *filter
        )
@@ -406,7 +400,6 @@ int dbg_set_filter(
 /* some Win32 API stubs */
 DBGAPI_API
 int dbg_read_memory(
-       PVOID       remote_id,
        HANDLE      proc_id,
        PVOID       mem_addr,
        PVOID       loc_buff,
@@ -437,7 +430,6 @@ int dbg_read_memory(
 
 DBGAPI_API
 int dbg_write_memory(
-       PVOID       remote_id,
        HANDLE      proc_id,
        PVOID       mem_addr,
        PVOID       loc_buff,
@@ -468,7 +460,6 @@ int dbg_write_memory(
 
 DBGAPI_API
 int dbg_get_context(
-       PVOID       remote_id,
        HANDLE      thread_id,
        PCONTEXT    context
        )
@@ -499,7 +490,6 @@ int dbg_get_context(
 
 DBGAPI_API
 int dbg_set_context(
-       PVOID       remote_id,
        HANDLE      thread_id,
        PCONTEXT    context
        )
@@ -736,7 +726,6 @@ PVOID dbg_enum_modules(
 */
 DBGAPI_API
 PVOID dbg_enum_threads(
-        IN PVOID remote_id,
         IN ULONG process_id
         )
 {

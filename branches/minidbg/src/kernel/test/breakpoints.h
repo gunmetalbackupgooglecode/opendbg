@@ -35,9 +35,9 @@ typedef struct _BREAK_POINT
 class breakpoint
 {
 	public:
-		int set_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type);
-		int delete_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address);
-		int is_breakpoint_exists (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address);
+		int set_breakpoint (u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type);
+		int delete_breakpoint (u32 proc_id, u32 thread_id, u3264 address);
+		int is_breakpoint_exists (u32 proc_id, u32 thread_id, u3264 address);
 	private:
 		std::vector <BREAK_POINT> breaks;
 		std::vector <BREAK_POINT>::iterator result;
