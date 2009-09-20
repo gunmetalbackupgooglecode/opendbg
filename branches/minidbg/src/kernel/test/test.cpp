@@ -23,7 +23,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include "test.h"
-#include "trc_breakpoints.h"
+#include "breakpoints.h"
 
 // modified version for xp sp3
 static uintptr_t
@@ -86,7 +86,7 @@ main(int argc, char* argv[])
 	HANDLE     pid;
 	dbg_msg    *msg = new dbg_msg;
 	u8         flag;
-	trc::tracer_breakpoints breaks;
+	std::vector<trc::breakpoint> breaks;
 
 	printf("dbgapi test tool started\n");
 
@@ -102,14 +102,14 @@ main(int argc, char* argv[])
 			printf("dbgapi initialized\n");
 			printf("dbgapi version as %d\n", dbg_drv_version());
 
-			if ( (pid = dbg_create_process(NULL, "C:\\Windows\\system32\\notepad.exe", CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL) {
+			if ( (pid = dbg_create_process("C:\\Windows\\system32\\notepad.exe", CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL) {
 				printf("process not started\n");
 				break;
 			}
 
 			printf("process started with pid %x\n", pid);
 
-			if (dbg_attach_debugger(NULL, pid) == 0) {
+			if (dbg_attach_debugger(pid) == 0) {
 				printf("debugger not attached\n");
 				break;
 			}
@@ -119,7 +119,7 @@ main(int argc, char* argv[])
 			filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
 			filter.filtr_count = 0;
 
-			if (dbg_set_filter(NULL, pid, &filter) == 0) {
+			if (dbg_set_filter(pid, &filter) == 0) {
 				printf("dbg_set_filter error\n");
 				break;
 			}
@@ -129,7 +129,7 @@ main(int argc, char* argv[])
 			do
 			{
 				u32 continue_status = DBG_CONTINUE;
-				if (dbg_get_msg_event(NULL, pid, msg) == 0) {
+				if (dbg_get_msg_event(pid, msg) == 0) {
 					printf("get debug message error\n");
 					break;
 				}
@@ -183,13 +183,13 @@ main(int argc, char* argv[])
 						{
 							flag = 0; // не было никакого бряка
 							// проверять наличие бряка
-							if (breaks.trc_ver_bp(NULL, msg->process_id, msg->thread_id, msg->exception.except_record.ExceptionAddress) != NO_BREAK)
-							{
+							//if (breaks(NULL, msg->process_id, msg->thread_id, msg->exception.except_record.ExceptionAddress) != NO_BREAK)
+							//{
 								//
 								//вставить код обработки бряка
 								//
 								flag = 1; //был обработан бряк
-							}
+							//}
 							if ( msg->exception.first_chance | flag )
 								continue_status = DBG_CONTINUE ;
 							else

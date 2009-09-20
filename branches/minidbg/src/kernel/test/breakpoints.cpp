@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "trc_breakpoints.h"
+#include "breakpoints.h"
 #include "dbgapi.h"
 
 int breakpoint::set_breakpoint (u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type)
