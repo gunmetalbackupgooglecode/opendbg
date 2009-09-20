@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "trc_breakpoints.h"
 #include "dbgapi.h"
 
-int tracer_breakpoints::trc_set_bp (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type)
+int breakpoint::set_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type)
 {
 	BYTE buf;
 	u32 readed;
@@ -43,12 +43,12 @@ int tracer_breakpoints::trc_set_bp (PVOID remote_id, u32 proc_id, u32 thread_id,
 	return 0;
 }
 
-int tracer_breakpoints::trc_del_bp (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address)
+int breakpoint::delete_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address)
 {
-	return 0
+	return 0;
 }
 
-int tracer_breakpoints::trc_ver_bp (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address)
+int breakpoint::is_breakpoint_exists (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address)
 {
 	// ¬ случае установки soft-брикпойнта (int 3) проверить
 	// чтобы его не было там изначально, а если есть

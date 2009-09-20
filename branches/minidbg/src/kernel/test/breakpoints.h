@@ -22,22 +22,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 enum BRK_TYPE { NO_BREAK, BRK_TYPE_INT3, BRK_TYPE_HWR, BRK_TYPE_HWE, BRK_TYPE_HWA };
 
-namespace trc_breaks
+namespace trc
 {
 
 typedef struct _BREAK_POINT
 {
-	DWORD_PTR addr;
+	u3264 addr;
 	BYTE soft_orig_byte;
 	BRK_TYPE type;
 } BREAK_POINT;
 
-class tracer_breakpoints
+class breakpoint
 {
 	public:
-		int trc_set_bp (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type);
-		int trc_del_bp (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address);
-		int trc_ver_bp (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address);
+		int set_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type);
+		int delete_breakpoint (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address);
+		int is_breakpoint_exists (PVOID remote_id, u32 proc_id, u32 thread_id, u3264 address);
 	private:
 		std::vector <BREAK_POINT> breaks;
 		std::vector <BREAK_POINT>::iterator result;
