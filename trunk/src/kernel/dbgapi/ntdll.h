@@ -3520,6 +3520,7 @@ RtlAdjustPrivilege(
 
 #pragma warning(default : 4200)
 #pragma warning(default : 4005)
+#pragma warning(default : 4010)
 
 #endif
 #endif
