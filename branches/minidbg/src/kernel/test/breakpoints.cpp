@@ -17,52 +17,39 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include <windows.h>
+#include <vector>
 #include "breakpoints.h"
-#include "dbgapi.h"
+#include "test.h"
 
-int breakpoint::set_breakpoint (u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type)
+int trc::breakpoint::set_breakpoint (u32 proc_id, u32 thread_id, u3264 address, brk_type break_type)
 {
 	BYTE buf;
 	u32 readed;
 	// ¬ случае установки soft-брикпойнта (int 3) проверить
 	// чтобы его не было там изначально, а если есть
 	// добавить флаг дл€ генерации исключени€ после срабатывани€
-	switch (brk_type)
+	switch (break_type)
 	{
 	case BRK_TYPE_INT3:
-		if (!dbg_read_memory(proc_id, address, buf, sizeof(buf), &readed))
+		if (!dbg_read_memory((HANDLE)proc_id, (PVOID)address, (PVOID)&buf, sizeof(buf), &readed))
 			return 1; // пам€ть не может быть прочитана
 		
 		break;
 	case BRK_TYPE_HWR:
 	case BRK_TYPE_HWE:
-	case BRK_TYPE_HWE:
+	case BRK_TYPE_HWA:
 		break;
 	}
 	return 0;
 }
 
-int breakpoint::delete_breakpoint (u32 proc_id, u32 thread_id, u3264 address)
+int trc::breakpoint::delete_breakpoint (u32 proc_id, u32 thread_id, u3264 address)
 {
 	return 0;
 }
 
-int breakpoint::is_breakpoint_exists (u32 proc_id, u32 thread_id, u3264 address)
-{
-	// ¬ случае установки soft-брикпойнта (int 3) проверить
-	// чтобы его не было там изначально, а если есть
-	// добавить флаг дл€ генерации исключени€ после срабатывани€
-	switch (brk_type)
-	{
-	case BRK_TYPE_INT3:
-		//std::find(breaks.begin(), breaks.end(), address);
-		//dbg_read_memory(,,address,,);
-		break;
-	case BRK_TYPE_HWR:
-	case BRK_TYPE_HWE:
-	case BRK_TYPE_HWE:
-		break;
-	}
+int trc::breakpoint::is_breakpoint_exists (u32 proc_id, u32 thread_id, u3264 address)
+{	
 	return 0;
 }

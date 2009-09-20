@@ -17,25 +17,28 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <windows.h>
+#include <stdio.h>
+#include "defines.h"
 #ifndef _BREAKS_
 #define _BREAKS_
 
 namespace trc
 {
 
-enum BRK_TYPE { NO_BREAK, BRK_TYPE_INT3, BRK_TYPE_HWR, BRK_TYPE_HWE, BRK_TYPE_HWA };
+enum brk_type { NO_BREAK, BRK_TYPE_INT3, BRK_TYPE_HWR, BRK_TYPE_HWE, BRK_TYPE_HWA };
 
 typedef struct _BREAK_POINT
 {
 	u3264 addr;
-	BYTE soft_orig_byte;
-	BRK_TYPE type;
+	u8 soft_orig_byte;
+	brk_type type;
 } BREAK_POINT;
 
 class breakpoint
 {
 	public:
-		int set_breakpoint (u32 proc_id, u32 thread_id, u3264 address, BRK_TYPE brk_type);
+		int set_breakpoint (u32 proc_id, u32 thread_id, u3264 address, brk_type break_type);
 		int delete_breakpoint (u32 proc_id, u32 thread_id, u3264 address);
 		int is_breakpoint_exists (u32 proc_id, u32 thread_id, u3264 address);
 	private:
