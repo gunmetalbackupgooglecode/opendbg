@@ -5,6 +5,7 @@
  #include <ntifs.h>
 #endif
 
+//typedef unsigned 
 typedef unsigned __int64 u64;
 typedef unsigned long    u32;
 typedef unsigned short   u16;
@@ -16,6 +17,14 @@ typedef short       s16;
 typedef char        s8;
 typedef const char  cs8;
 typedef const u8    cu8;
+	
+#if defined(_WIN64)
+    typedef				__int64 s3264;
+    typedef unsigned	__int64 u3264;	
+#else
+    typedef long			s3264;
+    typedef unsigned long	u3264;
+#endif
 
 #pragma pack (push, 1)
 
@@ -59,6 +68,7 @@ typedef const u8    cu8;
 #define p16(x) ((u16*)(x))
 #define p32(x) ((u32*)(x))
 #define p64(x) ((u64*)(x))
+#define p3264(x) ((u3264*)(x))
 #define pv(x)  ((void*)(x))
 #define ppv(x) ((void**)(x))
 
@@ -141,11 +151,18 @@ void debug_out(char *format, ...);
 #define memcpy(a,b,c) __movsb(p8(a), pcu8(b), (size_t)(c))
 #define memset(a,b,c) __stosb(p8(a),(u8)(b),(size_t)(c))
 
+#define set_jump(a,b) p8(a)[0] = 0xE9; p32((a)+1)[0] = (b) - (a) - 5
+
 #define lock_inc(x)             ( _InterlockedIncrement(x) )
 #define lock_dec(x)             ( _InterlockedDecrement(x) )
 #define lock_xchg(p,v)          ( _InterlockedExchange((p),(v)) )
 #define lock_cmpxchg(a,b,c)     ( _InterlockedCompareExchange((a),(b),(c)) )
 #define lock_cmpxchg_ptr(a,b,c) ( pv(_InterlockedCompareExchange(pv(a),(u32)(b),(u32)(c))) )
+
+#define plist(x) ((PLIST_ENTRY)(x))
+#define init_list(a) InitializeListHead(a)
+#define insert_list_tail(a,b,c) ExInterlockedInsertTailList(a,plist(b),c)
+#define remove_list_head(a,b,c) ExInterlockedRemoveHeadList(a,plist(b),c)
 
 #pragma warning(disable:4995)
 #pragma warning(disable:4164)

@@ -1,7 +1,9 @@
 /*
     *
-    * Copyright (c) 2008
-    * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
+    * Copyright (c) 2008 - 2009, OpenDbg Team
+	* ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
+	* d1mk4 <d1mk4nah@gmail.com>
+	* Vladimir <progopis@jabber.ru> PGP key ID - 0x59CF2D8A75CB8417
     *
 
     This program is free software: you can redistribute it and/or modify
@@ -20,9 +22,8 @@
 
 #include <windows.h>
 #include <stdio.h>
-
 #include "test.h"
-
+#include "trc_breakpoints.h"
 
 // modified version for xp sp3
 static uintptr_t
@@ -84,6 +85,8 @@ main(int argc, char* argv[])
 	event_filt filter;
 	HANDLE     pid;
 	dbg_msg    *msg = new dbg_msg;
+	u8         flag;
+	trc::tracer_breakpoints breaks;
 
 	printf("dbgapi test tool started\n");
 
@@ -178,7 +181,16 @@ main(int argc, char* argv[])
 					{
 						case EXCEPTION_BREAKPOINT :
 						{
-							if ( msg->exception.first_chance )
+							flag = 0; // не было никакого бряка
+							// проверять наличие бряка
+							if (breaks.trc_ver_bp(NULL, msg->process_id, msg->thread_id, msg->exception.except_record.ExceptionAddress) != NO_BREAK)
+							{
+								//
+								//вставить код обработки бряка
+								//
+								flag = 1; //был обработан бряк
+							}
+							if ( msg->exception.first_chance | flag )
 								continue_status = DBG_CONTINUE ;
 							else
 								continue_status = DBG_EXCEPTION_NOT_HANDLED ;
