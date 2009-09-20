@@ -1,8 +1,18 @@
-#define DBGAPI_API __declspec(dllexport) 
+#ifndef DBGAPI_H__
+#define DBGAPI_H__
+
+#define DBGAPI_API  __declspec(dllexport)
+#ifdef _MSC_VER
+#define CALLING_CONVENTION __stdcall
+#else
+#define CALLING_CONVENTION
+#endif
 
 #include "pdbparser.h"
 #include "dbg_def.h"
 #include "dbgconst.h"
+
+#pragma warning(disable: 4200)
 
 typedef struct _OPT_DATA
 {
@@ -275,7 +285,6 @@ typedef struct _DBG_CONTEXT
 #define DBG_CONTINUE_CALL 64
 #define DBG_RDTSC         128
 
-
 #define RES_NOT_HANDLED   0
 #define RES_CONTINUE      1
 #define RES_CORRECT_FRAME 2
@@ -296,7 +305,7 @@ typedef struct _EVENT_FILTER
 } EVENT_FILTER, *PEVENT_FILTER;
 
 typedef 
-uintptr_t (CALLBACK *dbg_sym_get)(
+uintptr_t (CALLBACK * dbg_sym_get)(
         int  sym_type,
         const char *sym_name,
         const char *sym_subname,
@@ -304,49 +313,49 @@ uintptr_t (CALLBACK *dbg_sym_get)(
         );
 
 DBGAPI_API
-int dbg_initialize_api(
+int CALLING_CONVENTION dbg_initialize_api(
         u_long      access_key,
         const wchar_t* pdb_path,
         dbg_sym_get sym_callback
         );
 
-DBGAPI_API u_long dbg_drv_version();
+DBGAPI_API u_long CALLING_CONVENTION dbg_drv_version();
 
 DBGAPI_API
-int dbg_terminate_process(
+int CALLING_CONVENTION dbg_terminate_process(
         IN PVOID  remote_id,
         IN HANDLE proc_id
         );
 
 DBGAPI_API
-int dbg_attach_debugger(
+int CALLING_CONVENTION dbg_attach_debugger(
         IN PVOID  remote_id,
         IN HANDLE proc_id
         );
 
 DBGAPI_API
-HANDLE dbg_create_process(
+HANDLE CALLING_CONVENTION dbg_create_process(
         IN PVOID remote_id,
         IN PCHAR cmd_line,
         IN ULONG create_flags
         );
 
 DBGAPI_API
-int dbg_get_msg_event(
+int CALLING_CONVENTION dbg_get_msg_event(
         PVOID    remote_id,
         HANDLE   proc_id, 
         dbg_msg  *msg
         );
 
 DBGAPI_API
-int dbg_set_filter(
+int CALLING_CONVENTION dbg_set_filter(
         PVOID       remote_id,
         HANDLE      proc_id,
         event_filt  *filter
         );
 
 DBGAPI_API
-int dbg_countinue_event(
+int CALLING_CONVENTION dbg_continue_event(
         PVOID             remote_id,
         HANDLE            proc_id, 
         u32               status,
@@ -354,7 +363,7 @@ int dbg_countinue_event(
         );
 
 DBGAPI_API
-int dbg_read_memory(
+int CALLING_CONVENTION dbg_read_memory(
         PVOID       remote_id,
         HANDLE      proc_id,
         PVOID       mem_addr,
@@ -364,7 +373,7 @@ int dbg_read_memory(
         );
 
 DBGAPI_API
-int dbg_write_memory(
+int CALLING_CONVENTION dbg_write_memory(
         PVOID       remote_id,
         HANDLE      proc_id,
         PVOID       mem_addr,
@@ -374,33 +383,33 @@ int dbg_write_memory(
         );
 
 DBGAPI_API
-int dbg_get_context(
+int CALLING_CONVENTION dbg_get_context(
         PVOID       remote_id,
         HANDLE      thread_id,
         PCONTEXT    context
         );
 
 DBGAPI_API
-int dbg_set_context(
+int CALLING_CONVENTION dbg_set_context(
         PVOID       remote_id,
         HANDLE      thread_id,
         PCONTEXT    context
         );
 
 DBGAPI_API
-HFILE dbg_open_file(
+HFILE CALLING_CONVENTION dbg_open_file(
         IN  LPCSTR lpFileName,
         OUT LPOFSTRUCT lpReOpenBuff,
         IN  UINT uStyle
         );
 
 DBGAPI_API
-BOOL dbg_close_file(
+BOOL CALLING_CONVENTION dbg_close_file(
         IN  HANDLE hObject
 		);
 
 DBGAPI_API
-BOOL dbg_read_file(
+BOOL CALLING_CONVENTION dbg_read_file(
         IN  HANDLE hFile,
         OUT LPVOID lpBuffer,
         IN  DWORD nNumberOfBytesToRead,
@@ -409,67 +418,70 @@ BOOL dbg_read_file(
         );
 
 DBGAPI_API
-DWORD dbg_resume_thread(
+DWORD CALLING_CONVENTION dbg_resume_thread(
         IN  HANDLE hThread
         );
 
 DBGAPI_API
-DWORD dbg_suspend_thread(
+DWORD CALLING_CONVENTION dbg_suspend_thread(
         IN HANDLE hThread               
         );
 
 DBGAPI_API
-int dbg_set_rdtsc(
+int CALLING_CONVENTION dbg_set_rdtsc(
         IN PVOID         context,
         IN BOOLEAN       rdtsc_on
         );
 
 DBGAPI_API
-void dbg_close_thread(
+void CALLING_CONVENTION dbg_close_thread(
         IN PVOID  dbg_thread
         );
 
 DBGAPI_API
-PVOID dbg_open_thread(
+HANDLE CALLING_CONVENTION dbg_open_thread(
         IN PVOID        context,
         IN ULONG        thread_id
         );
 
 DBGAPI_API
-PVOID dbg_enum_processes(
+PVOID CALLING_CONVENTION dbg_enum_processes(
         IN PVOID remote_id
         );
 
 DBGAPI_API
-PVOID dbg_enum_modules(
+PVOID CALLING_CONVENTION dbg_enum_modules(
         IN PVOID context
         );
 
 DBGAPI_API
-PVOID dbg_enum_threads(
+PVOID CALLING_CONVENTION dbg_enum_threads(
         IN PVOID remote_id,
         IN ULONG process_id
         );
 
 DBGAPI_API
-void dbg_free_memory(
+void CALLING_CONVENTION dbg_free_memory(
         IN void * memory
         );
 
 DBGAPI_API
-int dbg_get_thread_ctx(
+int CALLING_CONVENTION dbg_get_thread_ctx(
         IN  PVOID dbg_thread,
         OUT PVOID trd_context
         );
 
 DBGAPI_API
-void dbg_detach_debugger(
+void CALLING_CONVENTION dbg_detach_debugger(
         IN PVOID context
         );
 
 DBGAPI_API
-int dbg_hook_page(
+int CALLING_CONVENTION dbg_hook_page(
         IN PVOID context,
         IN PVOID page_addr,
         IN PVOID code_page
         );
+
+
+#endif // DBGAPI_H__

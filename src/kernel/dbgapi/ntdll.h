@@ -7,7 +7,7 @@
 
 #pragma warning(disable : 4200)
 #pragma warning(disable : 4005)
-
+#pragma warning(disable : 4010)
 
 #undef STATUS_WAIT_0
 #undef STATUS_ABANDONED_WAIT_0
