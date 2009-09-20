@@ -2,4 +2,4 @@
     CONSOLE APPLICATION : cli Project Overview
 ========================================================================
 
-opendbg cli interface
+opendbg command-line interface
