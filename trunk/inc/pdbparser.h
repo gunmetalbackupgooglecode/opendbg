@@ -1,3 +1,24 @@
+/*
+    *
+    * Copyright (c) 2009
+    * d1mk4 <d1mk4nah@gmail.com>
+    *
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 #ifndef PDBPARSER_H__
 #define PDBPARSER_H__
 
@@ -15,9 +36,19 @@
 
 #include <map>
 
-#include <dia2.h>
+#include "dia2.h"
 
-typedef unsigned long ulong;
+typedef unsigned __int64 u64;
+typedef unsigned long    u32;
+typedef unsigned short   u16;
+typedef unsigned char    u8;
+
+typedef __int64     s64;
+typedef int         s32;
+typedef short       s16;
+typedef char        s8;
+typedef const char  cs8;
+typedef const u8    cu8;
 
 namespace pdb
 {
@@ -67,7 +98,7 @@ public:
 	{
 	}
 
-	sym_info(const string_type& name, ulong rva, ulong offset, ulong section)
+	sym_info(const string_type& name, u32 rva, u32 offset, u32 section)
 	 : m_name(name),
 	   m_rva(rva),
 	   m_offset(offset),
@@ -75,7 +106,7 @@ public:
 	{
 	}
 
-	sym_info(const string_type& name, ulong relative_offset)
+	sym_info(const string_type& name)
 	 : m_name(name),
 	   m_rva(0),
 	   m_offset(0),
@@ -88,26 +119,26 @@ public:
 		return m_name;
 	}
 
-	ulong get_rva()
+	u32 get_rva()
 	{
 		return m_rva;
 	}
 
-	ulong get_offset()
+	u32 get_offset()
 	{
 		return m_offset;
 	}
 
-	ulong get_section()
+	u32 get_section()
 	{
 		return m_section;
 	}
 
 private:
 	string_type  m_name;
-	ulong        m_rva;
-	ulong        m_offset;
-	ulong        m_section;
+	u32        m_rva;
+	u32        m_offset;
+	u32        m_section;
 };
 
 class member_info
@@ -119,7 +150,7 @@ public:
 	{
 	}
 
-	member_info(const string_type& name, ulong offset)
+	member_info(const string_type& name, u32 offset)
 	 : m_name(name),
 	   m_offset(offset)
 	{
@@ -130,14 +161,14 @@ public:
 		return m_name;
 	}
 
-	ulong get_offset()
+	u32 get_offset()
 	{
 		return m_offset;
 	}
 
 private:
 	string_type  m_name;
-	ulong        m_offset;
+	u32        m_offset;
 };
 
 class type_info
@@ -265,12 +296,12 @@ void pdb_parser::init_symbols(IDiaSymbol* global)
 		throw pdb_error("child is not founded");
 
 	IDiaSymbol *pSymbol;
-	ULONG celt = 0;
+	u32 celt = 0;
 
 	while (SUCCEEDED(pEnumSymbols->Next(1, &pSymbol, &celt)) && (celt == 1))
 	{
 		BSTR name;
-		ulong rva, offset, section;
+		u32 rva, offset, section;
 		
 		pSymbol->get_name(&name);
 		pSymbol->get_relativeVirtualAddress(&rva);
@@ -288,7 +319,7 @@ void pdb_parser::init_symbols(IDiaSymbol* global)
 
 member_info pdb_parser::get_type_location(IDiaSymbol* sym)
 {
-	ulong loc_type;
+	u32 loc_type;
 
 	if (sym->get_locationType(&loc_type) != S_OK)
 		return member_info(0,0); // It must be a symbol in optimized code
@@ -311,8 +342,8 @@ pdb_parser::member_info_map pdb_parser::get_type_detail(IDiaSymbol* sym, int dee
 	IDiaEnumSymbols *enum_chids;
 	member_info_map members;
 
-	ulong celt = 0;
-	ulong symtag;
+	u32 celt = 0;
+	u32 symtag;
 	
 	if (deep > 2)
 		return members;
@@ -357,7 +388,7 @@ void pdb_parser::init_types(IDiaSymbol* global)
 		throw pdb_error("child is not founded");
 
 	IDiaSymbol *pSymbol;
-	ulong celt = 0;
+	u32 celt = 0;
 
 	while (SUCCEEDED(pEnumSymbols->Next(1, &pSymbol, &celt)) && (celt == 1))
 	{
