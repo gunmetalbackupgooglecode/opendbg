@@ -20,10 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _BREAKS_
 #define _BREAKS_
 
-enum BRK_TYPE { NO_BREAK, BRK_TYPE_INT3, BRK_TYPE_HWR, BRK_TYPE_HWE, BRK_TYPE_HWA };
-
 namespace trc
 {
+
+enum BRK_TYPE { NO_BREAK, BRK_TYPE_INT3, BRK_TYPE_HWR, BRK_TYPE_HWE, BRK_TYPE_HWA };
 
 typedef struct _BREAK_POINT
 {
