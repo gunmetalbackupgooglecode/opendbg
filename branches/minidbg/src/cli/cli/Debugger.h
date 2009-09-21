@@ -2,6 +2,7 @@
 #define _DEBUGGER_H_
 
 #include <string>
+#include "dbgapi.h"
 #include "pdbparser.h"
 
 class Debugger

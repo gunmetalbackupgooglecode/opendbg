@@ -8,7 +8,7 @@
 //  See http://www.boost.org/LICENSE_1_0.txt for licensing.
 //  See http://code.google.com/p/clipo/ for library home page.
 
-//  Modified to change prompt on the fly (vissi)
+//  Modified to change prompt on the fly (Stanislav 'vissi' Vorobyev <stanislav.vorobyev@gmail.com>)
 
 #ifndef BOOST_COMMAND_LINE_INTERPRETER
 #define BOOST_COMMAND_LINE_INTERPRETER

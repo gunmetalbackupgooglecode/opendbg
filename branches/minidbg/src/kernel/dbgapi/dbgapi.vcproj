@@ -155,7 +155,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="psapi.lib ntdll.lib"
+				AdditionalOptions="ntdll.lib psapi.lib ole32.lib oleaut32.lib uuid.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;;&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
@@ -218,6 +218,14 @@
 			</File>
 			<File
 				RelativePath=".\ntdll.h"
+				>
+			</File>
+			<File
+				RelativePath="..\test\pdbparser.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\inc\pdbparser.h"
 				>
 			</File>
 		</Filter>

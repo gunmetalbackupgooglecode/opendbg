@@ -19,14 +19,17 @@
 */
 
 #include <windows.h>
-#include <stdio.h>
+#include <cstdio>
 #include <tlhelp32.h>
 #include <psapi.h>
+
 // vs2009sp1 memory.h bug workaround
 #if _MSC_FULL_VER == 150030729
 #define _DO_NOT_DECLARE_INTERLOCKED_INTRINSICS_IN_MEMORY
 #endif
+
 #include <intrin.h>
+#define DBGAPI_DLLEXPORT
 #include "dbgapi.h"
 #include "ntdll.h"
 #include "..\sys\syscall.h"
@@ -78,7 +81,7 @@ static SC_HANDLE dbg_install_sc(const char *path, const char *name)
 }
 
 DBGAPI_API
-HANDLE dbg_create_process(
+HANDLE CALLING_CONVENTION dbg_create_process(
         IN PCHAR cmd_line,
         IN ULONG create_flags
         )
@@ -222,7 +225,7 @@ HANDLE dbg_open_process(HANDLE pid)
 
 
 DBGAPI_API
-int dbg_terminate_process(
+int CALLING_CONVENTION dbg_terminate_process(
         IN HANDLE proc_id
         )
 {

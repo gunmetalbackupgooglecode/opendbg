@@ -2,7 +2,7 @@
 #define _STDAFX_H_
 
 #include "targetver.h"
-#include <stdio.h>
+#include <cstdio>
 #include <tchar.h>
 
 #include <algorithm>
@@ -12,7 +12,6 @@
 #include <fstream>
 #include <boost/program_options.hpp>
 
-#include "dbgapi.h"
 #include "pdbparser.h"
 
 #endif

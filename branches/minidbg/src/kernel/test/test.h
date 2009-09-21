@@ -2,7 +2,7 @@
 #define _TEST_
 
 #include <windows.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include "pdbparser.h"
 #include "dbgapi.h"

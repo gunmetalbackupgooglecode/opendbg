@@ -21,11 +21,11 @@ u_long Debugger::GetVersion()
 void Debugger::DebugProcess(string imageName)
 {
 	auto_ptr<char> cs(const_cast<char*>(imageName.c_str()));
-	if ((pid = dbg_create_process(NULL, cs.get(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
+	if ((pid = dbg_create_process(cs.get(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
 		throw exception("process not started");
 //	printf("process started with pid %x\n", pid);
 
-	if (dbg_attach_debugger(NULL, pid) == 0)
+	if (dbg_attach_debugger(pid) == 0)
 		throw exception("debugger not attached");
 //	printf("debugger attached\n");
 }
@@ -35,7 +35,7 @@ void Debugger::Test()
 	filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
 	filter.filtr_count = 0;
 
-	if (dbg_set_filter(NULL, pid, &filter) == 0)
+	if (dbg_set_filter(pid, &filter) == 0)
 		throw exception("dbg_set_filter error");
 
 	printf("debug events filter set up\n");
@@ -43,7 +43,7 @@ void Debugger::Test()
 	do
 	{
 		u32 continue_status = DBG_CONTINUE;
-		if (dbg_get_msg_event(NULL, pid, msg) == 0)
+		if (dbg_get_msg_event(pid, msg) == 0)
 		{
 			printf("get debug message error\n");
 			break;

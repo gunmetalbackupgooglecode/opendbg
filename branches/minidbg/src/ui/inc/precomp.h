@@ -57,7 +57,7 @@
 #endif
 
 // C CRT includes
-#include <stdio.h>
+#include <cstdio>
 
 // C++ CRT includes
 #include <iostream>

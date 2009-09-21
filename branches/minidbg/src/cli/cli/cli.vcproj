@@ -62,7 +62,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dbgapi.lib dbghelp.lib"
+				AdditionalOptions="dbghelp.lib"
+				AdditionalDependencies="dbgapi.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(BOOST_ROOT)\stage\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
@@ -139,8 +140,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="false"
-				AdditionalOptions="dbgapi.lib dbghelp.lib"
-				AdditionalDependencies="dbgapi.lib dbghelp.lib"
+				AdditionalOptions="dbghelp.lib"
+				AdditionalDependencies="dbgapi.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(BOOST_ROOT)\stage\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"

@@ -21,7 +21,8 @@
 */
 
 #include <windows.h>
-#include <stdio.h>
+#include <cstdio>
+#include "dbgapi.h"
 #include "test.h"
 #include "breakpoints.h"
 

@@ -1,7 +1,12 @@
 #ifndef DBGAPI_H__
 #define DBGAPI_H__
 
-#define DBGAPI_API  __declspec(dllexport)
+#ifndef DBGAPI_DLLEXPORT
+#define DBGAPI_API __declspec(dllimport)
+#else
+#define DBGAPI_API __declspec(dllexport)
+#endif
+
 #ifdef _MSC_VER
 #define CALLING_CONVENTION __stdcall
 #else
