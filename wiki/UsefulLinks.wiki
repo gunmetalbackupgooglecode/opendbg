@@ -1,6 +1,6 @@
 #summary Useful links to understand the project.
 
-= Here you can find some links to the useful information to understand this project. =
+= Here you can find some links to understand this project better. =
 
 || *Links* || *Description* ||
 || [http://groups.google.ru/group/opendbg opendbg group] || if you want join with us, subscribe to it||
