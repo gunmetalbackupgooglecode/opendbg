@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(BOOST_ROOT),&quot;$(SolutionDir)../../inc&quot;;;$(SolutionDir)\..\..\src\cli\ext;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
+				AdditionalIncludeDirectories="$(BOOST_ROOT);&quot;$(SolutionDir)../../inc&quot;;;$(SolutionDir)\..\..\src\cli\ext;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -186,11 +186,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Debugger.cpp"
+				RelativePath=".\debugger.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\DebuggerCLI.cpp"
+				RelativePath=".\debugger_cli.cpp"
 				>
 			</File>
 			<File
@@ -224,11 +224,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Debugger.h"
+				RelativePath=".\debugger.h"
 				>
 			</File>
 			<File
-				RelativePath=".\DebuggerCLI.h"
+				RelativePath=".\debugger_cli.h"
 				>
 			</File>
 			<File

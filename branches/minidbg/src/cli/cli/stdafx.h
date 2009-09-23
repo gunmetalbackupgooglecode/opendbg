@@ -10,8 +10,5 @@
 #include <iterator>
 #include <iostream>
 #include <fstream>
-#include <boost/program_options.hpp>
-
-#include "pdbparser.h"
 
 #endif

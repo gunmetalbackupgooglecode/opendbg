@@ -1,37 +1,37 @@
 #include "stdafx.h"
 #include <io.h>
-#include "DebuggerCLI.h"
+#include "debugger_cli.h"
 
 namespace po = boost::program_options;
 using namespace std;
 
-DebuggerCLI::DebuggerCLI(void)
+debugger_cli::debugger_cli(void)
 {
 #ifdef _MSC_VER
-	interactive = _isatty(_fileno(stdin)) != 0;
+	m_interactive = _isatty(_fileno(stdin)) != 0;
 #else
-	interactive = isatty(fileno(stdin)) != 0;
+	m_interactive = isatty(fileno(stdin)) != 0;
 #endif
-	desc.add_options()
-		("show", po::value<string>()->implicit_value("info")->notifier(&ShowHandler), "show informational messages")
-		("help,?", po::value<string>()->implicit_value("")->notifier(&HelpHandler), "show this message")
-		("load,l", po::value<string>()->notifier(&LoadHandler), "load script file(s)")
-		("start,s", po::value<string>()->notifier(&StartHandler), "start process(es)")
-		("quit", po::value<int>()->implicit_value(0)->notifier(&ExitHandler), "close opendbg")
+	m_desc.add_options()
+		("show", po::value<string>()->implicit_value("info")->notifier(&show_handler), "show informational messages")
+		("help,?", po::value<string>()->implicit_value("")->notifier(&help_handler), "show this message")
+		("load,l", po::value<string>()->notifier(&load_handler), "load script file(s)")
+		("start,s", po::value<string>()->notifier(&start_handler), "start process(es)")
+		("quit", po::value<int>()->implicit_value(0)->notifier(&exit_handler), "close opendbg")
 		;
 
-	cli = new boost::cli::command_line_interpreter(desc, interactive ? "> " : "");
+	m_cli = new boost::cli::command_line_interpreter(m_desc, m_interactive ? "> " : "");
 }
 
-boost::cli::commands_description DebuggerCLI::desc = boost::cli::commands_description();
+boost::cli::commands_description debugger_cli::m_desc = boost::cli::commands_description();
 
-void DebuggerCLI::LoadHandler(string what)
+void debugger_cli::load_handler(string what)
 {
 	// TODO: script loading
 	cout << "script loading is not supported" << endl;
 }
 
-void DebuggerCLI::StartHandler(string what)
+void debugger_cli::start_handler(string what)
 {
 	int pid;
 	if (pid = atoi(what.data()))
@@ -55,18 +55,18 @@ void DebuggerCLI::StartHandler(string what)
 
 }
 
-void DebuggerCLI::Interpret(std::istream& input_stream)
+void debugger_cli::interpret(std::istream& input_stream)
 {
-	cli->interpret(input_stream);
+	m_cli->interpret(input_stream);
 }
 
-void DebuggerCLI::HelpHandler(string param)
+void debugger_cli::help_handler(string param)
 {
 	// TODO: normal description
 	//cout << desc;
 }
 
-void DebuggerCLI::ShowHandler(string what)
+void debugger_cli::show_handler(string what)
 {
 	if (what == "w")
 	{
@@ -91,17 +91,17 @@ void DebuggerCLI::ShowHandler(string what)
 	}
 }
 
-void DebuggerCLI::Start()
+void debugger_cli::start()
 {
-	cli->interpret(std::cin);
+	m_cli->interpret(std::cin);
 }
 
-void DebuggerCLI::ExitHandler(int code)
+void debugger_cli::exit_handler(int code)
 {
 	exit(code);
 }
 
-DebuggerCLI::~DebuggerCLI(void)
+debugger_cli::~debugger_cli(void)
 {
-	delete cli;
+	delete m_cli;
 }

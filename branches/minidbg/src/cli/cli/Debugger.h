@@ -5,18 +5,18 @@
 #include "dbgapi.h"
 #include "pdbparser.h"
 
-class Debugger
+class debugger
 {
-	event_filt filter;
-	HANDLE     pid;
-	dbg_msg    *msg;
+	event_filt m_filter;
+	HANDLE     m_pid;
+	dbg_msg    *m_msg;
 	static uintptr_t CALLBACK get_symbols_callback( int sym_type, char * sym_name, char * sym_subname, pdb::pdb_parser& pdb );
 public:
-	Debugger();
-	~Debugger(void);
-	void DebugProcess(std::string imageName);
-	u_long GetVersion();
-	void Test();
+	debugger();
+	~debugger(void);
+	void debug_process(std::string imageName);
+	u_long get_version();
+	void test();
 };
 
 #endif

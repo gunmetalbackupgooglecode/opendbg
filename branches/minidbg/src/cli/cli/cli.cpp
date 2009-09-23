@@ -1,6 +1,8 @@
 #include "stdafx.h"
+#include <boost/program_options.hpp>
 #include <io.h>
-#include "DebuggerCLI.h"
+#include "debugger_cli.h"
+#include "pdbparser.h"
 
 namespace po = boost::program_options;
 using namespace std;
@@ -24,6 +26,7 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 {
 	try
 	{
+		// try to detemine if we are in interactive console session
 #ifdef _MSC_VER
 		bool interactive = _isatty(_fileno(stdin)) != 0;
 #else
@@ -34,6 +37,7 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		typedef vector<string>::const_iterator VectorIter;
 		map<string, po::options_description> options_modules;
 
+		// initialize option sets
 		po::options_description generic_options("Generic options");
 		generic_options.add_options()
 			("help,?", "show this help screen")
@@ -64,6 +68,7 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		po::positional_options_description pos_opt_desc;
 		pos_opt_desc.add("input-processes", -1);
 
+		// load variables from config file
 		po::variables_map vars;
 		po::store(po::basic_command_line_parser<_TCHAR>(argc, argv).
 			options(result_options).positional(pos_opt_desc).run(), vars);
@@ -73,6 +78,7 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		config_file.close();
 		po::notify(vars);
 
+		// show welcome message
 		if (!vars.count("quiet") && !quiet)
 		{
 			cout << "opendbg " << OPENDBG_VERSION_STR << " cli" << endl;
@@ -88,6 +94,7 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		{
 			quiet = true;
 		}
+		// show help
 		if (vars.count("help"))
 		{
 			cout << visible_options << endl;
@@ -125,9 +132,10 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		{
 			return 1;
 		}
-		DebuggerCLI cli;
+		// start debugger cli
+		debugger_cli cli;
 		if (interactive)
-			cli.SetInteractive(false);
+			cli.set_interactive(false);
 		std::stringstream ss;
 		if (vars.count("input-processes"))
 		{
@@ -135,7 +143,7 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 			for(VectorIter it = processes.begin(); it != processes.end(); ++it)
 			{
 				ss << "start " << *it << endl;
-				cli.Interpret(ss);
+				cli.interpret(ss);
 				ss.clear();
 			}
 		}
@@ -145,12 +153,12 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 			for(VectorIter it = scripts.begin(); it != scripts.end(); ++it)
 			{
 				ss << "load " << *it << endl;
-				cli.Interpret(ss);
+				cli.interpret(ss);
 				ss.clear();
 			}
 		}
-		cli.SetInteractive(interactive);
-		cli.Start();
+		cli.set_interactive(interactive);
+		cli.start();
 	}
 	catch (po::multiple_values&)
 	{
