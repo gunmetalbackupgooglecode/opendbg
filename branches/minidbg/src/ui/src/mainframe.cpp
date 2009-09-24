@@ -389,18 +389,18 @@ void MainFrame::OnOpenModule( wxCommandEvent& event )
 		// set window title with current module name
 		this->SetTitle(this->GetTitle() + " - " + dialog.GetFilename());
 
-		if (m_debugger.m_sesId > 0)
-			m_debugger.close_session();
+		//if (m_debugger.m_sesId > 0)
+		//	m_debugger.close_session();
 
-		m_debugger.open_session(TRC_SESSION_LOCAL, NULL);
+		//m_debugger.open_session(TRC_SESSION_LOCAL, NULL);
 
 		// set callback dispatchers for cooperation with tracer
-		m_debugger.set_callback(TRC_DBG_EVENTS_CALLBACK, thunk_dbg_event, this);
-		m_debugger.set_callback(TRC_PROCESS_EVENTS_CALLBACK, thunk_proc_event, this);
-		m_debugger.set_callback(TRC_EXCEPTIONS_CALLBACK, thunk_except_event, this);
+		//m_debugger.set_callback(TRC_DBG_EVENTS_CALLBACK, thunk_dbg_event, this);
+		//m_debugger.set_callback(TRC_PROCESS_EVENTS_CALLBACK, thunk_proc_event, this);
+		//m_debugger.set_callback(TRC_EXCEPTIONS_CALLBACK, thunk_except_event, this);
 
-		// TODO: make settings dialog like ollydbg
-		m_debugger.load(dialog.GetPath(), TRC_OPT_BREAK_ON_EP | TRC_OPT_BREAK_ON_SEH_HANDLER);
+		//// TODO: make settings dialog like ollydbg
+		//m_debugger.load(dialog.GetPath(), TRC_OPT_BREAK_ON_EP | TRC_OPT_BREAK_ON_SEH_HANDLER);
 
 		//CONTEXT ctx;
 		//PTHREAD_LIST threadList = trc_get_thread_list(m_debugger.m_sesId);
@@ -554,10 +554,10 @@ void MainFrame::OnMsgBP( GuiProcEvent& event )
 	case GUI_MSG_ADD_BP:
 		{
 			UCHAR addrbp = htodw((char*)event.getAddrBP().c_str());
-			trc_set_bp(m_trc_debug.getSesId(), TRC_BP_SOFTWARE,
-				(UCHAR)m_trc_debug.getDebugEvent().CurrentThread->TID, (PVOID)addrbp, NULL);
+			//trc_set_bp(m_trc_debug.getSesId(), TRC_BP_SOFTWARE,
+				//(UCHAR)m_trc_debug.getDebugEvent().CurrentThread->TID, (PVOID)addrbp, NULL);
 
-			evt.setDebugEvent(m_trc_debug.getDebugEvent());
+			//evt.setDebugEvent(m_trc_debug.getDebugEvent());
 			evt.setSesId(m_trc_debug.getSesId());
 			evt.setAddrBP(event.getAddrBP());
 			evt.setDisasmBP(event.getDisasmBP());
@@ -568,10 +568,10 @@ void MainFrame::OnMsgBP( GuiProcEvent& event )
 	case GUI_MSG_DEL_BP:
 		{
 			UCHAR addrbp = htodw((char*)event.getAddrBP().c_str());
-			trc_delete_bp(m_trc_debug.getSesId(),
-				(UCHAR)m_trc_debug.getDebugEvent().CurrentThread->TID, (PVOID)addrbp, TRC_BP_SOFTWARE);
+			//trc_delete_bp(m_trc_debug.getSesId(),
+			//	(UCHAR)m_trc_debug.getDebugEvent().CurrentThread->TID, (PVOID)addrbp, TRC_BP_SOFTWARE);
 
-			evt.setDebugEvent(m_trc_debug.getDebugEvent());
+			//evt.setDebugEvent(m_trc_debug.getDebugEvent());
 			evt.setSesId(m_trc_debug.getSesId());
 			evt.setAddrBP(event.getAddrBP());
 			evt.setDisasmBP(event.getDisasmBP());

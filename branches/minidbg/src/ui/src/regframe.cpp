@@ -218,24 +218,24 @@ void RegRichTextCtrl::EditRegister( const char *RegNames, const wxString &value 
 				wxString::Format(wxT("%X"), tmp), this);
 
 	// if user press cancel then newStr will be empty
-	if (!newStr.empty())
-	{
-		Context ctx;
-		trc_get_thread_ctx(m_sesId, m_tid, &ctx);
+	//if (!newStr.empty())
+	//{
+	//	Context ctx;
+	//	trc_get_thread_ctx(m_sesId, m_tid, &ctx);
 
-		newStr.ToULong(&tmp, 16);
+	//	newStr.ToULong(&tmp, 16);
 
-		WhatBasicRegister(RegNames, tmp, ctx);
+	//	WhatBasicRegister(RegNames, tmp, ctx);
 
-		// TODO: to complete output for all warnings and errors to wxLog
-		if (0 == trc_set_thread_ctx(m_sesId, m_tid, &ctx) )
-			wxLogError(wxString(wxT("Can't set ")) + RegNames + wxString(wxT(" value")));
-		Context ctx_new;
-		if (0 == trc_get_thread_ctx(m_sesId, m_tid, &ctx_new) )
-			wxLogError(wxString(wxT("Can't get ")) + RegNames + wxString(wxT(" value")));
+	//	// TODO: to complete output for all warnings and errors to wxLog
+	//	if (0 == trc_set_thread_ctx(m_sesId, m_tid, &ctx) )
+	//		wxLogError(wxString(wxT("Can't set ")) + RegNames + wxString(wxT(" value")));
+	//	Context ctx_new;
+	//	if (0 == trc_get_thread_ctx(m_sesId, m_tid, &ctx_new) )
+	//		wxLogError(wxString(wxT("Can't get ")) + RegNames + wxString(wxT(" value")));
 
-		OutputBasic(ctx_new);
-	}
+	//	OutputBasic(ctx_new);
+	//}
 }
 
 void RegRichTextCtrl::WhatBasicRegister( const char *RegNames, int val, Context &ctx )
@@ -361,7 +361,7 @@ void RegFrame::Output( TrcDebugEvent& event )
 	m_textCtrlBasic->SetContextId(m_sesId);
 	m_textCtrlBasic->SetThreadId(m_tid);
 
-	trc_get_thread_ctx(m_sesId, m_tid, &ctx);
+	//trc_get_thread_ctx(m_sesId, m_tid, &ctx);
 
 	m_textCtrlBasic->OutputBasic(ctx);
 	m_textCtrlDR->OutputDR(ctx);

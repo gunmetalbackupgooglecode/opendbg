@@ -61,10 +61,10 @@ void StackFrame::LoadParams()
 
 void StackFrame::RefreshMemory( TrcDebugEvent& event )
 {
-	CONTEXT ctx;
-	PTHREAD_LIST threadList = trc_get_thread_list(event.getSesId());
-	trc_get_thread_ctx(event.getSesId(), threadList->thread[0].TID, &ctx);
-	OutputMemory(event.getSesId(), ctx.Ebp);
+	//CONTEXT ctx;
+	//PTHREAD_LIST threadList = trc_get_thread_list(event.getSesId());
+	//trc_get_thread_ctx(event.getSesId(), threadList->thread[0].TID, &ctx);
+	//OutputMemory(event.getSesId(), ctx.Ebp);
 }
 
 void StackFrame::OutputMemory( ULONG sesId, ULONG addr )
@@ -76,27 +76,27 @@ void StackFrame::OutputMemory( ULONG sesId, ULONG addr )
 	int k = 0, align = 16, padding = 0, pktSize = szMemRegion;
 	unsigned char *buff = new unsigned char[pktSize];
 	unsigned char *p = buff;
-	trc_read_memory(sesId, (PVOID)addr, buff, pktSize);
+	//trc_read_memory(sesId, (PVOID)addr, buff, pktSize);
 
-	while(pktSize)
-	{
-		if(pktSize<16)
-		{
-			align = pktSize;
-			padding = 16 - pktSize;
-		}
-		
-		for(int j = 0; j < align; j++, k++)
-		{
-			// unshowable chars
-			if( (p[k] != 173) && (p[k] > 31 && p[k] < 127 || p[k] > 159) )
-				output.Append( wxString::Format( wxT("%c"), p[k]) );
-			else
-				output.Append( wxString::Format(wxT(".")) ); //Special Character '?'
-		}
+	//while(pktSize)
+	//{
+	//	if(pktSize<16)
+	//	{
+	//		align = pktSize;
+	//		padding = 16 - pktSize;
+	//	}
+	//	
+	//	for(int j = 0; j < align; j++, k++)
+	//	{
+	//		// unshowable chars
+	//		if( (p[k] != 173) && (p[k] > 31 && p[k] < 127 || p[k] > 159) )
+	//			output.Append( wxString::Format( wxT("%c"), p[k]) );
+	//		else
+	//			output.Append( wxString::Format(wxT(".")) ); //Special Character '?'
+	//	}
 
-		pktSize -= align;
-	}
+	//	pktSize -= align;
+	//}
 
 	m_stackctrl.SetAddrValue(addr, szMemRegion);
 	m_stackctrl.SetDumpValue(output);

@@ -97,7 +97,7 @@ void BPFrame::LoadParams()
 //
 void BPFrame::OnAddBP( GuiProcEvent& event )
 {
-	PBP_LST bp_list = trc_get_bp_list(event.getSesId(),
+	/*PBP_LST bp_list = trc_get_bp_list(event.getSesId(),
 	(ULONG)event.getDebugEvent().CurrentThread->TID);
 
 	m_listCtrl.DeleteAllItems(); // очищаем список
@@ -106,7 +106,7 @@ void BPFrame::OnAddBP( GuiProcEvent& event )
 		m_listCtrl.InsertItem(i, wxT(""));
 		m_listCtrl.SetItem( i, 0, wxString::Format(wxT("%X"), bp_list->bp[i].addr) );
 		m_listCtrl.SetItem( i, 1, wxString::Format(wxT("%s"), event.getDebugEvent().CurrentModule->ModName));
-	}
+	}*/
 }
 
 //////////////////////////////////////////////////////////////////////////

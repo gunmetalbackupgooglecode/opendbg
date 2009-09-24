@@ -67,10 +67,10 @@ void MemFrame::LoadParams()
 
 void MemFrame::RefreshMemory( TrcDebugEvent& event )
 {
-	CONTEXT ctx;
-	PTHREAD_LIST threadList = trc_get_thread_list(event.getSesId());
-	trc_get_thread_ctx(event.getSesId(), threadList->thread[0].TID, &ctx);
-	OutputMemory(event.getSesId(), ctx.Eip);
+	//CONTEXT ctx;
+	//PTHREAD_LIST threadList = trc_get_thread_list(event.getSesId());
+	//trc_get_thread_ctx(event.getSesId(), threadList->thread[0].TID, &ctx);
+	//OutputMemory(event.getSesId(), ctx.Eip);
 }
 
 void MemFrame::OutputMemory( uint32_t sesId, uint32_t mem_addr)
@@ -83,31 +83,31 @@ void MemFrame::OutputMemory( uint32_t sesId, uint32_t mem_addr)
 	unsigned char *buff = new unsigned char[pktSize];
 	unsigned char *p = buff;
     // CHECK: is mem_addr should be used?
-	trc_read_memory(sesId, (PVOID)mem_addr, buff, pktSize);
+	//trc_read_memory(sesId, (PVOID)mem_addr, buff, pktSize);
 
-	while(pktSize)
-	{
-		if(pktSize < 16)
-		{
-			align = pktSize;
-			padding = 16 - pktSize;
-		}
-		
-		for(int j = 0; j < align; j++, k++)
-		{
-			// unshowable chars
-			if( (p[k] != 173) && (p[k] > 31 && p[k] < 127 || p[k] > 159) )
-				output.Append( wxString::Format( wxT("%c"), p[k]) );
-			else
-				output.Append( wxString::Format(wxT(".")) ); //Special Character '?'
-		}
+	//while(pktSize)
+	//{
+	//	if(pktSize < 16)
+	//	{
+	//		align = pktSize;
+	//		padding = 16 - pktSize;
+	//	}
+	//	
+	//	for(int j = 0; j < align; j++, k++)
+	//	{
+	//		// unshowable chars
+	//		if( (p[k] != 173) && (p[k] > 31 && p[k] < 127 || p[k] > 159) )
+	//			output.Append( wxString::Format( wxT("%c"), p[k]) );
+	//		else
+	//			output.Append( wxString::Format(wxT(".")) ); //Special Character '?'
+	//	}
 
-		pktSize -= align;
-	}
+	//	pktSize -= align;
+	//}
 
-    // CHECK: is mem_addr should be used?
-	m_memctrl->SetAddrValue(mem_addr, szMemRegion);
-	m_memctrl->SetDumpValue(output);
+ //   // CHECK: is mem_addr should be used?
+	//m_memctrl->SetAddrValue(mem_addr, szMemRegion);
+	//m_memctrl->SetDumpValue(output);
 
 	delete[] buff;
 }

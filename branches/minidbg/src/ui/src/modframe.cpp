@@ -91,16 +91,16 @@ void ModFrame::LoadParams()
 //////////////////////////////////////////////////////////////////////////
 void ModFrame::RefreshModList(ULONG sesId)
 {
-	PMOD_LIST mod_list = trc_get_module_list(sesId);
+	//PMOD_LIST mod_list = trc_get_module_list(sesId);
 
-	m_listCtrl.DeleteAllItems();
-	for (unsigned long i = 0; i < mod_list->count; ++i)
-	{
-		m_listCtrl.InsertItem(i, "");
-		m_listCtrl.SetItem(i, 0, wxString::Format(wxT("%X"), mod_list->module[i].ImageBase));
-		m_listCtrl.SetItem(i, 1, wxString::Format(wxT("%i"), mod_list->module[i].ImageSize));
-		m_listCtrl.SetItem(i, 5, mod_list->module[i].ModName);
-	}
+	//m_listCtrl.DeleteAllItems();
+	//for (unsigned long i = 0; i < mod_list->count; ++i)
+	//{
+	//	m_listCtrl.InsertItem(i, "");
+	//	m_listCtrl.SetItem(i, 0, wxString::Format(wxT("%X"), mod_list->module[i].ImageBase));
+	//	m_listCtrl.SetItem(i, 1, wxString::Format(wxT("%i"), mod_list->module[i].ImageSize));
+	//	m_listCtrl.SetItem(i, 5, mod_list->module[i].ModName);
+	//}
 }
 
 void ModFrame::OnSize( wxSizeEvent& event )

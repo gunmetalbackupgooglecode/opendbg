@@ -33,12 +33,13 @@ Debugger::Debugger()
 
 int Debugger::init()
 {
-	return trc_init();
+	//return trc_init();
+	return 1;
 }
 
 void Debugger::bp_list()
 {
-	PBP_LST bp_list=trc_get_bp_list(m_sesId,NULL);
+	/*PBP_LST bp_list=trc_get_bp_list(m_sesId,NULL);
 	CHAR hw[]="hardware";
 	CHAR sf[]="software";
 	PCHAR type=NULL;
@@ -60,12 +61,13 @@ void Debugger::bp_list()
 		}
 		printf("===================\n");
 		trc_free_list(bp_list);
-	}
+	}*/
 }
 
 void Debugger::threads_list()
 {
-PTHREAD_LIST thrd_lst=trc_get_thread_list(m_sesId);
+	/*
+	PTHREAD_LIST thrd_lst=trc_get_thread_list(m_sesId);
 		if(thrd_lst){
 			printf("running threads list==================\n");
 			for(unsigned int i=0;i<thrd_lst->count;i++){
@@ -73,51 +75,55 @@ PTHREAD_LIST thrd_lst=trc_get_thread_list(m_sesId);
 			}
 			printf("======================================\n");
 			trc_free_list(thrd_lst);
-		}
+		}*/
 }
 
 void Debugger::mod_list()
 {
-	PMOD_LIST mod_list=trc_get_module_list(m_sesId);
-		if(mod_list){
-			printf("loaded modules list==================\n");
-			for(unsigned int i=0;i<mod_list->count;i++){
-				printf("mod path: %s,mod base: %x,mod size: %x\n",mod_list->module[i].ModName,mod_list->module[i].ImageBase,mod_list->module[i].ImageSize);
-			}
-			printf("=====================================\n");
-			trc_free_list(mod_list);
-		}
+	//PMOD_LIST mod_list=trc_get_module_list(m_sesId);
+	//	if(mod_list){
+	//		printf("loaded modules list==================\n");
+	//		for(unsigned int i=0;i<mod_list->count;i++){
+	//			printf("mod path: %s,mod base: %x,mod size: %x\n",mod_list->module[i].ModName,mod_list->module[i].ImageBase,mod_list->module[i].ImageSize);
+	//		}
+	//		printf("=====================================\n");
+	//		trc_free_list(mod_list);
+	//	}
 }
 
 uint32_t Debugger::set_hwbp( char * bp )
 {
-	ULONG addr=htodw(bp),result;
-	result=trc_set_bp(m_sesId, TRC_HWBP_EXECUTE,NULL,(PVOID)addr, NULL);
-	return result;
+	//ULONG addr=htodw(bp),result;
+	//result=trc_set_bp(m_sesId, TRC_HWBP_EXECUTE,NULL,(PVOID)addr, NULL);
+	//return result;
+	return 1;
 }
 
 uint32_t Debugger::set_bp( char * bp )
 {
-	ULONG addr=htodw(bp),result;
-	result=trc_set_bp(m_sesId, TRC_BP_SOFTWARE,NULL,(PVOID)addr, NULL);
-	return result;
+	//ULONG addr=htodw(bp),result;
+	//result=trc_set_bp(m_sesId, TRC_BP_SOFTWARE,NULL,(PVOID)addr, NULL);
+	//return result;
+	return 1;
 }
 
 uint32_t Debugger::del_bp( char * bp )
 {
-	ULONG addr = htodw(bp),result;
-	result = trc_delete_bp(m_sesId,NULL,(PVOID)addr, NULL);
-	return result;
+	//ULONG addr = htodw(bp),result;
+	//result = trc_delete_bp(m_sesId,NULL,(PVOID)addr, NULL);
+	//return result;
+	return 1;
 }
 
 int Debugger::load_target( char *target, uint32_t options )
 {
-	printf("loading %s\n", target);
-		if(!trc_load_target(m_sesId, target, options ))//| TRC_OPT_BREAK_ON_MOD_EP  
-		{
-			printf("can\'t load target!!\n");
-			return 0;
-		}
+	//printf("loading %s\n", target);
+	//	if(!trc_load_target(m_sesId, target, options ))//| TRC_OPT_BREAK_ON_MOD_EP  
+	//	{
+	//		printf("can\'t load target!!\n");
+	//		return 0;
+	//	}
+	//return 1;
 	return 1;
 }
 
@@ -128,51 +134,51 @@ void Debugger::print_mem(char *mem_addr)
 	int i=0,k=0,align=16,padding=0,pktSize=128;
 	u_char buff[128];
 	u_char *p=buff;
-	trc_read_memory(m_sesId,(PVOID)addr,buff,128);
-		while(pktSize)
-		{
-			if(pktSize<16)
-			{
-				align=pktSize;
-				padding=16-pktSize;
-			}
-			k=i;
-			for(int j=0;j<align;j++,k++)
-			{
-				printf("%.2x ",p[k]);
-			}
-			
-			for(int t=0;t<padding;t++)
-			{
-				printf("   ");
-			}
-			
-			printf("\t");
-			k=i;
-			for(int j=0;j<align;j++,k++){
-				if(p[k]==0x0a||p[k]==0x0d||p[k]==0x09){
-					printf(".");
-				} else {
-					printf("%c",p[k]);
-				}
-			}
-		i+=align;
-					
-			printf("\n");
-			pktSize-=align;
-				
-		}
+	//trc_read_memory(m_sesId,(PVOID)addr,buff,128);
+	//	while(pktSize)
+	//	{
+	//		if(pktSize<16)
+	//		{
+	//			align=pktSize;
+	//			padding=16-pktSize;
+	//		}
+	//		k=i;
+	//		for(int j=0;j<align;j++,k++)
+	//		{
+	//			printf("%.2x ",p[k]);
+	//		}
+	//		
+	//		for(int t=0;t<padding;t++)
+	//		{
+	//			printf("   ");
+	//		}
+	//		
+	//		printf("\t");
+	//		k=i;
+	//		for(int j=0;j<align;j++,k++){
+	//			if(p[k]==0x0a||p[k]==0x0d||p[k]==0x09){
+	//				printf(".");
+	//			} else {
+	//				printf("%c",p[k]);
+	//			}
+	//		}
+	//	i+=align;
+	//				
+	//		printf("\n");
+	//		pktSize-=align;
+	//			
+	//	}
 }
 
 void Debugger::print_regs( uint32_t tid )
 {
-	CONTEXT ctx;
-	ZeroMemory(&ctx,sizeof(ctx));
-	if(trc_get_thread_ctx(m_sesId,tid,&ctx))
-	{
-		printf("eax=%.8x ebx=%.8x ecx=%.8x edx=%.8x edi=%.8x esi=%.8x\nebp=%.8x esp=%.8x eip=%.8x\n",
-			ctx.Eax,ctx.Ebx,ctx.Ecx,ctx.Edx,ctx.Edi,ctx.Esi,ctx.Ebp,ctx.Esp,ctx.Eip);
-	}
+	//CONTEXT ctx;
+	//ZeroMemory(&ctx,sizeof(ctx));
+	//if(trc_get_thread_ctx(m_sesId,tid,&ctx))
+	//{
+	//	printf("eax=%.8x ebx=%.8x ecx=%.8x edx=%.8x edi=%.8x esi=%.8x\nebp=%.8x esp=%.8x eip=%.8x\n",
+	//		ctx.Eax,ctx.Ebx,ctx.Ecx,ctx.Edx,ctx.Edi,ctx.Esi,ctx.Ebp,ctx.Esp,ctx.Eip);
+	//}
 }
 
 uint32_t Debugger::split_cmd( char * str,char **cmd,char **arg )
@@ -297,18 +303,18 @@ void Debugger::load( const wxString &path, uint32_t options )
 
 void Debugger::unload()
 {
-	trc_session_close(m_sesId);
+	//trc_session_close(m_sesId);
 }
 
 void Debugger::open_session( uint32_t options, LPVOID params )
 {
 	// TRC_SESSION_LOCAL, NULL
-	m_sesId = trc_session_open(options, params);
+	//m_sesId = trc_session_open(options, params);
 }
 
 void Debugger::close_session()
 {
-	trc_session_close(m_sesId);
+	//trc_session_close(m_sesId);
 	m_sesId = 0;
 }
 

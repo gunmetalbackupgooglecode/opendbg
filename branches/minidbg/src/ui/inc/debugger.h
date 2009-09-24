@@ -33,7 +33,7 @@ public:
 
 	void set_callback(uint32_t type, PVOID callback, PVOID pthis)
 	{
-		trc_set_callback(m_sesId, type, callback, pthis);
+		//trc_set_callback(m_sesId, type, callback, pthis);
 	}
 
 	void set_tracemode(uint32_t mode)

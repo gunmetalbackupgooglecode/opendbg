@@ -127,7 +127,8 @@ DISASMAPI	PMnemonics DasmDisasmCmd(ULONG sesId,PVOID addr,ULONG size)
 	
 	ULONG instCount=0,i=0;
 
-	if(trc_read_memory(sesId,addr,buffer,size))
+	//if(trc_read_memory(sesId,addr,buffer,size))
+	if (0)
 	{
 		if(oneCmd)
 			instCount=1;

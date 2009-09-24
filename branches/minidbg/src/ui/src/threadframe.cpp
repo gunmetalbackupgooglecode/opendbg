@@ -61,19 +61,19 @@ void ThreadFrame::LoadParams()
 //////////////////////////////////////////////////////////////////////////
 void ThreadFrame::RefreshThreadList( ULONG sesId )
 {
-	PTHREAD_LIST thread_list = trc_get_thread_list(sesId);
+	//PTHREAD_LIST thread_list = trc_get_thread_list(sesId);
 
-	int szThread = thread_list->count;
+	//int szThread = thread_list->count;
 
-	m_listCtrl.DeleteAllItems();
+	//m_listCtrl.DeleteAllItems();
 
 
-	for (int i = 0; i < szThread; ++i)
-	{
-		m_listCtrl.InsertItem(i, "");
-		m_listCtrl.SetItem(i, 0, wxString::Format(wxT("%X"), thread_list->thread[i].TID));
-		m_listCtrl.SetItem(i, 1, wxString::Format(wxT("%X"), thread_list->thread[i].teb_addr));
-	}
+	//for (int i = 0; i < szThread; ++i)
+	//{
+	//	m_listCtrl.InsertItem(i, "");
+	//	m_listCtrl.SetItem(i, 0, wxString::Format(wxT("%X"), thread_list->thread[i].TID));
+	//	m_listCtrl.SetItem(i, 1, wxString::Format(wxT("%X"), thread_list->thread[i].teb_addr));
+	//}
 }
 
 void ThreadFrame::OnSize( wxSizeEvent& event )
