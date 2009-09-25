@@ -16,7 +16,7 @@ GUI:
 
 The following environment variables should be defined:
 ||*Variable*||*Example*||
-||BOOST_ROOT||C:\Program Files\Boost||
+||BOOST_ROOT||C:\Program Files\boost\boost_1_40_0||
 ||DbgToolsSDK||C:\Program Files\Debugging Tools for Windows (x86)\sdk||
 ||WINDDK||C:\WinDDK\7600.16385.0||
 ||WXWIN||C:\wxWidgets-2.8.10||
