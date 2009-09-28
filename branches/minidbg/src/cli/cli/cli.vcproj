@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -45,8 +45,8 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CallingConvention="0"
@@ -62,12 +62,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="dbghelp.lib"
 				AdditionalDependencies="dbgapi.lib"
+				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(BOOST_ROOT)\stage\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
+				EntryPointSymbol=""
 				TargetMachine="1"
 			/>
 			<Tool
@@ -193,26 +194,6 @@
 				RelativePath=".\debugger_cli.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\stdafx.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -220,23 +201,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\ext\command_line_interpreter.hpp"
-				>
-			</File>
-			<File
 				RelativePath=".\debugger.h"
 				>
 			</File>
 			<File
 				RelativePath=".\debugger_cli.h"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\targetver.h"
 				>
 			</File>
 		</Filter>

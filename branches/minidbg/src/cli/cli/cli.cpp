@@ -5,7 +5,6 @@
 #include "pdbparser.h"
 
 namespace po = boost::program_options;
-using namespace std;
 
 #define OPENDBG_VERSION_STR "0.1-dev"
 #define CONFIG_FILE_PATH "cli.conf"
@@ -22,7 +21,7 @@ std::ostream& operator<<(std::ostream& out, std::vector<T> const& v)
 	return out;
 }
 
-int __cdecl _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
 	try
 	{
@@ -33,32 +32,32 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		bool interactive = isatty(fileno(stdin)) != 0;
 #endif
 		bool quiet = !interactive;
-		typedef map<string, po::options_description>::iterator MapIter;
-		typedef vector<string>::const_iterator VectorIter;
-		map<string, po::options_description> options_modules;
+		typedef std::map<std::string, po::options_description>::iterator MapIter;
+		typedef std::vector<std::string>::const_iterator VectorIter;
+		std::map<std::string, po::options_description> options_modules;
 
 		// initialize option sets
 		po::options_description generic_options("Generic options");
 		generic_options.add_options()
 			("help,?", "show this help screen")
 			("verbose", "show more information")
-			("help-module", po::value< vector<string> >()->multitoken()->zero_tokens(), "show help module list or help for given module(s)")
+			("help-module", po::value< std::vector<std::string> >()->multitoken()->zero_tokens(), "show help module list or help for given module(s)")
 			("version", "print version")
 			("quiet,q", "do not display introductory message")
 		;
-		options_modules.insert(make_pair("generic", generic_options));
+		options_modules.insert(std::make_pair("generic", generic_options));
 
 		po::options_description config_options("Configuration");
 		config_options.add_options()
-			("input-scripts,s", po::value< vector<string> >()->multitoken()->zero_tokens()->composing(), "input scripts")
+			("input-scripts,s", po::value< std::vector<std::string> >()->multitoken()->zero_tokens()->composing(), "input scripts")
 		;
-		options_modules.insert(make_pair("config", config_options));
+		options_modules.insert(std::make_pair("config", config_options));
 
 		po::options_description hidden_options("Hidden options");
 		hidden_options.add_options()
-			("input-processes", po::value< vector<string> >()->multitoken(), "processes to analyze")
+			("input-processes", po::value< std::vector<std::string> >()->multitoken(), "processes to analyze")
 		;
-		options_modules.insert(make_pair("hidden", hidden_options));
+		options_modules.insert(std::make_pair("hidden", hidden_options));
 
 		po::options_description result_options;
 		result_options.add(generic_options).add(config_options).add(hidden_options);
@@ -72,7 +71,7 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		po::variables_map vars;
 		po::store(po::basic_command_line_parser<_TCHAR>(argc, argv).
 			options(result_options).positional(pos_opt_desc).run(), vars);
-		ifstream config_file(CONFIG_FILE_PATH);
+		std::ifstream config_file(CONFIG_FILE_PATH);
 		if (config_file.good())
 			po::store(po::parse_config_file(config_file, result_options, true), vars);
 		config_file.close();
@@ -81,13 +80,13 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		// show welcome message
 		if (!vars.count("quiet") && !quiet)
 		{
-			cout << "opendbg " << OPENDBG_VERSION_STR << " cli" << endl;
+			std::cout << "opendbg " << OPENDBG_VERSION_STR << " cli\n";
 			if (!(vars.count("help") || vars.count("help-module") || vars.count("input-processes") || vars.count("input-scripts")))
 			{
-				cout << "Copyright (C) 2009 Opendbg developers group." << endl;
-				cout << "This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'." << endl;
-				cout << "This is free software, and you are welcome to redistribute it" << endl;
-				cout << "under certain conditions; type `show c' for details." << endl;
+				std::cout << "Copyright (C) 2009 opendbg developers group.\n";
+				std::cout << "This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.\n";
+				std::cout << "This is free software, and you are welcome to redistribute it\n";
+				std::cout << "under certain conditions; type `show c' for details.\n";
 			}
 		}
 		else
@@ -97,34 +96,34 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		// show help
 		if (vars.count("help"))
 		{
-			cout << visible_options << endl;
+			std::cout << visible_options << "\n";
 			if (vars.count("verbose"))
 			{
-				cout << "Additional debugger options can be specified in " << CONFIG_FILE_PATH << " file." << endl;
-				cout << "For the full list of options, please see cli --help-module config" << endl;
+				std::cout << "Additional debugger options can be specified in " << CONFIG_FILE_PATH << " file.\n";
+				std::cout << "For the full list of options, please see cli --help-module config\n";
 			}
 			return 1;
 		}
 		if (vars.count("help-module"))
 		{
-			const vector<string>& modules = vars["help-module"].as< vector<string> >();
+			const std::vector<std::string>& modules = vars["help-module"].as< std::vector<std::string> >();
 			if (!modules.empty())
 			{
 				MapIter iter;
 				for(VectorIter it = modules.begin(); it != modules.end(); it++)
 				{
 					if ((iter = options_modules.find(*it)) != options_modules.end())
-						cout << iter->second << endl;
+						std::cout << iter->second << "\n";
 					else
-						cout << "module " << *it << " not found" << endl;
+						std::cout << "module " << *it << " not found\n";
 				}
 			}
 			else
 			{
-				vector<string> module_names;
+				std::vector<std::string> module_names;
 				for(MapIter it = options_modules.begin(); it != options_modules.end(); it++)
 					module_names.push_back(it->first);
-				cout << "available help modules: " << module_names << endl;
+				std::cout << "available help modules: " << module_names << "\n";
 			}
 			return 1;
 		}
@@ -139,20 +138,20 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 		std::stringstream ss;
 		if (vars.count("input-processes"))
 		{
-			const vector<string>& processes = vars["input-processes"].as< vector<string> >();
+			const std::vector<std::string>& processes = vars["input-processes"].as< std::vector<std::string> >();
 			for(VectorIter it = processes.begin(); it != processes.end(); ++it)
 			{
-				ss << "start " << *it << endl;
+				ss << "start " << *it << "\n";
 				cli.interpret(ss);
 				ss.clear();
 			}
 		}
 		if (vars.count("input-scripts"))
 		{
-			const vector<string>& scripts = vars["input-scripts"].as< vector<string> >();
+			const std::vector<std::string>& scripts = vars["input-scripts"].as< std::vector<std::string> >();
 			for(VectorIter it = scripts.begin(); it != scripts.end(); ++it)
 			{
-				ss << "load " << *it << endl;
+				ss << "load " << *it << "\n";
 				cli.interpret(ss);
 				ss.clear();
 			}
@@ -162,45 +161,45 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
 	}
 	catch (po::multiple_values&)
 	{
-		cerr << "error: too many values" << endl;
+		std::cerr << "error: too many values\n";
 		return 1;
 	}
 	catch (po::multiple_occurrences&)
 	{
-		cerr << "error: some parameter occurs more than once" << endl;
+		std::cerr << "error: some parameter occurs more than once\n";
 	}
 	catch (po::unknown_option& e)
 	{
-		cerr << "error: unknown option " << e.what() << endl;
+		std::cerr << "error: unknown option " << e.what() << "\n";
 	}
 	catch (po::invalid_command_line_syntax& e)
 	{
 		switch (e.kind())
 		{
 		case po::invalid_command_line_syntax::missing_parameter:
-			cerr << "error: " << e.what();
+			std::cerr << "error: " << e.what();
 			break;
 		default:
-			cerr << "error: " << e.what();
+			std::cerr << "error: " << e.what();
 			break;
 		}
 	}
 	catch (po::error& e)
 	{
-		cerr << "error: unknown error parsing command-line arguments: " << e.what() << endl;
+		std::cerr << "error: unknown error parsing command-line arguments: " << e.what() << "\n";
 	}
 	catch(pdb::pdb_error& e)
 	{
-		cerr << "pdb error: " << e.what() << endl;
+		std::cerr << "pdb error: " << e.what() << "\n";
 	}
-	catch(exception& e)
+	catch(std::exception& e)
 	{
-		cerr << "error: " << e.what() << endl;
+		std::cerr << "error: " << e.what() << "\n";
 		return 1;
 	}
 	catch(...)
 	{
-		cerr << "exception of unknown type!\n";
+		std::cerr << "exception of unknown type!\n";
 	}
 	return 0;
 }
