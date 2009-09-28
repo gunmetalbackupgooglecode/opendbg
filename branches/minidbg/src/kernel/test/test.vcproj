@@ -24,12 +24,12 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="2"
 			CharacterSet="1"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -195,12 +195,13 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"

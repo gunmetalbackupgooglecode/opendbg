@@ -18,10 +18,11 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="0"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -46,7 +47,11 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(TargetName).pch"
+				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
+				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
+				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CallingConvention="0"
@@ -95,11 +100,12 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -125,6 +131,11 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="stdafx.h"
+				PrecompiledHeaderFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(TargetName).pch"
+				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
+				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
+				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 				CallingConvention="0"
@@ -141,9 +152,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="false"
-				AdditionalOptions="dbghelp.lib"
+				AdditionalOptions="/FORCE:MULTIPLE dbghelp.lib"
 				AdditionalDependencies="dbgapi.lib"
-				LinkIncremental="1"
+				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(BOOST_ROOT)\stage\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -185,14 +196,82 @@
 			<File
 				RelativePath=".\cli.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="stdafx.h"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="stdafx.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\debugger.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="stdafx.h"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="stdafx.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\debugger_cli.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="stdafx.h"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="stdafx.h"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\stdafx.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -206,6 +285,10 @@
 			</File>
 			<File
 				RelativePath=".\debugger_cli.h"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 		</Filter>

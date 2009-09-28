@@ -28,8 +28,8 @@ namespace trc
 breakpoint::breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 	: m_address(address)
 {
-	BYTE buf;
-	u32 readed;
+	//BYTE buf;
+	//u32 readed;
 	// В случае установки soft-брикпойнта (int 3) проверить
 	// чтобы его не было там изначально, а если есть --
 	// добавить флаг для генерации исключения после срабатывания

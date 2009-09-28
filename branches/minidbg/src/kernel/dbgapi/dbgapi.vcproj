@@ -18,11 +18,11 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="0"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -67,7 +67,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="ntdll.lib psapi.lib ole32.lib oleaut32.lib uuid.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;;&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
 				GenerateManifest="false"
 				GenerateDebugInformation="true"
@@ -97,17 +97,17 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(SolutionDir)..\..\bin\$(ConfigurationName)\dbgapi.dll $(SolutionDir)\$(ConfigurationName)"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -190,7 +190,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(SolutionDir)..\..\bin\$(ConfigurationName)\dbgapi.dll $(SolutionDir)\$(ConfigurationName)"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>

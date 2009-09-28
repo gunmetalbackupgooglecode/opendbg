@@ -33,7 +33,7 @@ __cdecl
 main(int argc, char* argv[])
 {
 	event_filt filter;
-	HANDLE     pid;
+	//HANDLE     pid;
 	dbg_msg    *msg = new dbg_msg;
 	u8         flag;
 	std::vector<trc::breakpoint> breaks;

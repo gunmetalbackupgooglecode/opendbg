@@ -1,6 +1,11 @@
 #include "stdafx.h"
-#include <boost/program_options.hpp>
+// isatty
+#ifdef _MSC_VER
 #include <io.h>
+#else
+#include <unistd.h>
+#endif
+#include <boost/program_options.hpp>
 #include "debugger_cli.h"
 #include "pdbparser.h"
 
@@ -69,7 +74,7 @@ int main(int argc, char* argv[])
 
 		// load variables from config file
 		po::variables_map vars;
-		po::store(po::basic_command_line_parser<_TCHAR>(argc, argv).
+		po::store(po::basic_command_line_parser<char>(argc, argv).
 			options(result_options).positional(pos_opt_desc).run(), vars);
 		std::ifstream config_file(CONFIG_FILE_PATH);
 		if (config_file.good())

@@ -1,5 +1,10 @@
 #include "stdafx.h"
+// isatty
+#ifdef _MSC_VER
 #include <io.h>
+#else
+#include <unistd.h>
+#endif
 #include "debugger_cli.h"
 
 namespace po = boost::program_options;
@@ -9,7 +14,7 @@ boost::cli::commands_description debugger_cli::m_desc = boost::cli::commands_des
 debugger_cli::debugger_cli()
 {
 #ifdef _MSC_VER
-	m_interactive = 1;//_isatty(_fileno(stdin)) != 0;
+	m_interactive = _isatty(_fileno(stdin)) != 0;
 #else
 	m_interactive = isatty(fileno(stdin)) != 0;
 #endif
