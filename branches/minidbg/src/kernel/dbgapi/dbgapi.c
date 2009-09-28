@@ -82,7 +82,7 @@ static SC_HANDLE dbg_install_sc(const char *path, const char *name)
 
 DBGAPI_API
 HANDLE CALLING_CONVENTION dbg_create_process(
-        IN PCHAR cmd_line,
+        IN const char* cmd_line,
         IN ULONG create_flags
         )
 {
@@ -93,7 +93,7 @@ HANDLE CALLING_CONVENTION dbg_create_process(
     str.cb = sizeof(str);
 
     b_succ = CreateProcessA(
-               NULL, cmd_line,
+               NULL, const_cast<char*>(cmd_line),
                 NULL, NULL,
                 FALSE, create_flags,
                 NULL, NULL,

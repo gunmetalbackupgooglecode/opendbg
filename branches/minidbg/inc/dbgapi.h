@@ -338,7 +338,7 @@ int CALLING_CONVENTION dbg_attach_debugger(
 
 DBGAPI_API
 HANDLE CALLING_CONVENTION dbg_create_process(
-        IN PCHAR cmd_line,
+        IN const char* cmd_line,
         IN ULONG create_flags
         );
 

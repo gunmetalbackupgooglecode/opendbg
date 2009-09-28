@@ -23,59 +23,8 @@
 #include <windows.h>
 #include <cstdio>
 #include "dbgapi.h"
-#include "test.h"
-#include "breakpoints.h"
-
-// modified version for xp sp3
-static uintptr_t
-CALLBACK get_symbols_callback(
-		int sym_type, char * sym_name, char * sym_subname, pdb::pdb_parser& pdb
-		)
-{
-
-	if (sym_type == SYM_TIMESTAMP)
-	{
-		return 0x45E53F9C;
-	}
-
-	if (sym_type == SYM_NTAPI_NUM)
-	{
-		if (strcmp(sym_name, "ZwTerminateProcess") == 0) {
-			return 0x101;
-		}
-
-		if (strcmp(sym_name, "ZwCreateThread") == 0) {
-			return 0x035;
-		}
-
-		if (strcmp(sym_name, "ZwTerminateThread") == 0) {
-			return 0x102;
-		}
-	}
-
-	wchar_t sym_name_w[255];
-	MultiByteToWideChar(
-		CP_ACP, 0, sym_name, strlen(sym_name)+1,
-		sym_name_w, sizeof(sym_name_w)/sizeof(sym_name_w[0])
-	);
-
-	wchar_t sym_subname_w[255];
-	if (sym_subname && strlen(sym_subname)) {
-		MultiByteToWideChar(
-			CP_ACP, 0, sym_subname, strlen(sym_subname)+1,
-			sym_subname_w, sizeof(sym_subname_w)/sizeof(sym_subname_w[0])
-		);
-	}
-
-	if (sym_type == SYM_OFFSET) {
-		return pdb.get_symbol(sym_name_w).get_rva();
-	}
-
-	if (sym_type == SYM_STRUCT_OFFSET)
-		return pdb.get_type(sym_name_w).get_member(sym_subname_w).get_offset();
-
-	return 0;
-}
+#include "breakpoint.h"
+#include "tracer.h"
 
 int
 #ifdef _MSC_VER
@@ -94,33 +43,21 @@ main(int argc, char* argv[])
 	try {
 		do
 		{
-
-			if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) != 1) {
-				printf("dbgapi initialization error\n");
-				break;
-			}
+			trc::tracer tracer_test;
 
 			printf("dbgapi initialized\n");
 			printf("dbgapi version as %d\n", dbg_drv_version());
 
-			if ( (pid = dbg_create_process("C:\\Windows\\system32\\notepad.exe", CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL) {
-				printf("process not started\n");
-				break;
-			}
+			tracer_test.open_process("C:\\Windows\\system32\\notepad.exe");
 
-			printf("process started with pid %x\n", pid);
-
-			if (dbg_attach_debugger(pid) == 0) {
-				printf("debugger not attached\n");
-				break;
-			}
-
+			printf("process started with pid %x\n", tracer_test.get_pid());
 			printf("debugger attached\n");
+
 
 			filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
 			filter.filtr_count = 0;
 
-			if (dbg_set_filter(pid, &filter) == 0) {
+			if (dbg_set_filter(tracer_test.get_pid(), &filter) == 0) {
 				printf("dbg_set_filter error\n");
 				break;
 			}
@@ -130,7 +67,7 @@ main(int argc, char* argv[])
 			do
 			{
 				u32 continue_status = DBG_CONTINUE;
-				if (dbg_get_msg_event(pid, msg) == 0) {
+				if (dbg_get_msg_event(tracer_test.get_pid(), msg) == 0) {
 					printf("get debug message error\n");
 					break;
 				}
