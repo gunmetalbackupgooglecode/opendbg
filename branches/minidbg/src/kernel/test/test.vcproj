@@ -398,6 +398,10 @@
 				RelativePath=".\test.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\tracer.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

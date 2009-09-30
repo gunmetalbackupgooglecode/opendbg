@@ -48,11 +48,11 @@ main(int argc, char* argv[])
 			printf("dbgapi initialized\n");
 			printf("dbgapi version as %d\n", dbg_drv_version());
 
+			// start tracing
 			tracer_test.open_process("C:\\Windows\\system32\\notepad.exe");
 
 			printf("process started with pid %x\n", tracer_test.get_pid());
 			printf("debugger attached\n");
-
 
 			filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
 			filter.filtr_count = 0;
@@ -91,6 +91,7 @@ main(int argc, char* argv[])
 						msg->thread_start.teb_addr
 						);
 
+
 					continue_status = DBG_CONTINUE;
 					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
@@ -117,7 +118,7 @@ main(int argc, char* argv[])
 
 					switch (msg->exception.except_record.ExceptionCode)
 					{
-						case EXCEPTION_BREAKPOINT :
+						case EXCEPTION_BREAKPOINT:
 						{
 							flag = 0; // не было никакого бряка
 							// проверять наличие бряка
@@ -133,10 +134,16 @@ main(int argc, char* argv[])
 							else
 								continue_status = DBG_EXCEPTION_NOT_HANDLED ;
 						}
-						break ;
+						break;
+						
+						case EXCEPTION_SINGLE_STEP:
+						{
+							printf("SINGLE_STEP %x\n", msg->exception.except_record.ExceptionAddress);
+						}
+						break;
 
 					default:
-						continue_status  = DBG_CONTINUE ;
+						continue_status  = DBG_CONTINUE;
 						break ;
 					}
 					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
@@ -155,7 +162,10 @@ main(int argc, char* argv[])
 					continue_status = DBG_CONTINUE;
 					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
-				
+
+				if (!tracer_test.enable_single_step(msg->thread_id))
+					printf("can't enable single step for %x\n", msg->thread_id);
+
 				if (!ContinueDebugEvent((u32)msg->process_id, (u32)msg->thread_id, continue_status))
 					break;
 			} while (1);

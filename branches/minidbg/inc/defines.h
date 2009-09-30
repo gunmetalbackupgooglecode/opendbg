@@ -164,6 +164,9 @@ void debug_out(char *format, ...);
 #define insert_list_tail(a,b,c) ExInterlockedInsertTailList(a,plist(b),c)
 #define remove_list_head(a,b,c) ExInterlockedRemoveHeadList(a,plist(b),c)
 
+#define TF_BIT 0x100 /* TRACE0 flag bit in the i386 thread context flags */
+#define INT3_OPCODE 0xCC /* breakpoint opcode for i386 */
+
 #pragma warning(disable:4995)
 #pragma warning(disable:4164)
 #pragma intrinsic(memcpy,memset,memcmp)

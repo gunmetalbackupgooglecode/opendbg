@@ -36,6 +36,21 @@ public:
 	{
 	}
 
+	u3264 get_address()
+	{
+		return m_address;
+	}
+
+	u32 get_pid()
+	{
+		return m_proc_id;
+	}
+
+	u32 get_tid()
+	{
+		return m_thread_id;
+	}
+
 private:
 	u3264 m_address;
 	u32   m_proc_id;
