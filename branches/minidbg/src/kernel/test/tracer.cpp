@@ -1,5 +1,5 @@
 #include "tracer.h"
-
+#include "disasm.h"
 namespace trc
 {
 uintptr_t CALLBACK get_symbols_callback(
@@ -67,9 +67,16 @@ bool tracer::enable_single_step(HANDLE thread_id)
 	CONTEXT context;
 	if (dbg_get_context(thread_id, &context))
 	{
-		context.EFlags |= TF_BIT;
-		dbg_set_context(thread_id, &context);
-		return true;
+		// проверяем возможность трейса команды
+		if (is_instruction_untraceable)
+			;// выполнить "виртуально"
+			// либо поставить int 3 бряк
+		else
+		{
+			context.EFlags |= TF_BIT;
+			dbg_set_context(thread_id, &context);
+			return true;
+		}
 	}
 
 	return false;
