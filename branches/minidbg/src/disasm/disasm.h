@@ -1,3 +1,5 @@
+#ifndef DISASM_H_
+#define DISASM_H_
 #include "pstdint.h"
 
 /*************************
@@ -882,3 +884,5 @@ unsigned int disassemble(uint8_t *offset, struct INSTRUCTION *instr, struct PARA
 #ifdef __cplusplus
 }
 #endif
+
+#endif // DISASM_H_
