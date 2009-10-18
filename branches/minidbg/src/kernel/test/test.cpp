@@ -163,7 +163,7 @@ main(int argc, char* argv[])
 					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
-				if (!tracer_test.enable_single_step(msg->thread_id))
+				if (!tracer_test.enable_single_step(msg->process_id, msg->thread_id))
 					printf("can't enable single step for %x\n", msg->thread_id);
 
 				if (!ContinueDebugEvent((u32)msg->process_id, (u32)msg->thread_id, continue_status))

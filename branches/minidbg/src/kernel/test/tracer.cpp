@@ -1,6 +1,7 @@
 #include "tracer.h"
 #include "disasm.h"
 #include "analyzer.h"
+#include "breakpoint.h"
 namespace trc
 {
 uintptr_t CALLBACK get_symbols_callback(
@@ -69,24 +70,24 @@ void tracer::open_process(const std::string& filename)
 	params.mode = DISASSEMBLE_MODE_32;
 }
 
-bool tracer::enable_single_step(HANDLE thread_id)
+bool tracer::enable_single_step(HANDLE process_id, HANDLE thread_id)
 {
-	// undefined
-	bool is_instruction_untraceable = false;
+	int readed, cmdlength;
+	u8 buf[MAX_INSTRUCTION_LEN];
 	CONTEXT context;
 	if (dbg_get_context(thread_id, &context))
 	{
 		// проверяем возможность трейса команды
-		disassemble(context.Eip, &tracer::instr, &tracer::params);
-		if (is_instruction_untraceable(instr))
-			;// выполнить "виртуально"
-			// либо поставить int 3 бряк
-		else
-		{
-			context.EFlags |= TF_BIT;
-			dbg_set_context(thread_id, &context);
-			return true;
-		}
+		if (!dbg_read_memory(process_id, context.Eip, &buf, sizeof(buf), int &readed))
+			return false;
+		cmdlength = disassemble(buf, tracer::instr, &tracer::params);
+		if (analyser::is_instruction_untraceable(*instr))
+			breakpoint::breakpoint(process_id, thread_id, (u3264)(context.Eip + cmdlength));// поставить int 3 бряк
+		// записать что это quick-бряк
+
+		context.EFlags |= TF_BIT;
+		dbg_set_context(thread_id, &context);
+		return true;
 	}
 
 	return false;

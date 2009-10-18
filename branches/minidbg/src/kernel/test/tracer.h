@@ -46,7 +46,7 @@ public:
 	}
 	
 	void open_process(const std::string& filename);
-	bool enable_single_step(HANDLE thread_id);
+	bool enable_single_step(HANDLE process_id, HANDLE thread_id);
 	bool disable_single_step(HANDLE thread_id);
 
 	HANDLE get_pid()
@@ -62,7 +62,7 @@ private:
 
 private:
 	HANDLE m_pid;
-	struct INSTRUCTION instr;
+	struct INSTRUCTION * instr;
 	struct PARAMS params;
 };
 

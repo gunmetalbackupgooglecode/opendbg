@@ -28,13 +28,15 @@ namespace trc
 breakpoint::breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 	: m_address(address)
 {
-	//BYTE buf;
-	//u32 readed;
-	// В случае установки soft-брикпойнта (int 3) проверить
-	// чтобы его не было там изначально, а если есть --
-	// добавить флаг для генерации исключения после срабатывания
-	//if (!dbg_read_memory((HANDLE)proc_id, (PVOID)address, (PVOID)&buf, sizeof(buf), &readed))
-	//	return 1; // память не может быть прочитана
+	BYTE buf;
+	u32 readed;
+	if (!dbg_read_memory((HANDLE)proc_id, (PVOID)address, (PVOID)&buf, sizeof(buf), &readed))
+		return; // память не может быть прочитана
+	/* TODO: сохранить оригинальный байт*/
+	/*//////////////////////////////////*/
+	buf = INT3_OPCODE;
+	if (!dbg_write_memory((HANDLE)proc_id, (PVOID)address, (PVOID)&buf, sizeof(buf), &readed))
+		return; // память не может быть прочитана
 }
 
 breakpoint::~breakpoint()
