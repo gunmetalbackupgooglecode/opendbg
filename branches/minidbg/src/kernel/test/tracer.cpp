@@ -1,7 +1,5 @@
 #include "tracer.h"
-#include "disasm.h"
-#include "analyzer.h"
-#include "breakpoint.h"
+
 namespace trc
 {
 uintptr_t CALLBACK get_symbols_callback(
@@ -72,17 +70,18 @@ void tracer::open_process(const std::string& filename)
 
 bool tracer::enable_single_step(HANDLE process_id, HANDLE thread_id)
 {
-	int readed, cmdlength;
+	u_long readed, cmdlength;
 	u8 buf[MAX_INSTRUCTION_LEN];
 	CONTEXT context;
 	if (dbg_get_context(thread_id, &context))
 	{
 		// проверяем возможность трейса команды
-		if (!dbg_read_memory(process_id, context.Eip, &buf, sizeof(buf), int &readed))
+		if (!dbg_read_memory(process_id, (char*)context.Eip, &buf, sizeof(buf), &readed))
 			return false;
-		cmdlength = disassemble(buf, tracer::instr, &tracer::params);
-		if (analyser::is_instruction_untraceable(*instr))
-			breakpoint::breakpoint(process_id, thread_id, (u3264)(context.Eip + cmdlength));// поставить int 3 бряк
+		cmdlength = disassemble(buf, this->instr, &this->params);
+		if (analyser::is_instruction_untraceable(*this->instr)) {
+			breakpoint bp((u32)process_id, (u32)thread_id, (u3264)(context.Eip + cmdlength));// поставить int 3 бряк
+		}
 		// записать что это quick-бряк
 
 		context.EFlags |= TF_BIT;

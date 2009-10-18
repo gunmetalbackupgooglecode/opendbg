@@ -22,8 +22,7 @@
 
 #include <windows.h>
 #include <cstdio>
-#include "dbgapi.h"
-#include "breakpoint.h"
+
 #include "tracer.h"
 
 int

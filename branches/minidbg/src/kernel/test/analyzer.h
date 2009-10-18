@@ -17,6 +17,10 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef ANALYZER_H__
+#define ANALYZER_H__
+
+#include "dbgapi.h"
 #include "disasm.h"
 
 namespace trc
@@ -25,7 +29,9 @@ namespace trc
 class analyser
 {
 public:
-	int is_instruction_untraceable(struct INSTRUCTION instr);
+	static int is_instruction_untraceable(INSTRUCTION& instr);
 };
 
 } // namespace trc
+
+#endif // ANALYZER_H__

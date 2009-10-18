@@ -138,7 +138,21 @@ typedef char unichar_t;
 #define XREG_CODE_XMM14 0xE
 #define XREG_CODE_XMM15 0xF
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #pragma pack(push, 0x4)
+
+struct ADDR
+{
+	uint8_t seg;
+	uint8_t mod;
+	uint8_t base;
+	uint8_t index;
+	uint8_t scale;
+};
+
 struct OPERAND
 {
 	uint8_t flags;
@@ -180,17 +194,15 @@ struct OPERAND
 			} far_addr48;
 		} far_addr;
 
-		struct ADDR
-		{
-			uint8_t seg;
-			uint8_t mod;
-			uint8_t base;
-			uint8_t index;
-			uint8_t scale;
-		} addr;
+		ADDR addr;
+
 	} value;
 };
 #pragma pack (pop)
+
+#ifdef __cplusplus
+}
+#endif
 
 /************************
 * Defines and structs for
@@ -252,6 +264,10 @@ struct OPERAND
 #define EFLAG_D 0x40
 #define EFLAG_O 0x80
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #pragma pack(push, 0x4)
 struct DISPLACEMENT
 {
@@ -298,6 +314,40 @@ struct PARAMS
 	uint8_t mode;
 };
 #pragma pack(pop)
+
+//Table for bulding 16bit addresses in my representation.
+static ADDR addrs_16bit[] =
+{
+	  //seg         mod                                           base         index        scale
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX,                 REG_CODE_BX, REG_CODE_SI, 0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX,                 REG_CODE_BX, REG_CODE_DI, 0x1 },
+	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX,                 REG_CODE_BP, REG_CODE_SI, 0x1 },
+	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX,                 REG_CODE_BP, REG_CODE_DI, 0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE,                                REG_CODE_SI, 0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE,                                REG_CODE_DI, 0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_DISP,                                0x0,         0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE,                                REG_CODE_BX, 0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BX, REG_CODE_SI, 0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BX, REG_CODE_DI, 0x1 },
+	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BP, REG_CODE_SI, 0x1 },
+	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BP, REG_CODE_DI, 0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_SI, 0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_DI, 0x0,         0x1 },
+	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_BP, 0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_BX, 0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BX, REG_CODE_SI, 0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BX, REG_CODE_DI, 0x1 },
+	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BP, REG_CODE_SI, 0x1 },
+	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BP, REG_CODE_DI, 0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_SI, 0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_DI, 0x0,         0x1 },
+	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_BP, 0x0,         0x1 },
+	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_BX, 0x0,         0x1 }
+};
+
+#ifdef __cplusplus
+}
+#endif
 
 /******************
 * Instructions' IDs

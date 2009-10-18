@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
+
 #include "disasm.h"
 
 struct STREAM
@@ -540,7 +541,7 @@ static void dump_sf_prefixes(struct STREAM *stream, uint8_t *sf_prefixes)
 	}
 	else
 	{
-		count = (unsigned int)strlen(sf_prefixes);
+		count = (unsigned int)strlen((char*)sf_prefixes);
 		if (!count)
 			di_strncpy(stream, "none");
 		else

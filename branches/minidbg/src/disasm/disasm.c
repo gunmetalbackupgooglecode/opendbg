@@ -232,35 +232,6 @@ void (*ops_handlers[])(struct INSTRUCTION *instr, uint8_t mode, struct OPERAND_S
 	ops_wv,
 	ops_wvqp
 };
-//Table for bulding 16bit addresses in my representation.
-static struct ADDR addrs_16bit[] =
-{
-	  //seg         mod                                           base         index        scale
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX,                 REG_CODE_BX, REG_CODE_SI, 0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX,                 REG_CODE_BX, REG_CODE_DI, 0x1 },
-	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX,                 REG_CODE_BP, REG_CODE_SI, 0x1 },
-	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX,                 REG_CODE_BP, REG_CODE_DI, 0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE,                                REG_CODE_SI, 0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE,                                REG_CODE_DI, 0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_DISP,                                0x0,         0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE,                                REG_CODE_BX, 0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BX, REG_CODE_SI, 0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BX, REG_CODE_DI, 0x1 },
-	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BP, REG_CODE_SI, 0x1 },
-	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BP, REG_CODE_DI, 0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_SI, 0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_DI, 0x0,         0x1 },
-	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_BP, 0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_BX, 0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BX, REG_CODE_SI, 0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BX, REG_CODE_DI, 0x1 },
-	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BP, REG_CODE_SI, 0x1 },
-	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_IDX | ADDR_MOD_DISP, REG_CODE_BP, REG_CODE_DI, 0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_SI, 0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_DI, 0x0,         0x1 },
-	{ SREG_CODE_SS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_BP, 0x0,         0x1 },
-	{ SREG_CODE_DS, ADDR_MOD_BASE | ADDR_MOD_DISP,                REG_CODE_BX, 0x0,         0x1 }
-};
 
 /*******************************************
 * Handler for clearing superfluous prefixes.
@@ -336,9 +307,9 @@ static uint8_t pref_opcodes[] =
 */
 uint32_t opt_1(uint8_t *origin_offset, uint8_t *offset, struct INSTRUCTION *instr, struct OPERAND *op, struct OPERAND_SIZE *opsize, uint8_t mode)
 {
-	op ->flags |= OPERAND_TYPE_IMM;
-	op ->size = OPERAND_SIZE_8;
-	op ->value.imm.imm8 = 0x1;
+	op->flags |= OPERAND_TYPE_IMM;
+	op->size = OPERAND_SIZE_8;
+	op->value.imm.imm8 = 0x1;
 
 	return 0x0;
 }
@@ -1035,14 +1006,14 @@ uint32_t pref_CS_set(uint8_t *origin_offset, uint8_t *offset, struct INSTRUCTION
 {
 	uint32_t res;
 
-	if (instr ->prefixes & INSTR_PREFIX_SEG_MASK)
+	if (instr->prefixes & INSTR_PREFIX_SEG_MASK)
 	{
-		instr ->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
+		instr->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
 		res = 0;
 	}
 	else
 	{
-		instr ->prefixes |= INSTR_PREFIX_CS;
+		instr->prefixes |= INSTR_PREFIX_CS;
 		res = 1;
 	}
 
@@ -1053,14 +1024,14 @@ uint32_t pref_DS_set(uint8_t *origin_offset, uint8_t *offset, struct INSTRUCTION
 {
 	uint32_t res;
 
-	if (instr ->prefixes & INSTR_PREFIX_SEG_MASK)
+	if (instr->prefixes & INSTR_PREFIX_SEG_MASK)
 	{
-		instr ->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
+		instr->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
 		res = 0;
 	}
 	else
 	{
-		instr ->prefixes |= INSTR_PREFIX_DS;
+		instr->prefixes |= INSTR_PREFIX_DS;
 		res = 1;
 	}
 
@@ -1071,14 +1042,14 @@ uint32_t pref_ES_set(uint8_t *origin_offset, uint8_t *offset, struct INSTRUCTION
 {
 	uint32_t res;
 
-	if (instr ->prefixes & INSTR_PREFIX_SEG_MASK)
+	if (instr->prefixes & INSTR_PREFIX_SEG_MASK)
 	{
-		instr ->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
+		instr->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
 		res = 0;
 	}
 	else
 	{
-		instr ->prefixes |= INSTR_PREFIX_ES;
+		instr->prefixes |= INSTR_PREFIX_ES;
 		res = 1;
 	}
 	
@@ -1089,14 +1060,14 @@ uint32_t pref_SS_set(uint8_t *origin_offset, uint8_t *offset, struct INSTRUCTION
 {
 	uint32_t res;
 
-	if (instr ->prefixes & INSTR_PREFIX_SEG_MASK)
+	if (instr->prefixes & INSTR_PREFIX_SEG_MASK)
 	{
-		instr ->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
+		instr->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
 		res = 0;
 	}
 	else
 	{
-		instr ->prefixes |= INSTR_PREFIX_SS;
+		instr->prefixes |= INSTR_PREFIX_SS;
 		res = 1;
 	}
 
@@ -1107,14 +1078,14 @@ uint32_t pref_FS_set(uint8_t *origin_offset, uint8_t *offset, struct INSTRUCTION
 {
 	uint32_t res;
 
-	if (instr ->prefixes & INSTR_PREFIX_SEG_MASK)
+	if (instr->prefixes & INSTR_PREFIX_SEG_MASK)
 	{
-		instr ->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
+		instr->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
 		res = 0;
 	}
 	else
 	{
-		instr ->prefixes |= INSTR_PREFIX_FS;
+		instr->prefixes |= INSTR_PREFIX_FS;
 		res = 1;
 	}
 
@@ -1886,7 +1857,7 @@ void check_sse_sf_prefixes(struct INSTRUCTION *instr, uint8_t sse_pref, uint8_t 
 		instr ->flags |= INSTR_FLAG_SUPERFLUOUS_PREFIX;
 		if (sf_prefixes)
 		{
-			sf_prefixes[strlen(sf_prefixes)] = pref_opcodes[idx - 1];
+			sf_prefixes[strlen((char*)sf_prefixes)] = pref_opcodes[idx - 1];
 		}
 	}
 }
