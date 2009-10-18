@@ -52,7 +52,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;;&quot;$(SolutionDir)/../../src/disasm&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -410,6 +410,10 @@
 			>
 			<File
 				RelativePath=".\breakpoint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\disasm\disasm.h"
 				>
 			</File>
 			<File

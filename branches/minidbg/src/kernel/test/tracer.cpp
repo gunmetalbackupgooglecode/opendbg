@@ -64,6 +64,8 @@ void tracer::open_process(const std::string& filename)
 
 bool tracer::enable_single_step(HANDLE thread_id)
 {
+	// undefined
+	bool is_instruction_untraceable = false;
 	CONTEXT context;
 	if (dbg_get_context(thread_id, &context))
 	{
