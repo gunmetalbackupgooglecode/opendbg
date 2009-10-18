@@ -31,7 +31,7 @@ namespace trc
 		{
 			if (instr.id == ID_POPF || instr.id == ID_PUSHF)
 				result = 1;
-			else if ((instr.id == ID_POP) && (instr.groups & GRP_SEGREG) && (instr.ops->reg.code = SREG_CODE_SS))
+			else if ((instr.id == ID_POP) && (instr.groups & GRP_SEGREG) && (instr.ops[0].reg.code = SREG_CODE_SS))
 				result = 1;
 		}
 

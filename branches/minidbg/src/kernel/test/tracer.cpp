@@ -1,5 +1,6 @@
 #include "tracer.h"
 #include "disasm.h"
+#include "analyzer.h"
 namespace trc
 {
 uintptr_t CALLBACK get_symbols_callback(
@@ -55,11 +56,17 @@ uintptr_t CALLBACK get_symbols_callback(
 
 void tracer::open_process(const std::string& filename)
 {
+	u8 sf_prefixes[MAX_INSTRUCTION_LEN];
+
 	if ( (m_pid = dbg_create_process(filename.c_str(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
 		throw tracer_error("process not started");
 
 	if (dbg_attach_debugger(m_pid) == 0)
 		throw tracer_error("debugger not attached");
+
+	params.arch = ARCH_COMMON;
+	params.sf_prefixes = sf_prefixes;
+	params.mode = DISASSEMBLE_MODE_32;
 }
 
 bool tracer::enable_single_step(HANDLE thread_id)
@@ -70,7 +77,8 @@ bool tracer::enable_single_step(HANDLE thread_id)
 	if (dbg_get_context(thread_id, &context))
 	{
 		// проверяем возможность трейса команды
-		if (is_instruction_untraceable)
+		disassemble(context.Eip, &tracer::instr, &tracer::params);
+		if (is_instruction_untraceable(instr))
 			;// выполнить "виртуально"
 			// либо поставить int 3 бряк
 		else

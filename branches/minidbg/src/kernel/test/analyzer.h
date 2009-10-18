@@ -26,6 +26,6 @@ class analyser
 {
 public:
 	int is_instruction_untraceable(struct INSTRUCTION instr);
-}
+};
 
 } // namespace trc

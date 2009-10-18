@@ -62,6 +62,8 @@ private:
 
 private:
 	HANDLE m_pid;
+	struct INSTRUCTION instr;
+	struct PARAMS params;
 };
 
 }
