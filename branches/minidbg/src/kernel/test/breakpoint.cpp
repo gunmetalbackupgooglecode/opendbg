@@ -28,7 +28,7 @@ namespace trc
 breakpoint::breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 	: m_address(address)
 {
-	BYTE buf;
+	u8 buf;
 	u32 readed;
 	if (!dbg_read_memory((HANDLE)proc_id, (PVOID)address, (PVOID)&buf, sizeof(buf), &readed))
 		return; // память не может быть прочитана
