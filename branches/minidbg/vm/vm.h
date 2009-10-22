@@ -24,7 +24,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 /* General VM configuration */
 #define GEN_REGS_NUM 8
-#define GEN_REGS_SIZE_4
 #define CTRL_REGS_NUM 0
 #define CTRL_REGS_SIZE 0
 #define DBG_REGS_NUM 6
@@ -33,8 +32,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define FPU_REGS_SIZE 10
 #define FPU_SPEC_NUM 3
 #define FPU_SPEC_SIZE 2
-#define STACK_VAR_SIZE_4
 #define STACK_REG_INDEX 4
+
+#define STACK_VAR_SIZE_4
+#define GEN_REGS_SIZE_4
 /*//////////////////////////*/
 
 /* Useful types of data */
@@ -49,7 +50,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #ifdef STACK_VAR_SIZE_4
-	typedef struct { u32 val;
+	typedef union { u32 val;
 					u32 type;
 					u8 reg_type;
 					u32 reg_val;
@@ -86,7 +87,7 @@ public:
 					} regs;
 	typedef struct _stack {	_stack * next;
 							stackvar var;
-							} * stack;
+							} stack;
 	typedef struct _seh_frame { struct _seh_frame * next;
 								int hanler_offset;
 								int safe_offset;

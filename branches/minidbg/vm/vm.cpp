@@ -25,7 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace vm
 {
-	int push (vm_main::stack ** pstack, reg_size * ESP, stackvar var)
+	int vm_main::push (vm_main::stack ** pstack, reg_size * ESP, stackvar var)
 	{
 		vm_main::stack * p;
 		vm_main::stack * stk = *pstack;
@@ -40,7 +40,7 @@ namespace vm
 		case TYPE_SEG_REG:
 			p->var.reg_val = var.reg_val;
 		case TYPE_NUM:
-			p->var = var.val;
+			p->var.val = var.val;
 			break;
 		default:
 			fprintf(stderr, "Fatal error! Unknown type!");
@@ -57,7 +57,7 @@ namespace vm
 		return 0;
 	}
 
-	int pop (vm_main::stack ** stack, reg_size * ESP, stackvar * var)
+	int vm_main::pop (vm_main::stack ** stack, reg_size * ESP, stackvar * var)
 	{
 		vm_main::stack * p;
 		vm_main::stack * stk = *stack;
@@ -94,6 +94,7 @@ namespace vm
 	{
 		u64 groups;
 		u16 id;
+		// TODO: INITIALIZE
 		stackvar var;
 		reg_size * ESP;
 
