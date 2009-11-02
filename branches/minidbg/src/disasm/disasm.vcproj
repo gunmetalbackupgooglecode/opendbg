@@ -179,11 +179,35 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\disasm.c"
+				RelativePath=".\libudis86\decode.c"
 				>
 			</File>
 			<File
-				RelativePath=".\disasm_main.c"
+				RelativePath=".\libudis86\input.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libudis86\itab.c"
+				>
+			</File>
+			<File
+				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\libudis86\syn-att.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libudis86\syn-intel.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libudis86\syn.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libudis86\udis86.c"
 				>
 			</File>
 		</Filter>
@@ -193,19 +217,27 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\disasm.h"
+				RelativePath=".\libudis86\decode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\pstdint.h"
+				RelativePath=".\libudis86\extern.h"
 				>
 			</File>
 			<File
-				RelativePath=".\tables.h"
+				RelativePath=".\libudis86\input.h"
 				>
 			</File>
 			<File
-				RelativePath=".\tables.inc"
+				RelativePath=".\libudis86\itab.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libudis86\syn.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libudis86\types.h"
 				>
 			</File>
 		</Filter>
@@ -215,10 +247,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
