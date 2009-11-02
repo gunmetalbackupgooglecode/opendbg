@@ -35,7 +35,7 @@ breakpoint::breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 	/* TODO: сохранить оригинальный байт*/
 	/*//////////////////////////////////*/
 	buf = INT3_OPCODE;
-	if (!dbg_write_memory((HANDLE)proc_id, (PVOID)address, (PVOID)&buf, sizeof(buf), &readed))
+	if (!dbg_write_memory((HANDLE)proc_id, (PVOID)address, &buf, sizeof(buf), &readed))
 		return; // память не может быть прочитана
 }
 

@@ -17,11 +17,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#ifndef BREAKPOINT_H__
+#define BREAKPOINT_H__
+
 #include <windows.h>
 #include <cstdio>
 #include "defines.h"
-#ifndef BREAKPOINT_H__
-#define BREAKPOINT_H__
 
 namespace trc
 {

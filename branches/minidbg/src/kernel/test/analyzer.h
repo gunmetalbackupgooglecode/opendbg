@@ -21,7 +21,6 @@
 #define ANALYZER_H__
 
 #include "dbgapi.h"
-#include "disasm.h"
 
 namespace trc
 {
@@ -29,7 +28,7 @@ namespace trc
 class analyser
 {
 public:
-	static int is_instruction_untraceable(INSTRUCTION& instr);
+	//static int is_instruction_untraceable(INSTRUCTION& instr);
 };
 
 } // namespace trc

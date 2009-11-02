@@ -109,11 +109,11 @@ main(int argc, char* argv[])
 
 				if (msg->event_code == DBG_EXCEPTION)
 				{
-					printf("DBG_EXCEPTION %0.8x in %x:%x\n",
-						msg->exception.except_record.ExceptionCode,
-						msg->thread_id,
-						msg->process_id
-						);
+					//printf("DBG_EXCEPTION %0.8x in %x:%x\n",
+					//	msg->exception.except_record.ExceptionCode,
+					//	msg->thread_id,
+					//	msg->process_id
+					//	);
 
 					switch (msg->exception.except_record.ExceptionCode)
 					{
@@ -129,14 +129,16 @@ main(int argc, char* argv[])
 								flag = 1; //был обработан бряк
 							//}
 							if ( msg->exception.first_chance | flag )
-								continue_status = DBG_CONTINUE ;
+								continue_status = DBG_CONTINUE;
 							else
-								continue_status = DBG_EXCEPTION_NOT_HANDLED ;
+								continue_status = DBG_EXCEPTION_NOT_HANDLED;
 						}
 						break;
 						
 						case EXCEPTION_SINGLE_STEP:
 						{
+							CONTEXT context;
+							dbg_get_thread_ctx(msg->thread_id, &context);
 							printf("SINGLE_STEP %x\n", msg->exception.except_record.ExceptionAddress);
 						}
 						break;
@@ -162,8 +164,8 @@ main(int argc, char* argv[])
 					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 				}
 
-				if (!tracer_test.enable_single_step(msg->process_id, msg->thread_id))
-					printf("can't enable single step for %x\n", msg->thread_id);
+				//if (!tracer_test.enable_single_step(msg->process_id, msg->thread_id))
+					//printf("can't enable single step for %x\n", msg->thread_id);
 
 				if (!ContinueDebugEvent((u32)msg->process_id, (u32)msg->thread_id, continue_status))
 					break;

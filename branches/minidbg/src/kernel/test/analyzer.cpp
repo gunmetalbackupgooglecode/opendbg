@@ -23,20 +23,20 @@
 namespace trc
 {
 
-	int analyser::is_instruction_untraceable(INSTRUCTION& instr)
-	{
-		int result = 0;
-		if (instr.groups & GRP_STACK)
-		{
-			if (instr.id == ID_POPF || instr.id == ID_PUSHF)
-				result = 1; // Reason: need hide TF flag
-			else if ((instr.id == ID_POP) && (instr.groups & GRP_SEGREG) && (instr.ops[0].value.reg.code = SREG_CODE_SS))
-				result = 1; // Reason: POP SS is untraceable command
-			else if ((instr.groups & GRP_BREAK) && (instr.id != ID_BOUND))
-				result = 1; // Reason: int's, into, icebp are untraceable commands
-		}
+	//int analyser::is_instruction_untraceable(INSTRUCTION& instr)
+	//{
+	//	int result = 0;
+	//	if (instr.groups & GRP_STACK)
+	//	{
+	//		if (instr.id == ID_POPF || instr.id == ID_PUSHF)
+	//			result = 1; // Reason: need hide TF flag
+	//		else if ((instr.id == ID_POP) && (instr.groups & GRP_SEGREG) && (instr.ops[0].value.reg.code = SREG_CODE_SS))
+	//			result = 1; // Reason: POP SS is untraceable command
+	//		else if ((instr.groups & GRP_BREAK) && (instr.id != ID_BOUND))
+	//			result = 1; // Reason: int's, into, icebp are untraceable commands
+	//	}
 
-		return result;
-	}
+	//	return result;
+	//}
 
 } // namespace trc

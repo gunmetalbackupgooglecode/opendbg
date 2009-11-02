@@ -8,7 +8,6 @@
 #include "breakpoint.h"
 #include "pdbparser.h"
 #include "dbgapi.h"
-#include "disasm.h"
 
 namespace trc
 {
@@ -65,8 +64,6 @@ private:
 
 private:
 	HANDLE m_pid;
-	INSTRUCTION *instr;
-	PARAMS params;
 };
 
 }
