@@ -4,7 +4,7 @@
 
 using namespace std;
 
-debugger::debugger(void)
+debugger::debugger()
 {
         m_msg = new dbg_msg;
         // TODO: remove hardcoded reference
@@ -18,10 +18,9 @@ u_long debugger::get_version()
         return dbg_drv_version();
 }
 
-void debugger::debug_process(string imageName)
+void debugger::debug_process(const string& imageName)
 {
-        auto_ptr<char> cs(const_cast<char*>(imageName.c_str()));
-        if ((m_pid = dbg_create_process(cs.get(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
+        if ((m_pid = dbg_create_process(imageName.c_str(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
                 throw exception("process not started");
 //      printf("process started with pid %x\n", pid);
 
@@ -133,7 +132,6 @@ void debugger::test()
 uintptr_t
 CALLBACK debugger::get_symbols_callback(int sym_type, char * sym_name, char * sym_subname, pdb::pdb_parser& pdb)
 {
-
         if (sym_type == SYM_TIMESTAMP)
         {
                 return 0x45E53F9C;

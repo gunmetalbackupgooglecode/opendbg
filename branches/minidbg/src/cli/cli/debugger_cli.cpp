@@ -18,6 +18,7 @@ debugger_cli::debugger_cli()
 #else
 	m_interactive = isatty(fileno(stdin)) != 0;
 #endif
+
 	m_desc.add_options()
 		("show", po::value<std::string>()->implicit_value("info")->notifier(&show_handler), "show informational messages")
 		("help,?", po::value<std::string>()->implicit_value("")->notifier(&help_handler), "show this message")
@@ -34,9 +35,16 @@ debugger_cli::~debugger_cli(void)
 	delete m_cli;
 }
 
-void debugger_cli::load_handler(const std::string& what)
+void debugger_cli::load_handler(const std::string& filename)
 {
-	// TODO: script loading
+	try {
+	m_debugger.debug_process(filename);
+	}
+	
+	catch (std::exception& e) {
+		std::cout << e.what() << "\n";
+	}
+	
 	std::cout << "script loading is not supported\n";
 }
 

@@ -14,6 +14,7 @@ main() {
     ud_set_mode(&ud_obj, 32);
     
     while (ud_disassemble(&ud_obj)) {
+        printf("\t%d\n", ud_insn_len(&ud_obj));
         printf("\t%s\n", ud_insn_asm(&ud_obj));
     }
     return 0;

@@ -22,8 +22,9 @@
 
 #include <windows.h>
 #include <cstdio>
-
-#include "tracer.h"
+//
+//#include "tracer.h"
+//#include "breakpoint.h"
 
 int
 #ifdef _MSC_VER
@@ -31,152 +32,145 @@ __cdecl
 #endif
 main(int argc, char* argv[])
 {
-	event_filt filter;
-	//HANDLE     pid;
-	dbg_msg    *msg = new dbg_msg;
-	u8         flag;
-	std::vector<trc::breakpoint> breaks;
+	int** p = new int*[];
 
-	printf("dbgapi test tool started\n");
+	//event_filt filter;
+	////HANDLE     pid;
+	//dbg_msg    *msg = new dbg_msg;
 
-	try {
-		do
-		{
-			trc::tracer tracer_test;
+	//printf("dbgapi test tool started\n");
 
-			printf("dbgapi initialized\n");
-			printf("dbgapi version as %d\n", dbg_drv_version());
+	//try {
+	//	do
+	//	{
+	//		trc::tracer tracer_test;
 
-			// start tracing
-			tracer_test.open_process("C:\\Windows\\system32\\notepad.exe");
+	//		printf("dbgapi initialized\n");
+	//		printf("dbgapi version as %d\n", dbg_drv_version());
 
-			printf("process started with pid %x\n", tracer_test.get_pid());
-			printf("debugger attached\n");
+	//		// start tracing
+	//		tracer_test.open_process("C:\\Windows\\system32\\notepad.exe");
 
-			filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
-			filter.filtr_count = 0;
+	//		printf("process started with pid %x\n", tracer_test.get_pid());
+	//		printf("debugger attached\n");
 
-			if (dbg_set_filter(tracer_test.get_pid(), &filter) == 0) {
-				printf("dbg_set_filter error\n");
-				break;
-			}
+	//		filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
+	//		filter.filtr_count = 0;
 
-			printf("debug events filter set up\n");
+	//		if (dbg_set_filter(tracer_test.get_pid(), &filter) == 0) {
+	//			printf("dbg_set_filter error\n");
+	//			break;
+	//		}
 
-			do
-			{
-				u32 continue_status = DBG_CONTINUE;
-				if (dbg_get_msg_event(tracer_test.get_pid(), msg) == 0) {
-					printf("get debug message error\n");
-					break;
-				}
+	//		printf("debug events filter set up\n");
 
-				if (msg->event_code == DBG_TERMINATED)
-				{
-					printf("DBG_TERMINATED %x by %x\n",
-						msg->terminated.proc_id,
-						msg->process_id
-						);
+	//		do
+	//		{
+	//			u32 continue_status = DBG_CONTINUE;
+	//			if (dbg_get_msg_event(tracer_test.get_pid(), msg) == 0) {
+	//				printf("get debug message error\n");
+	//				break;
+	//			}
 
-					continue_status = DBG_CONTINUE;
-					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-				}
+	//			if (msg->event_code == DBG_TERMINATED)
+	//			{
+	//				printf("DBG_TERMINATED %x by %x\n",
+	//					msg->terminated.proc_id,
+	//					msg->process_id
+	//					);
 
-				if (msg->event_code == DBG_START_THREAD)
-				{
-					printf("DBG_START_THREAD %x by %x, teb: %x\n",
-						msg->thread_start.thread_id,
-						msg->process_id,
-						msg->thread_start.teb_addr
-						);
+	//				continue_status = DBG_CONTINUE;
+	//				//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	//			}
+
+	//			if (msg->event_code == DBG_START_THREAD)
+	//			{
+	//				printf("DBG_START_THREAD %x by %x, teb: %x\n",
+	//					msg->thread_start.thread_id,
+	//					msg->process_id,
+	//					msg->thread_start.teb_addr
+	//					);
 
 
-					continue_status = DBG_CONTINUE;
-					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-				}
+	//				continue_status = DBG_CONTINUE;
+	//				//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	//			}
 
-				if (msg->event_code == DBG_EXIT_THREAD)
-				{
-					printf("DBG_EXIT_THREAD %x in %x by %x\n",
-						msg->thread_exit.thread_id,
-						msg->thread_exit.proc_id,
-						msg->process_id
-						);
+	//			if (msg->event_code == DBG_EXIT_THREAD)
+	//			{
+	//				printf("DBG_EXIT_THREAD %x in %x by %x\n",
+	//					msg->thread_exit.thread_id,
+	//					msg->thread_exit.proc_id,
+	//					msg->process_id
+	//					);
 
-					continue_status = DBG_CONTINUE;
-					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-				}
+	//				continue_status = DBG_CONTINUE;
+	//				//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	//			}
 
-				if (msg->event_code == DBG_EXCEPTION)
-				{
-					//printf("DBG_EXCEPTION %0.8x in %x:%x\n",
-					//	msg->exception.except_record.ExceptionCode,
-					//	msg->thread_id,
-					//	msg->process_id
-					//	);
+	//			if (msg->event_code == DBG_EXCEPTION)
+	//			{
+	//				//printf("DBG_EXCEPTION %0.8x in %x:%x\n",
+	//				//	msg->exception.except_record.ExceptionCode,
+	//				//	msg->thread_id,
+	//				//	msg->process_id
+	//				//	);
 
-					switch (msg->exception.except_record.ExceptionCode)
-					{
-						case EXCEPTION_BREAKPOINT:
-						{
-							flag = 0; // не было никакого бряка
-							// проверять наличие бряка
-							//if (breaks(NULL, msg->process_id, msg->thread_id, msg->exception.except_record.ExceptionAddress) != NO_BREAK)
-							//{
-								//
-								//вставить код обработки бряка
-								//
-								flag = 1; //был обработан бряк
-							//}
-							if ( msg->exception.first_chance | flag )
-								continue_status = DBG_CONTINUE;
-							else
-								continue_status = DBG_EXCEPTION_NOT_HANDLED;
-						}
-						break;
-						
-						case EXCEPTION_SINGLE_STEP:
-						{
-							CONTEXT context;
-							dbg_get_thread_ctx(msg->thread_id, &context);
-							printf("SINGLE_STEP %x\n", msg->exception.except_record.ExceptionAddress);
-						}
-						break;
+	//				switch (msg->exception.except_record.ExceptionCode)
+	//				{
+	//					case EXCEPTION_BREAKPOINT:
+	//					{
+	//						printf("BREAKPOINT %x\n", msg->exception.except_record.ExceptionAddress);
+	//						if ( msg->exception.first_chance )
+	//							continue_status = DBG_CONTINUE;
+	//						else
+	//							continue_status = DBG_EXCEPTION_NOT_HANDLED;
+	//					}
+	//					break;
+	//					
+	//					case EXCEPTION_SINGLE_STEP:
+	//					{
+	//						CONTEXT context;
+	//						dbg_get_thread_ctx(msg->thread_id, &context);
+	//						printf("SINGLE_STEP %x\n", msg->exception.except_record.ExceptionAddress);
+	//						trc::breakpoint bp((u32)msg->process_id, (u32)msg->thread_id, (u3264)msg->exception.except_record.ExceptionAddress);
+	//					}
+	//					break;
 
-					default:
-						continue_status  = DBG_CONTINUE;
-						break ;
-					}
-					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-				}
+	//				default:
+	//					continue_status  = DBG_CONTINUE;
+	//					break;
+	//				}
+	//				//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	//			}
 
-				if (msg->event_code == DBG_LOAD_DLL)
-				{
-					printf("DBG_LOAD_DLL %ws adr 0x%p sz 0x%x in %x:%x\n",
-							msg->dll_load.dll_name,
-							msg->dll_load.dll_image_base,
-							msg->dll_load.dll_image_size,
-							msg->thread_id,
-							msg->process_id
-							);
+	//			if (msg->event_code == DBG_LOAD_DLL)
+	//			{
+	//				printf("DBG_LOAD_DLL %ws adr 0x%p sz 0x%x in %x:%x\n",
+	//						msg->dll_load.dll_name,
+	//						msg->dll_load.dll_image_base,
+	//						msg->dll_load.dll_image_size,
+	//						msg->thread_id,
+	//						msg->process_id
+	//						);
 
-					continue_status = DBG_CONTINUE;
-					//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
-				}
+	//				continue_status = DBG_CONTINUE;
+	//				//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	//			}
 
-				//if (!tracer_test.enable_single_step(msg->process_id, msg->thread_id))
-					//printf("can't enable single step for %x\n", msg->thread_id);
+	//			if (!tracer_test.enable_single_step(msg->process_id, msg->thread_id))
+	//				printf("can't enable single step for %x\n", msg->thread_id);
 
-				if (!ContinueDebugEvent((u32)msg->process_id, (u32)msg->thread_id, continue_status))
-					break;
-			} while (1);
+	//			if (!ContinueDebugEvent((u32)msg->process_id, (u32)msg->thread_id, continue_status))
+	//				break;
+	//		} while (1);
 
-		} while (0);
-	} catch (pdb::pdb_error& e) {
-		std::cout << e.what() << "\n";
-	}
+	//	} while (0);
+	//} catch (pdb::pdb_error& e) {
+	//	std::cout << e.what() << "\n";
+	//}
 
-	//Sleep(INFINITE);
+	////Sleep(INFINITE);
 
 	return 0;
 }
