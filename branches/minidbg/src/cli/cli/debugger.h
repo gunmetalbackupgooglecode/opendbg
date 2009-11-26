@@ -12,10 +12,15 @@ private:
 
 public:
 	debugger();
-	~debugger(void);
+	~debugger();
 	void debug_process(const std::string& imageName);
 	u_long get_version();
 	void test();
+	
+	void operator()()
+	{
+		test();
+	}
 
 private:
 	event_filt m_filter;

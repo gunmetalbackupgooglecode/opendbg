@@ -12,6 +12,7 @@ namespace po = boost::program_options;
 boost::cli::commands_description debugger_cli::m_desc = boost::cli::commands_description();
 
 debugger_cli::debugger_cli()
+ : m_debugger()
 {
 #ifdef _MSC_VER
 	m_interactive = _isatty(_fileno(stdin)) != 0;
@@ -20,11 +21,41 @@ debugger_cli::debugger_cli()
 #endif
 
 	m_desc.add_options()
-		("show", po::value<std::string>()->implicit_value("info")->notifier(&show_handler), "show informational messages")
-		("help,?", po::value<std::string>()->implicit_value("")->notifier(&help_handler), "show this message")
-		("load,l", po::value<std::string>()->notifier(&load_handler), "load script file(s)")
-		("start,s", po::value<std::string>()->notifier(&start_handler), "start process(es)")
-		("quit", po::value<int>()->implicit_value(0)->notifier(&exit_handler), "close opendbg")
+		(
+			"show",
+			po::value<std::string>()->implicit_value("info")->notifier(boost::bind(&debugger_cli::show_handler, this, _1)),
+			"show informational messages"
+		)
+
+		(
+			"help,?",
+			po::value<std::string>()->implicit_value("")->notifier(boost::bind(&debugger_cli::help_handler, this, _1)),
+			"show this message"
+		)
+
+		(
+			"load,l",
+			po::value<std::string>()->notifier(boost::bind(&debugger_cli::load_handler, this, _1)),
+			"load script file(s)"
+		)
+
+		(
+			"start,s",
+			po::value<std::string>()->notifier(boost::bind(&debugger_cli::start_handler, this, _1)),
+			"start process(es)"
+		)
+
+		(
+			"trace",
+			po::value<std::string>()->notifier(boost::bind(&debugger_cli::trace_handler, this, _1)),
+			"trace process(es)"
+		)
+
+		(
+			"quit",
+			po::value<int>()->implicit_value(0)->notifier(boost::bind(&debugger_cli::exit_handler, this, _1)),
+			"close opendbg"
+		)
 		;
 
 	m_cli = new boost::cli::command_line_interpreter(m_desc, m_interactive ? "> " : "");
@@ -37,42 +68,19 @@ debugger_cli::~debugger_cli(void)
 
 void debugger_cli::load_handler(const std::string& filename)
 {
-	try {
-	m_debugger.debug_process(filename);
-	}
-	
-	catch (std::exception& e) {
-		std::cout << e.what() << "\n";
-	}
-	
 	std::cout << "script loading is not supported\n";
 }
 
-void debugger_cli::start_handler(const std::string& what)
+void debugger_cli::start_handler(const std::string& filename)
 {
-	int pid;
-	if (pid = atoi(what.data()))
-	{
-		HANDLE handle;
-		DWORD nameLength = 100;
-		std::auto_ptr<char> imageName(new char[nameLength]);
-		if ((handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ | PROCESS_VM_WRITE, FALSE, pid)) == NULL)
-		{
-			std::cout << "no such process with pid " << what << "\n";
-			return;
-		}
-		std::cout << "found existing process ";
-		//if (QueryFullProcessImageNameA(handle, 0, imageName.get(), &nameLength))
-		//	std::cout << imageName.get() << "\n";
-		//else
-		//	std::cout << "(can't get image name)\n";
-	}
-
+	m_debugger.debug_process(filename);
+	std::cout << filename << " started\n";
 }
 
-void debugger_cli::interpret(std::istream& input_stream)
+void debugger_cli::trace_handler(const std::string& param)
 {
-	m_cli->interpret(input_stream);
+	boost::thread m_debug_thread(m_debugger);
+	//m_debug_thread.join();
 }
 
 void debugger_cli::help_handler(const std::string& param)
@@ -81,23 +89,23 @@ void debugger_cli::help_handler(const std::string& param)
 	//cout << desc;
 }
 
-void debugger_cli::show_handler(const std::string& what)
+void debugger_cli::show_handler(const std::string& param)
 {
-	if (what == "w")
+	if (param == "w")
 	{
 		std::cout << "This program is distributed in the hope that it will be useful,\n";
 		std::cout << "but WITHOUT ANY WARRANTY; without even the implied warranty of\n";
 		std::cout << "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n";
 		std::cout << "GNU General Public License for more details.\n";
 	}
-	else if (what == "c")
+	else if (param == "c")
 	{
 		std::cout << "This program is free software: you can redistribute it and/or modify\n";
 		std::cout << "it under the terms of the GNU General Public License as published by\n";
 		std::cout << "the Free Software Foundation, either version 3 of the License, or\n";
 		std::cout << "(at your option) any later version.\n";
 	}
-	else if (what == "info")
+	else if (param == "info")
 	{
 		std::cout << "please supply one of arguments:\n";
 		std::cout << "\tinfo\tshow this message\n";
@@ -111,7 +119,13 @@ void debugger_cli::exit_handler(int code)
 	exit(code);
 }
 
+void debugger_cli::interpret(std::istream& input_stream)
+{
+	m_cli->interpret(input_stream);
+}
+
 void debugger_cli::start()
 {
 	m_cli->interpret(std::cin);
 }
+
