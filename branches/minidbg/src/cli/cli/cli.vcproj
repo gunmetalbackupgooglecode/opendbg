@@ -216,6 +216,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\dbg_event.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\debugger.cpp"
 				>
 				<FileConfiguration
@@ -285,6 +289,10 @@
 			>
 			<File
 				RelativePath=".\breakpoint.h"
+				>
+			</File>
+			<File
+				RelativePath=".\dbg_event.h"
 				>
 			</File>
 			<File

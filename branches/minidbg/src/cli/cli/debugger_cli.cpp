@@ -58,6 +58,8 @@ debugger_cli::debugger_cli()
 		)
 		;
 
+	m_debugger.add_trace_slot(boost::bind(&debugger_cli::trace_slot, this));
+
 	m_cli = new boost::cli::command_line_interpreter(m_desc, m_interactive ? "> " : "");
 }
 
@@ -75,12 +77,15 @@ void debugger_cli::start_handler(const std::string& filename)
 {
 }
 
+void trace_slot()
+{
+	std::cout << "msg received\n";
+}
+
 void debugger_cli::trace_handler(const std::string& param)
 {
-	debugger dbg(param);
-	//dbg.test();
-	boost::thread dbg_thread(dbg);
-	//m_debug_thread.join();
+	m_debugger.set_image_name(param);
+	boost::thread dbg_thread(m_debugger);
 }
 
 void debugger_cli::help_handler(const std::string& param)

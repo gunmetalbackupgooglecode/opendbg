@@ -32,13 +32,12 @@ public:
 private:
 	void show_handler(const std::string& param);
 	void help_handler(const std::string& param);
-
 	void load_handler(const std::string& param);
-	
 	void start_handler(const std::string& param);
 	void trace_handler(const std::string& param);
-
 	void exit_handler(int code);
+
+	void trace_slot();
 
 private:
 	boost::cli::command_line_interpreter* m_cli;

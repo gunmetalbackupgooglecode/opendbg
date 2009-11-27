@@ -188,6 +188,6 @@ CALLBACK debugger::get_symbols_callback(int sym_type, char * sym_name, char * sy
 
 debugger::~debugger()
 {
-	//delete m_msg;
+	delete m_msg;
 }
 
