@@ -5,11 +5,23 @@
 using namespace std;
 
 debugger::debugger()
- : m_msg(new dbg_msg())
+ : m_image_name("")
 {
-	//m_msg = new dbg_msg;
 	// TODO: remove hardcoded reference
 	// TODO: debugger_exception class
+	init();
+}
+
+debugger::debugger(const std::string& image_name)
+ : m_image_name(image_name)
+{
+	init();
+}
+
+void debugger::init()
+{
+	m_msg = new dbg_msg();
+	m_pid = 0;
 	if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) != 1)
 		throw exception("dbgapi initialization error");
 }
@@ -19,19 +31,16 @@ u_long debugger::get_version()
 	return dbg_drv_version();
 }
 
-void debugger::debug_process(const string& imageName)
+void debugger::debug_process()
 {
-	if ((m_pid = dbg_create_process(imageName.c_str(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
+	if ((m_pid = dbg_create_process(m_image_name.c_str(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
 		throw exception("process not started");
 //      printf("process started with pid %x\n", pid);
 
 	if (dbg_attach_debugger(m_pid) == 0)
 		throw exception("debugger not attached");
 //      printf("debugger attached\n");
-}
 
-void debugger::test()
-{
 	m_filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
 	m_filter.filtr_count = 0;
 
@@ -181,3 +190,4 @@ debugger::~debugger()
 {
 	//delete m_msg;
 }
+

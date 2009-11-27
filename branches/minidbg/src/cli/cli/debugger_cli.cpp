@@ -73,13 +73,13 @@ void debugger_cli::load_handler(const std::string& filename)
 
 void debugger_cli::start_handler(const std::string& filename)
 {
-	m_debugger.debug_process(filename);
-	std::cout << filename << " started\n";
 }
 
 void debugger_cli::trace_handler(const std::string& param)
 {
-	boost::thread m_debug_thread(m_debugger);
+	debugger dbg(param);
+	//dbg.test();
+	boost::thread dbg_thread(dbg);
 	//m_debug_thread.join();
 }
 

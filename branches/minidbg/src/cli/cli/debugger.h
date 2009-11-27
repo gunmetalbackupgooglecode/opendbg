@@ -12,21 +12,29 @@ private:
 
 public:
 	debugger();
+	debugger(const std::string& image_name);
 	~debugger();
-	void debug_process(const std::string& imageName);
+	
+	void init();
+	
+	void debug_process();
 	u_long get_version();
-	void test();
 	
 	void operator()()
 	{
-		test();
+		debug_process();
+	}
+
+	HANDLE get_pid() const
+	{
+		return m_pid;
 	}
 
 private:
+	std::string m_image_name;
 	event_filt m_filter;
 	HANDLE     m_pid;
 	dbg_msg    *m_msg;
-
 };
 
 #endif

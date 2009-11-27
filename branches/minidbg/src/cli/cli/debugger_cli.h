@@ -2,7 +2,9 @@
 #define _DEBUGGERCLI_H_
 
 #include <string>
+
 #include <boost/thread.hpp>
+#include <boost/ref.hpp>
 
 #include "command_line_interpreter.hpp"
 #include "debugger.h"
