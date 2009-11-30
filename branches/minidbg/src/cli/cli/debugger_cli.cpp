@@ -12,7 +12,7 @@ namespace po = boost::program_options;
 boost::cli::commands_description debugger_cli::m_desc = boost::cli::commands_description();
 
 debugger_cli::debugger_cli()
- : m_debugger()
+ : m_tracer()
 {
 #ifdef _MSC_VER
 	m_interactive = _isatty(_fileno(stdin)) != 0;
@@ -58,7 +58,13 @@ debugger_cli::debugger_cli()
 		)
 		;
 
-	m_debugger.add_trace_slot(boost::bind(&debugger_cli::trace_slot, this));
+	m_tracer.add_trace_slot(boost::bind(&debugger_cli::trace_slot, this, _1));
+	m_tracer.add_breakpoint_slot(boost::bind(&debugger_cli::breakpoint_slot, this, _1));
+	m_tracer.add_terminated_slot(boost::bind(&debugger_cli::terminated_slot, this, _1));
+	m_tracer.add_start_thread_slot(boost::bind(&debugger_cli::start_thread_slot, this, _1));
+	m_tracer.add_exit_thread_slot(boost::bind(&debugger_cli::exit_thread_slot, this, _1));
+	m_tracer.add_exception_slot(boost::bind(&debugger_cli::exception_slot, this, _1));
+	m_tracer.add_dll_load_slot(boost::bind(&debugger_cli::dll_load_slot, this, _1));
 
 	m_cli = new boost::cli::command_line_interpreter(m_desc, m_interactive ? "> " : "");
 }
@@ -77,15 +83,11 @@ void debugger_cli::start_handler(const std::string& filename)
 {
 }
 
-void trace_slot()
-{
-	std::cout << "msg received\n";
-}
-
 void debugger_cli::trace_handler(const std::string& param)
 {
-	m_debugger.set_image_name(param);
-	boost::thread dbg_thread(m_debugger);
+	m_tracer.set_image_name(param);
+	boost::thread dbg_thread(boost::ref(m_tracer));
+	dbg_thread.join();
 }
 
 void debugger_cli::help_handler(const std::string& param)
@@ -134,3 +136,58 @@ void debugger_cli::start()
 	m_cli->interpret(std::cin);
 }
 
+void debugger_cli::trace_slot(dbg_msg msg)
+{
+	//std::cout << msg.event_code << "\n";
+}
+
+void debugger_cli::breakpoint_slot( dbg_msg msg )
+{
+
+}
+
+void debugger_cli::terminated_slot( dbg_msg msg )
+{
+	printf("DBG_TERMINATED %x by %x\n",
+					msg.terminated.proc_id,
+					msg.process_id
+					);
+}
+
+void debugger_cli::start_thread_slot( dbg_msg msg )
+{
+	printf("DBG_START_THREAD %x by %x, teb: %x\n",
+					msg.thread_start.thread_id,
+					msg.process_id,
+					msg.thread_start.teb_addr
+					);
+}
+
+void debugger_cli::exit_thread_slot( dbg_msg msg )
+{
+	printf("DBG_EXIT_THREAD %x in %x by %x\n",
+					msg.thread_exit.thread_id,
+					msg.thread_exit.proc_id,
+					msg.process_id
+					);
+}
+
+void debugger_cli::exception_slot( dbg_msg msg )
+{
+	printf("DBG_EXCEPTION %0.8x in %x:%x\n",
+					msg.exception.except_record.ExceptionCode,
+					msg.thread_id,
+					msg.process_id
+					);
+}
+
+void debugger_cli::dll_load_slot( dbg_msg msg )
+{
+	printf("DBG_LOAD_DLL %ws adr 0x%p sz 0x%x in %x:%x\n",
+		msg.dll_load.dll_name,
+		msg.dll_load.dll_image_base,
+		msg.dll_load.dll_image_size,
+		msg.thread_id,
+		msg.process_id
+		);
+}

@@ -7,7 +7,7 @@
 #include <boost/ref.hpp>
 
 #include "command_line_interpreter.hpp"
-#include "debugger.h"
+#include "tracer.h"
 
 class debugger_cli
 {
@@ -37,12 +37,18 @@ private:
 	void trace_handler(const std::string& param);
 	void exit_handler(int code);
 
-	void trace_slot();
+	void trace_slot(dbg_msg msg);
+	void breakpoint_slot(dbg_msg msg);
+	void terminated_slot(dbg_msg msg);
+	void start_thread_slot(dbg_msg msg);
+	void exit_thread_slot(dbg_msg msg);
+	void exception_slot(dbg_msg msg);
+	void dll_load_slot(dbg_msg msg);
 
 private:
 	boost::cli::command_line_interpreter* m_cli;
 
-	debugger m_debugger;
+	tracer m_tracer;
 
 	bool m_interactive;
 	static boost::cli::commands_description m_desc;

@@ -333,7 +333,7 @@ int dbg_get_msg_event(
                     if (dbg_event.u.LoadDll.lpImageName)
                     {
                         dbg_read_memory((HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, filename, sizeof(filename), 0);
-                        wcsncpy(msg->dll_load.dll_name, filename, sizeof(filename));
+                        wcsncpy_s(msg->dll_load.dll_name, filename, sizeof(filename));
                     }
                 }
 

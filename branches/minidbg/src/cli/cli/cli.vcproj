@@ -216,30 +216,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\dbg_event.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\debugger.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PrecompiledHeaderThrough="stdafx.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PrecompiledHeaderThrough="stdafx.h"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\debugger_cli.cpp"
 				>
 				<FileConfiguration
@@ -282,6 +258,22 @@
 			<File
 				RelativePath=".\tracer.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="stdafx.h"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="stdafx.h"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -289,14 +281,6 @@
 			>
 			<File
 				RelativePath=".\breakpoint.h"
-				>
-			</File>
-			<File
-				RelativePath=".\dbg_event.h"
-				>
-			</File>
-			<File
-				RelativePath=".\debugger.h"
 				>
 			</File>
 			<File

@@ -1,13 +1,122 @@
+#include "stdafx.h"
 #include "tracer.h"
+#include "dbgapi.h"
 
-namespace trc
+using namespace std;
+
+tracer::tracer()
+ : m_image_name("")
 {
-uintptr_t CALLBACK get_symbols_callback(
-	int sym_type,
-	char * sym_name,
-	char * sym_subname,
-	pdb::pdb_parser& pdb
-	)
+	// TODO: remove hardcoded reference
+	// TODO: debugger_exception class
+	init();
+}
+
+tracer::tracer(const std::string& image_name)
+ : m_image_name(image_name)
+{
+	init();
+}
+
+void tracer::init()
+{
+	m_pid = 0;
+	if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) != 1)
+		throw std::exception("dbgapi initialization error");
+}
+
+u_long tracer::get_version()
+{
+	return dbg_drv_version();
+}
+
+void tracer::trace_process()
+{
+	if ((m_pid = dbg_create_process(m_image_name.c_str(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
+		throw std::exception("process not started");
+//      printf("process started with pid %x\n", pid);
+
+	if (dbg_attach_debugger(m_pid) == 0)
+		throw std::exception("tracer not attached");
+//      printf("tracer attached\n");
+
+	m_filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
+	m_filter.filtr_count = 0;
+
+	if (dbg_set_filter(m_pid, &m_filter) == 0)
+		throw std::exception("dbg_set_filter error");
+
+	printf("debug events filter set up\n");
+
+	do
+	{
+	dbg_msg msg;
+	u32 continue_status = DBG_CONTINUE;
+	if (dbg_get_msg_event(m_pid, &msg) == 0)
+	{
+		printf("get debug message error\n");
+		break;
+	}
+
+	if (msg.event_code == DBG_TERMINATED)
+	{
+		m_terminated_signal(msg);
+		continue_status = DBG_CONTINUE;
+		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	}
+
+	if (msg.event_code == DBG_START_THREAD)
+	{
+		m_start_thread_signal(msg);
+		continue_status = DBG_CONTINUE;
+		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	}
+
+	if (msg.event_code == DBG_EXIT_THREAD)
+	{
+		m_exit_thread_signal(msg);
+		continue_status = DBG_CONTINUE;
+		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	}
+
+	if (msg.event_code == DBG_EXCEPTION)
+	{
+		m_exception_signal(msg);
+
+		switch (msg.exception.except_record.ExceptionCode)
+		{
+		case EXCEPTION_BREAKPOINT :
+			{
+				m_breakpoint_signal(msg);
+				if ( msg.exception.first_chance )
+					continue_status = DBG_CONTINUE ;
+				else
+					continue_status = DBG_EXCEPTION_NOT_HANDLED ;
+			}
+			break ;
+
+		default:
+			continue_status  = DBG_CONTINUE ;
+			break ;
+		}
+		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	}
+
+	if (msg.event_code == DBG_LOAD_DLL)
+	{
+		m_dll_load_signal(msg);
+		continue_status = DBG_CONTINUE;
+		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	}
+
+	if (!ContinueDebugEvent((u32)msg.process_id, (u32)msg.thread_id, continue_status))
+		break;
+	} while (1);
+}
+
+// modified version for xp sp3
+uintptr_t
+CALLBACK tracer::get_symbols_callback(int sym_type, char * sym_name, char * sym_subname, pdb::pdb_parser& pdb)
 {
 	if (sym_type == SYM_TIMESTAMP)
 	{
@@ -33,14 +142,14 @@ uintptr_t CALLBACK get_symbols_callback(
 	MultiByteToWideChar(
 		CP_ACP, 0, sym_name, strlen(sym_name)+1,
 		sym_name_w, sizeof(sym_name_w)/sizeof(sym_name_w[0])
-	);
+		);
 
 	wchar_t sym_subname_w[255];
 	if (sym_subname && strlen(sym_subname)) {
 		MultiByteToWideChar(
 			CP_ACP, 0, sym_subname, strlen(sym_subname)+1,
 			sym_subname_w, sizeof(sym_subname_w)/sizeof(sym_subname_w[0])
-		);
+			);
 	}
 
 	if (sym_type == SYM_OFFSET) {
@@ -51,15 +160,6 @@ uintptr_t CALLBACK get_symbols_callback(
 		return pdb.get_type(sym_name_w).get_member(sym_subname_w).get_offset();
 
 	return 0;
-}
-
-void tracer::open_process(const std::string& filename)
-{
-	if ( (m_pid = dbg_create_process(filename.c_str(), DEBUG_PROCESS | DEBUG_ONLY_THIS_PROCESS)) == NULL)
-		throw tracer_error("process not started");
-
-	if (dbg_attach_debugger(m_pid) == 0)
-		throw tracer_error("debugger not attached");
 }
 
 bool tracer::enable_single_step(HANDLE process_id, HANDLE thread_id)
@@ -113,4 +213,3 @@ void tracer::del_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 	);
 }
 
-}

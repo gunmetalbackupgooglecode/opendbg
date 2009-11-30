@@ -29,9 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "dbgapi.h"
 #include "defines.h"
 
-namespace trc
-{
-
 class breakpoint
 {
 public:
@@ -63,7 +60,5 @@ private:
 	u32   m_thread_id;
 	u8   m_orig_value;
 };
-
-}
 
 #endif // BREAKPOINT_H__
