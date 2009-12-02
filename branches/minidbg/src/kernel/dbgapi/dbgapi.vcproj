@@ -207,7 +207,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\test\pdbparser.cpp"
+				RelativePath=".\pdbparser.cpp"
 				>
 			</File>
 		</Filter>

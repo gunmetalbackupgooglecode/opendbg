@@ -47,6 +47,11 @@ public:
 		m_image_name = imagename;
 	}
 
+	std::string get_image_name()
+	{
+		return m_image_name;
+	}
+
 	HANDLE get_pid() const
 	{
 		return m_pid;

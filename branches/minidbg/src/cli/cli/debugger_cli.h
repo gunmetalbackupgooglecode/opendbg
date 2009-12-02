@@ -12,6 +12,11 @@
 class debugger_cli
 {
 public:
+	typedef boost::mutex              mutex_t;
+	typedef boost::mutex::scoped_lock lock_t;
+	typedef boost::condition_variable condition_t;
+
+public:
 	debugger_cli();
 	~debugger_cli();
 
@@ -36,8 +41,9 @@ private:
 	void start_handler(const std::string& param);
 	void trace_handler(const std::string& param);
 	void exit_handler(int code);
+	void next_handler(const std::string& param);
 
-	void trace_slot(dbg_msg msg);
+	void debug_slot(dbg_msg msg);
 	void breakpoint_slot(dbg_msg msg);
 	void terminated_slot(dbg_msg msg);
 	void start_thread_slot(dbg_msg msg);
@@ -49,6 +55,8 @@ private:
 	boost::cli::command_line_interpreter* m_cli;
 
 	tracer m_tracer;
+	condition_t m_condition;
+	mutex_t     m_mutex;
 
 	bool m_interactive;
 	static boost::cli::commands_description m_desc;

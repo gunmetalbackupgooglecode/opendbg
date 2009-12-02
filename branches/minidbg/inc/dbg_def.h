@@ -34,7 +34,7 @@ typedef struct _dbg_exception {
 typedef struct _dbg_dll_load {
 	PVOID       dll_image_base;
 	SIZE_T      dll_image_size;
-	WCHAR		dll_name[MAX_PATH];
+	WCHAR       dll_name[MAX_PATH];
 } dbg_dll_load;
 
 typedef struct _dbg_msg {

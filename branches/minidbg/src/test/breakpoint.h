@@ -22,11 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define BREAKPOINT_H__
 
 #include <windows.h>
+#include <vector>
 #include <cstdio>
-#include "defines.h"
 
-namespace trc
-{
+#include "tracer_error.h"
+#include "dbgapi.h"
+#include "defines.h"
 
 class breakpoint
 {
@@ -57,8 +58,7 @@ private:
 	u3264 m_address;
 	u32   m_proc_id;
 	u32   m_thread_id;
+	u8   m_orig_value;
 };
-
-}
 
 #endif // BREAKPOINT_H__

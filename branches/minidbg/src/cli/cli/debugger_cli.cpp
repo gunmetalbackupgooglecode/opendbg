@@ -56,9 +56,15 @@ debugger_cli::debugger_cli()
 			po::value<int>()->implicit_value(0)->notifier(boost::bind(&debugger_cli::exit_handler, this, _1)),
 			"close opendbg"
 		)
+
+		(
+			"next",
+			po::value<std::string>()->implicit_value("event")->notifier(boost::bind(&debugger_cli::next_handler, this, _1)),
+			"next event"
+		)
 		;
 
-	m_tracer.add_trace_slot(boost::bind(&debugger_cli::trace_slot, this, _1));
+	m_tracer.add_trace_slot(boost::bind(&debugger_cli::debug_slot, this, _1));
 	m_tracer.add_breakpoint_slot(boost::bind(&debugger_cli::breakpoint_slot, this, _1));
 	m_tracer.add_terminated_slot(boost::bind(&debugger_cli::terminated_slot, this, _1));
 	m_tracer.add_start_thread_slot(boost::bind(&debugger_cli::start_thread_slot, this, _1));
@@ -87,7 +93,7 @@ void debugger_cli::trace_handler(const std::string& param)
 {
 	m_tracer.set_image_name(param);
 	boost::thread dbg_thread(boost::ref(m_tracer));
-	dbg_thread.join();
+	//dbg_thread.join();
 }
 
 void debugger_cli::help_handler(const std::string& param)
@@ -126,6 +132,11 @@ void debugger_cli::exit_handler(int code)
 	exit(code);
 }
 
+void debugger_cli::next_handler(const std::string& param)
+{
+	m_condition.notify_one();
+}
+
 void debugger_cli::interpret(std::istream& input_stream)
 {
 	m_cli->interpret(input_stream);
@@ -136,14 +147,17 @@ void debugger_cli::start()
 	m_cli->interpret(std::cin);
 }
 
-void debugger_cli::trace_slot(dbg_msg msg)
+void debugger_cli::debug_slot(dbg_msg msg)
 {
+	lock_t lock(m_mutex);
+	m_condition.wait(lock);
 	//std::cout << msg.event_code << "\n";
 }
 
 void debugger_cli::breakpoint_slot( dbg_msg msg )
 {
-
+	lock_t lock(m_mutex);
+	m_condition.wait(lock);
 }
 
 void debugger_cli::terminated_slot( dbg_msg msg )
@@ -179,6 +193,9 @@ void debugger_cli::exception_slot( dbg_msg msg )
 					msg.thread_id,
 					msg.process_id
 					);
+
+	lock_t lock(m_mutex);
+	m_condition.wait(lock);
 }
 
 void debugger_cli::dll_load_slot( dbg_msg msg )
@@ -191,3 +208,4 @@ void debugger_cli::dll_load_slot( dbg_msg msg )
 		msg.process_id
 		);
 }
+

@@ -70,7 +70,7 @@
 				AdditionalDependencies="dbgapi.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(BOOST_ROOT)\stage\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				EntryPointSymbol=""
