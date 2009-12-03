@@ -1,7 +1,8 @@
 #include "tracer.h"
 #include "dbgapi.h"
 
-using namespace std;
+namespace trc
+{
 
 tracer::tracer()
  : m_image_name("")
@@ -80,23 +81,23 @@ void tracer::trace_process()
 
 	if (msg.event_code == DBG_EXCEPTION)
 	{
-		m_exception_signal(msg);
-
 		switch (msg.exception.except_record.ExceptionCode)
 		{
-		case EXCEPTION_BREAKPOINT :
-			{
-				m_breakpoint_signal(msg);
-				if ( msg.exception.first_chance )
-					continue_status = DBG_CONTINUE ;
-				else
-					continue_status = DBG_EXCEPTION_NOT_HANDLED ;
-			}
+			(msg.exception.first_chance)
+				? continue_status = DBG_CONTINUE
+				: continue_status = DBG_EXCEPTION_NOT_HANDLED;
+
+		case EXCEPTION_BREAKPOINT:
+			m_breakpoint_signal(msg);
 			break ;
 
+		case EXCEPTION_SINGLE_STEP:
+			m_trace_signal(msg);
+			break;
+
 		default:
-			continue_status  = DBG_CONTINUE ;
-			break ;
+			m_exception_signal(msg);
+			break;
 		}
 		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 	}
@@ -161,7 +162,21 @@ CALLBACK tracer::get_symbols_callback(int sym_type, char * sym_name, char * sym_
 	return 0;
 }
 
-bool tracer::enable_single_step(HANDLE process_id, HANDLE thread_id)
+void tracer::add_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
+{
+	m_bp_array.push_back(breakpoint(proc_id, thread_id, address));
+}
+
+void tracer::del_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
+{
+	std::remove_if(
+		m_bp_array.begin(),
+		m_bp_array.end(),
+		boost::bind(&breakpoint::get_address, _1) == address
+	);
+}
+
+bool enable_single_step(HANDLE process_id, HANDLE thread_id)
 {
 	u_long readed, cmdlength;
 	CONTEXT context;
@@ -185,7 +200,7 @@ bool tracer::enable_single_step(HANDLE process_id, HANDLE thread_id)
 	return false;
 }
 
-bool tracer::disable_single_step(HANDLE thread_id)
+bool disable_single_step(HANDLE thread_id)
 {
 	CONTEXT context;
 	if (dbg_get_context(thread_id, &context))
@@ -198,17 +213,5 @@ bool tracer::disable_single_step(HANDLE thread_id)
 	return false;
 }
 
-void tracer::add_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
-{
-	m_bp_array.push_back(breakpoint(proc_id, thread_id, address));
-}
-
-void tracer::del_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
-{
-	std::remove_if(
-		m_bp_array.begin(),
-		m_bp_array.end(),
-		boost::bind(&breakpoint::get_address, _1) == address
-	);
 }
 

@@ -330,9 +330,7 @@ int dbg_get_msg_event(
                     dbg_read_memory((HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, &dbg_event.u.LoadDll.lpImageName, sizeof(dbg_event.u.LoadDll.lpImageName), 0);
                     if (dbg_event.u.LoadDll.lpImageName)
                     {
-                        WCHAR filename[MAX_PATH];
-                        dbg_read_memory((HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, filename, sizeof(filename), 0);
-                        wcsncpy_s(msg->dll_load.dll_name, filename, sizeof(filename));
+                        dbg_read_memory((HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, msg->dll_load.dll_name, sizeof(msg->dll_load.dll_name), 0);
                     }
                 }
 

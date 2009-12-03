@@ -20,6 +20,9 @@
 
 #include "breakpoint.h"
 
+namespace trc
+{
+
 breakpoint::breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 	: m_proc_id(proc_id),
 	  m_thread_id(thread_id),
@@ -45,4 +48,6 @@ breakpoint::~breakpoint()
 	if (INT3_OPCODE == buf)
 		if (!dbg_write_memory((HANDLE)m_proc_id, (PVOID)m_address, &m_orig_value, sizeof(m_orig_value), &readed))
 			throw tracer_error("can't write memory on destroying breakpoint"); // memory is not writable
+}
+
 }

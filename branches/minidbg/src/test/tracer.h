@@ -12,6 +12,9 @@
 #include "pdbparser.h"
 #include "breakpoint.h"
 
+namespace trc
+{
+
 class tracer
 {
 public:
@@ -37,8 +40,6 @@ public:
 	void trace_process();
 	u_long get_version();
 	void open_process(const std::string& filename);
-	bool enable_single_step(HANDLE process_id, HANDLE thread_id);
-	bool disable_single_step(HANDLE thread_id);
 	void add_breakpoint(u32 proc_id, u32 thread_id, u3264 address);
 	void del_breakpoint(u32 proc_id, u32 thread_id, u3264 address);
 
@@ -117,5 +118,10 @@ private:
 	breakpoint_array_t m_bp_array;
 
 };
+
+bool enable_single_step(HANDLE process_id, HANDLE thread_id);
+bool disable_single_step(HANDLE thread_id);
+
+}
 
 #endif

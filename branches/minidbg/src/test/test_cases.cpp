@@ -6,9 +6,9 @@
 
 #include "tracer.h"
 
-void debug_slot(dbg_msg msg)
+void trace_slot(dbg_msg msg)
 {
-	std::cout << "debug slot\n";
+	std::cout << "trace slot\n";
 }
 
 void breakpoint_slot(dbg_msg msg)
@@ -55,17 +55,18 @@ void dll_load_slot(dbg_msg msg)
 	BOOST_CHECK(msg.thread_id);
 	BOOST_CHECK(msg.dll_load.dll_name);
 	BOOST_CHECK(msg.dll_load.dll_image_base);
-	std::cout << "dll load slot\n";
+	std::wcout << "dll load " << msg.dll_load.dll_name << "\n";
+	trc::enable_single_step(msg.process_id, msg.thread_id);
 }
 
 void test_events_handling()
 {
 	std::string image_name("c:\\windows\\notepad.exe");
-	tracer tracer_obj;
+	trc::tracer tracer_obj;
 	tracer_obj.set_image_name(image_name);
 	BOOST_CHECK_EQUAL( tracer_obj.get_image_name(), "c:\\windows\\notepad.exe" );
 
-	tracer_obj.add_trace_slot(debug_slot);
+	tracer_obj.add_trace_slot(trace_slot);
 	tracer_obj.add_breakpoint_slot(breakpoint_slot);
 	tracer_obj.add_terminated_slot(terminated_slot);
 	tracer_obj.add_start_thread_slot(start_thread_slot);
