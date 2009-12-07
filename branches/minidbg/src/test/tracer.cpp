@@ -36,8 +36,13 @@ void tracer::trace_process()
 		throw std::exception("process not started");
 //      printf("process started with pid %x\n", pid);
 
-	if (dbg_attach_debugger(m_pid) == 0)
-		throw std::exception("tracer not attached");
+//  ISSUE: it's an invalid representation about
+//  how debugger attaches to processes;
+//  dbg_create_process and dbg_attach_debugger
+//  different ways to start debugging
+//
+//	if (dbg_attach_debugger(m_pid) == 0)
+//		throw std::exception("tracer not attached");
 //      printf("tracer attached\n");
 
 	m_filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
