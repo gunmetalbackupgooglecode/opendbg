@@ -22,7 +22,7 @@
 
 #include  "cadt.h"
 #include  "disasm.h"
-#include  "ngtracerapi.h"
+//#include  "ngtracerapi.h"
 
 ULONG Disasm(PVOID addr,PVOID trueAddr,PMnemonic pMnem)
 {
