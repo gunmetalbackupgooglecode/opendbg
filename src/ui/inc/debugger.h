@@ -16,7 +16,7 @@ This class will be reconstructed
 
 #include "disasm.h"
 #include "utils.h"
-#include "ngtracerapi.h"
+//#include "ngtracerapi.h"
 
 class Debugger
 {
