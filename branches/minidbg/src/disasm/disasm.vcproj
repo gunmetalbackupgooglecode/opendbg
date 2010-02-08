@@ -20,8 +20,8 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
+			ConfigurationType="4"
+			CharacterSet="0"
 			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
@@ -42,16 +42,17 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc/libudis86&quot;;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
 				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				WarningLevel="3"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -63,18 +64,10 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
+				Name="VCLibrarianTool"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -84,9 +77,6 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -119,6 +109,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -191,10 +182,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\libudis86\syn-att.c"
 				>
 			</File>
@@ -221,11 +208,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\libudis86\extern.h"
+				RelativePath="..\..\inc\libudis86\extern.h"
 				>
 			</File>
 			<File
 				RelativePath=".\libudis86\input.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\inc\libudis86\itab.h"
 				>
 			</File>
 			<File
@@ -237,7 +228,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\libudis86\types.h"
+				RelativePath="..\..\inc\libudis86\types.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\inc\udis86.h"
 				>
 			</File>
 		</Filter>

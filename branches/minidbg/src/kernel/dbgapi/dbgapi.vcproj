@@ -50,7 +50,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CallingConvention="2"
 				CompileAs="2"
 			/>
@@ -72,6 +72,8 @@
 				GenerateManifest="false"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(TargetName).pdb&quot;"
+				GenerateMapFile="true"
+				MapExports="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"

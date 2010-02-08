@@ -5,6 +5,13 @@
 
 #pragma pack (push, 1)
 
+typedef struct _dbg_created {
+	HANDLE proc_id;
+	HANDLE thread_id;
+	HANDLE h_file;
+	HANDLE image_base;
+} dbg_created;
+
 typedef struct _dbg_terminated {
 	HANDLE proc_id;
 	u32    exit_code;
@@ -44,11 +51,12 @@ typedef struct _dbg_msg {
 
 	union
 	{
+		dbg_created      created;
 		dbg_terminated   terminated;
 		dbg_start_thread thread_start;
 		dbg_exit_thread  thread_exit;
 		dbg_exception    exception;
-		dbg_dll_load	 dll_load;
+		dbg_dll_load     dll_load;
 	};
 
 } dbg_msg;
@@ -91,6 +99,7 @@ typedef struct _set_filter_data {
 #define DBG_UNLOAD_DLL    32
 #define DBG_CONTINUE_CALL 64
 #define DBG_RDTSC         128
+#define DBG_CREATED       256
 
 #define RES_NOT_HANDLED   0
 #define RES_CONTINUE      1

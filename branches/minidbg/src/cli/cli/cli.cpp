@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "precompiled.h"
 // isatty
 #ifdef _MSC_VER
 #include <io.h>

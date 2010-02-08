@@ -1,26 +1,44 @@
-#include "stdafx.h"
+#include "precompiled.h"
+
 #include "tracer.h"
 #include "dbgapi.h"
 
-using namespace std;
+namespace trc
+{
 
 tracer::tracer()
  : m_image_name("")
 {
-	// TODO: remove hardcoded reference
-	// TODO: debugger_exception class
-	init();
+	init(instruction_set::X86);
 }
 
-tracer::tracer(const std::string& image_name)
+tracer::tracer(instruction_set set)
+ : m_image_name("")
+{
+	init(set);
+}
+
+tracer::tracer(instruction_set set, const std::string& image_name)
  : m_image_name(image_name)
 {
-	init();
+	init(set);
 }
 
-void tracer::init()
+tracer::tracer( const tracer& dbg )
+ : m_image_name(dbg.m_image_name),
+   m_pid(dbg.m_pid)
+{
+	m_filter.event_mask = dbg.m_filter.event_mask;
+	m_filter.filtr_count = dbg.m_filter.filtr_count;
+	for (size_t i = 0; i < dbg.m_filter.filtr_count; ++i)
+		m_filter.filters[i] = dbg.m_filter.filters[i];
+}
+
+void tracer::init(instruction_set set)
 {
 	m_pid = 0;
+	ud_init(&m_disasm);
+	ud_set_mode(&m_disasm, set);
 	if (dbg_initialize_api(0x1234, L"c:\\ntoskrnl.pdb", (dbg_sym_get)get_symbols_callback) != 1)
 		throw std::exception("dbgapi initialization error");
 }
@@ -32,17 +50,13 @@ u_long tracer::get_version()
 
 void tracer::trace_process()
 {
-	if ((m_pid = dbg_create_process(m_image_name.c_str(), CREATE_NEW_CONSOLE | DEBUG_ONLY_THIS_PROCESS)) == NULL)
+	if ((m_pid = dbg_create_process(m_image_name.c_str(), DEBUG_PROCESS | DEBUG_ONLY_THIS_PROCESS)) == NULL)
 		throw std::exception("process not started");
 //      printf("process started with pid %x\n", pid);
 
-//  ISSUE: it's an invalid representation about
-//  how debugger attaches to processes;
-//  dbg_create_process and dbg_attach_debugger
-//  different ways to start debugging
-//
-//	if (dbg_attach_debugger(m_pid) == 0)
-//		throw std::exception("tracer not attached");
+	ATTACH_INFO attach_info;
+	if (dbg_attach_debugger(m_pid, &attach_info) == 0)
+		throw std::exception("tracer not attached");
 //      printf("tracer attached\n");
 
 	m_filter.event_mask  = DBG_EXCEPTION | DBG_TERMINATED | DBG_START_THREAD | DBG_EXIT_THREAD | DBG_LOAD_DLL;
@@ -63,11 +77,19 @@ void tracer::trace_process()
 		break;
 	}
 
-	if (msg.event_code == DBG_TERMINATED)
+	m_tid = msg.thread_id;
+
+	if (msg.event_code == DBG_CREATED)
 	{
-		m_terminated_signal(msg);
+		std::cout << msg.created.image_base << "\n";
+		HANDLE ep_addr = (HANDLE)((u3264)attach_info.image_ep + (u3264)msg.created.image_base);
+		try {
+			//m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, reinterpret_cast<u3264>(ep_addr)));
+		} catch (tracer_error& e) {
+			std::cout << e.what() << "\n";
+		}
+		m_created_signal(msg);
 		continue_status = DBG_CONTINUE;
-		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 	}
 
 	if (msg.event_code == DBG_START_THREAD)
@@ -86,23 +108,27 @@ void tracer::trace_process()
 
 	if (msg.event_code == DBG_EXCEPTION)
 	{
-		m_exception_signal(msg);
-
 		switch (msg.exception.except_record.ExceptionCode)
 		{
-		case EXCEPTION_BREAKPOINT :
-			{
-				m_breakpoint_signal(msg);
-				if ( msg.exception.first_chance )
-					continue_status = DBG_CONTINUE ;
-				else
-					continue_status = DBG_EXCEPTION_NOT_HANDLED ;
-			}
-			break ;
+			(msg.exception.first_chance)
+				? continue_status = DBG_CONTINUE
+				: continue_status = DBG_EXCEPTION_NOT_HANDLED;
+
+		case EXCEPTION_BREAKPOINT:
+			for (int i = 0; i < m_bp_trc_array.size(); ++i)
+				if ( m_bp_trc_array[i].get_address() == reinterpret_cast<u3264>(msg.exception.except_record.ExceptionAddress) )
+					m_bp_trc_array[i].turn_off();
+
+			m_breakpoint_signal(msg);
+			break;
+
+		case EXCEPTION_SINGLE_STEP:
+			m_trace_signal(msg);
+			break;
 
 		default:
-			continue_status  = DBG_CONTINUE ;
-			break ;
+			m_exception_signal(msg);
+			break;
 		}
 		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 	}
@@ -111,6 +137,13 @@ void tracer::trace_process()
 	{
 		m_dll_load_signal(msg);
 		continue_status = DBG_CONTINUE;
+		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
+	}
+
+	if (msg.event_code == DBG_TERMINATED)
+	{
+		m_terminated_signal(msg);
+		continue_status = 0;
 		//dbg_continue_event(NULL, pid, RES_NOT_HANDLED, NULL);
 	}
 
@@ -167,7 +200,21 @@ CALLBACK tracer::get_symbols_callback(int sym_type, char * sym_name, char * sym_
 	return 0;
 }
 
-bool tracer::enable_single_step(HANDLE process_id, HANDLE thread_id)
+void tracer::add_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
+{
+	m_bp_usr_array.push_back(breakpoint(proc_id, thread_id, address));
+}
+
+void tracer::del_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
+{
+	std::remove_if(
+		m_bp_usr_array.begin(),
+		m_bp_usr_array.end(),
+		boost::bind(&breakpoint::get_address, _1) == address
+	);
+}
+
+bool enable_single_step(HANDLE process_id, HANDLE thread_id)
 {
 	u_long readed, cmdlength;
 	CONTEXT context;
@@ -176,22 +223,13 @@ bool tracer::enable_single_step(HANDLE process_id, HANDLE thread_id)
 	{
 		context.EFlags |= TF_BIT;
 		dbg_set_context(thread_id, &context);
-		//// проверяем возможность трейса команды
-		//if (!dbg_read_memory(process_id, (char*)context.Eip, &buf, sizeof(buf), &readed))
-		//	return false;
-		//cmdlength = disassemble(buf, this->instr, &this->params);
-		//if (analyser::is_instruction_untraceable(*this->instr)) {
-		//	breakpoint bp((u32)process_id, (u32)thread_id, (u3264)(context.Eip + cmdlength));// поставить int 3 бряк
-		//}
-		//// записать что это quick-бряк
-
 		return true;
 	}
 
 	return false;
 }
 
-bool tracer::disable_single_step(HANDLE thread_id)
+bool disable_single_step(HANDLE thread_id)
 {
 	CONTEXT context;
 	if (dbg_get_context(thread_id, &context))
@@ -204,17 +242,94 @@ bool tracer::disable_single_step(HANDLE thread_id)
 	return false;
 }
 
-void tracer::add_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
+bool tracer::is_untraceable_opcode(u8* opcode)
 {
-	m_bp_array.push_back(breakpoint(proc_id, thread_id, address));
+	return (opcode[0] == 0x17) || // pop ss
+	(opcode[0] == 0x9D) || // popfd
+	(opcode[0] == 0x9C); // pushfd 
 }
 
-void tracer::del_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
+bool tracer::is_call(u8* opcode)
 {
-	std::remove_if(
-		m_bp_array.begin(),
-		m_bp_array.end(),
-		boost::bind(&breakpoint::get_address, _1) == address
-	);
+	ud_set_input_buffer(&m_disasm, opcode, MAX_INSTRUCTION_LEN);
+	ud_disassemble(&m_disasm);
+
+	return m_disasm.mnemonic == UD_Icall;
 }
+
+bool tracer::is_rep(u8* opcode)
+{
+	ud_set_input_buffer(&m_disasm, opcode, MAX_INSTRUCTION_LEN);
+	ud_disassemble(&m_disasm);
+
+	return m_disasm.pfx_rep ||
+		m_disasm.pfx_repe ||
+		m_disasm.pfx_repne ||
+		m_disasm.mnemonic == UD_Irep ||
+		m_disasm.mnemonic == UD_Irepne;
+}
+
+bool tracer::is_loop(u8* opcode)
+{
+	ud_set_input_buffer(&m_disasm, opcode, MAX_INSTRUCTION_LEN);
+	ud_disassemble(&m_disasm);
+
+	return (m_disasm.mnemonic == UD_Iloop) ||
+		(m_disasm.mnemonic == UD_Iloope) ||
+		(m_disasm.mnemonic == UD_Iloopnz);
+}
+
+void tracer::step_into()
+{
+	enable_single_step(m_pid, m_tid);
+}
+
+void tracer::step_over()
+{
+	CONTEXT ctx;
+	dbg_get_context(m_tid, &ctx);
+
+	ud_init(&m_disasm);
+	ud_set_mode(&m_disasm, 32);
+	ud_set_input_buffer(&m_disasm, (u8*)ctx.Eip, MAX_INSTRUCTION_LEN);
+	ud_disassemble(&m_disasm);
+
+	if (m_disasm.mnemonic == UD_Icall) {
+		size_t sz = get_size_till_ret((void*)ctx.Eip);
+		m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, ctx.Eip + sz));
+	} else {
+		enable_single_step(m_pid, m_tid);
+	}
+}
+
+void tracer::step_out()
+{
+	CONTEXT ctx;
+	dbg_get_context(m_tid, &ctx);
+
+	size_t sz = get_size_till_ret((void*)ctx.Eip);
+	m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, ctx.Eip + sz));
+}
+
+u32 get_size_till_ret(void* fn)
+{
+	u32 res = 0, len;
+	ud_t disasm;
+	ud_init(&disasm);
+	ud_set_mode(&disasm, 32);
+
+	do
+	{
+		ud_set_input_buffer(&disasm, (uint8_t*)fn, MAX_INSTRUCTION_LEN);
+		ud_disassemble(&disasm);
+		len = ud_insn_len(&disasm);
+		res += len;
+		if ((len == 1) && (disasm.mnemonic == UD_Iret)) break;
+		fn = (void*)((u32)fn + len);
+	} while (len);
+
+	return res;
+}
+
+} // namespace trc
 

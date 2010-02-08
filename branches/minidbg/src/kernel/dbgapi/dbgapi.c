@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <tlhelp32.h>
 #include <psapi.h>
+#include <imagehlp.h>
 
 // vs2009sp1 memory.h bug workaround
 #if _MSC_FULL_VER == 150030729
@@ -208,8 +209,8 @@ DBGAPI_API u_long dbg_drv_version()
     return ver;
 }
 
-static
-HANDLE dbg_open_process(HANDLE pid)
+DBGAPI_API
+HANDLE CALLING_CONVENTION dbg_open_process(HANDLE pid)
 {
     HANDLE h_proc;
     if ( (h_proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, (u32)pid)) == NULL) {
@@ -253,19 +254,41 @@ int CALLING_CONVENTION dbg_terminate_process(
 
 DBGAPI_API
 int dbg_attach_debugger(
-        IN HANDLE proc_id
+        IN HANDLE proc_id,
+        OUT PATTACH_INFO attach_info
         )
 {
     int succs = 0;
+    DWORD ret_bytes;
+    PROCESS_BASIC_INFORMATION pbi;
+    PEB peb;
+    IMAGE_DOS_HEADER dos;
+    IMAGE_NT_HEADERS nt;
+    MODULEINFO mi;
+    HANDLE h_proc = dbg_open_process(proc_id);
+    WCHAR imagename[MAX_PATH];
+    NtQueryInformationProcess(h_proc, ProcessBasicInformation, &pbi, sizeof(PROCESS_BASIC_INFORMATION), &ret_bytes);
+    NtQueryInformationProcess(h_proc, MaxProcessInfoClass, &attach_info->file_name, sizeof(WCHAR) * MAX_PATH, &ret_bytes);
+    dbg_read_memory(proc_id, pbi.PebBaseAddress, &peb, sizeof(PEB), &ret_bytes);
+    dbg_read_memory(proc_id, peb.ImageBaseAddress, &dos, sizeof(IMAGE_DOS_HEADER), &ret_bytes);
+    dbg_read_memory(proc_id, (PVOID)(dos.e_lfanew + (DWORD)peb.ImageBaseAddress), &nt, sizeof(IMAGE_NT_HEADERS), &ret_bytes);
+    ////if (DebugActiveProcess((u32)proc_id))
 
-    //if (DebugActiveProcess((u32)proc_id))
-        succs = 1;
+		CHAR filename[MAX_PATH];
+		GetModuleFileNameEx(h_proc, NULL, filename, sizeof(CHAR)*MAX_PATH);
+
+    HMODULE hMod = GetModuleHandle("notepad.exe");
+
+    attach_info->image_ep = (PVOID)nt.OptionalHeader.AddressOfEntryPoint;
+    attach_info->image_base = (PVOID)nt.OptionalHeader.ImageBase;
+    attach_info->image_size = nt.OptionalHeader.SizeOfImage;
+    attach_info->peb_addr = pbi.PebBaseAddress;
 
     //if (dbg_syscall(SC_DBG_ATTACH, &proc_id, sizeof(proc_id), NULL, 0) != 0) {
     //    succs = 1;
     //}
 
-    return succs;
+    return succs = 1;
 }
 
 DBGAPI_API
@@ -285,6 +308,14 @@ int dbg_get_msg_event(
 
         switch (dbg_event.dwDebugEventCode)
         {
+            case CREATE_PROCESS_DEBUG_EVENT:
+            {
+							msg->event_code = DBG_CREATED;
+							msg->created.image_base = dbg_event.u.CreateProcessInfo.lpBaseOfImage;
+							msg->created.h_file     = dbg_event.u.CreateProcessInfo.hFile;
+							break;
+            }
+        
             case EXCEPTION_DEBUG_EVENT:
             {
                 msg->event_code = DBG_EXCEPTION;
@@ -774,4 +805,3 @@ int dbg_hook_page(
 {
     return -1;
 }
-

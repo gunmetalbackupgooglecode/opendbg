@@ -52,14 +52,16 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="precompiled.h"
 				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
 				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CallingConvention="0"
+				CompileAs="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -72,7 +74,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dbgapi.lib"
+				AdditionalOptions="dbgapi.lib dbghelp.lib psapi.lib disasm.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
@@ -137,7 +139,8 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NGTRACER_EXPORTS"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="precompiled.h"
 				ObjectFile="$(IntDir)\"
 				ProgramDataBaseFileName="$(IntDir)\vc90.pdb"
 				XMLDocumentationFileName="$(IntDir)\"
@@ -157,7 +160,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="dbgapi.lib dbghelp.lib"
+				AdditionalDependencies="dbgapi.lib dbghelp.lib psapi.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
@@ -222,6 +225,10 @@
 			>
 			<File
 				RelativePath=".\breakpoint.h"
+				>
+			</File>
+			<File
+				RelativePath=".\precompiled.h"
 				>
 			</File>
 			<File

@@ -1,13 +1,6 @@
 #ifndef _DEBUGGER_H_
 #define _DEBUGGER_H_
 
-#include <string>
-#include <vector>
-
-#include <boost/function.hpp>
-#include <boost/signals2.hpp>
-#include <boost/thread.hpp>
-
 #include "dbgapi.h"
 #include "pdbparser.h"
 #include "breakpoint.h"
@@ -15,33 +8,44 @@
 namespace trc
 {
 
+#define MAX_INSTRUCTION_LEN 16
+
+enum instruction_set { X86 = 32, X86_64 = 64 };
+
 class tracer
 {
 public:
-	typedef boost::signals2::signal<void (dbg_msg)> signal_t;
-	typedef boost::signals2::connection      connection_t;
-	typedef std::vector<breakpoint>          breakpoint_array_t;
-	typedef breakpoint_array_t::iterator     breakpoint_iterator;
+	typedef boost::signals2::signal<void (dbg_msg&)> signal_t;
+	typedef boost::signals2::connection             connection_t;
+	typedef std::vector<breakpoint>                 breakpoint_array_t;
+	typedef breakpoint_array_t::iterator            breakpoint_iterator;
 
 public:
 	tracer();
-	tracer(const tracer& dbg)
-	 : m_image_name(dbg.m_image_name),
-	   m_pid(dbg.m_pid)
-	{
-		m_filter.event_mask = dbg.m_filter.event_mask;
-		m_filter.filtr_count = dbg.m_filter.filtr_count;
-		for (size_t i = 0; i < dbg.m_filter.filtr_count; ++i)
-			m_filter.filters[i] = dbg.m_filter.filters[i];
-	}
+	tracer(instruction_set set);
+	tracer(instruction_set set, const std::string& image_name);
+	tracer(const tracer& dbg);
 
-	tracer(const std::string& image_name);
-	void init();
+	void init(instruction_set set);
 	void trace_process();
 	u_long get_version();
 	void open_process(const std::string& filename);
 	void add_breakpoint(u32 proc_id, u32 thread_id, u3264 address);
 	void del_breakpoint(u32 proc_id, u32 thread_id, u3264 address);
+
+	bool is_untraceable_opcode(u8* opcode);
+	bool is_call(u8* opcode);
+	bool is_rep(u8* opcode);
+	bool is_loop(u8* opcode);
+
+	void step_into(u3264 addr);
+	void step_over(u3264 addr);
+	bool step_out();
+
+	void operator()() // this function is necessary for boost::thread
+	{
+		trace_process();
+	}
 
 	void set_image_name(const std::string& imagename)
 	{
@@ -93,11 +97,6 @@ public:
 		return m_dll_load_signal.connect(subscriber);
 	}
 
-	void operator()() // this function is necessary for boost::thread
-	{
-		trace_process();
-	}
-
 private:
 	static uintptr_t CALLBACK get_symbols_callback(int sym_type, char * sym_name, char * sym_subname, pdb::pdb_parser& pdb);
 
@@ -115,12 +114,15 @@ private:
 	signal_t m_exception_signal;
 	signal_t m_dll_load_signal;
 
-	breakpoint_array_t m_bp_array;
-
+	breakpoint_array_t m_bp_usr_array;
+	breakpoint_array_t m_bp_trc_array;
+	ud_t m_disasm;
 };
 
 bool enable_single_step(HANDLE process_id, HANDLE thread_id);
 bool disable_single_step(HANDLE thread_id);
+
+u32 get_size_till_ret(void* fn);
 
 }
 

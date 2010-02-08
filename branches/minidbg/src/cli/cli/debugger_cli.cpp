@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "precompiled.h"
 // isatty
 #ifdef _MSC_VER
 #include <io.h>
@@ -39,15 +39,15 @@ debugger_cli::debugger_cli()
 			"load script file(s)"
 		)
 
-		(
-			"start,s",
-			po::value<std::string>()->notifier(boost::bind(&debugger_cli::start_handler, this, _1)),
-			"start process(es)"
-		)
+		//(
+		//	"start",
+		//	po::value<std::string>()->notifier(boost::bind(&debugger_cli::start_handler, this, _1)),
+		//	"start process(es)"
+		//)
 
 		(
-			"trace",
-			po::value<std::string>()->notifier(boost::bind(&debugger_cli::trace_handler, this, _1)),
+			"step,s",
+			po::value<std::string>()->notifier(boost::bind(&debugger_cli::step_handler, this, _1)),
 			"trace process(es)"
 		)
 
@@ -64,6 +64,7 @@ debugger_cli::debugger_cli()
 		)
 		;
 
+	m_tracer.add_created_slot(boost::bind(&debugger_cli::created_slot, this, _1));
 	m_tracer.add_trace_slot(boost::bind(&debugger_cli::debug_slot, this, _1));
 	m_tracer.add_breakpoint_slot(boost::bind(&debugger_cli::breakpoint_slot, this, _1));
 	m_tracer.add_terminated_slot(boost::bind(&debugger_cli::terminated_slot, this, _1));
@@ -85,11 +86,14 @@ void debugger_cli::load_handler(const std::string& filename)
 	std::cout << "script loading is not supported\n";
 }
 
-void debugger_cli::start_handler(const std::string& filename)
+void debugger_cli::run_handler(const std::string& param)
 {
+	m_tracer.set_image_name(param);
+	boost::thread dbg_thread(boost::ref(m_tracer));
+	//dbg_thread.join();
 }
 
-void debugger_cli::trace_handler(const std::string& param)
+void debugger_cli::step_handler(const std::string& param)
 {
 	m_tracer.set_image_name(param);
 	boost::thread dbg_thread(boost::ref(m_tracer));
@@ -127,14 +131,14 @@ void debugger_cli::show_handler(const std::string& param)
 	}
 }
 
-void debugger_cli::exit_handler(int code)
-{
-	exit(code);
-}
-
 void debugger_cli::next_handler(const std::string& param)
 {
 	m_condition.notify_one();
+}
+
+void debugger_cli::exit_handler(int code)
+{
+	exit(code);
 }
 
 void debugger_cli::interpret(std::istream& input_stream)
@@ -154,8 +158,14 @@ void debugger_cli::debug_slot(dbg_msg msg)
 	//std::cout << msg.event_code << "\n";
 }
 
+void debugger_cli::created_slot( dbg_msg msg )
+{
+	std::cout << "started debugger\n";
+}
+
 void debugger_cli::breakpoint_slot( dbg_msg msg )
 {
+	std::cout << "breakpoint address: " << msg.exception.except_record.ExceptionAddress << "\n";
 	lock_t lock(m_mutex);
 	m_condition.wait(lock);
 }
@@ -188,8 +198,9 @@ void debugger_cli::exit_thread_slot( dbg_msg msg )
 
 void debugger_cli::exception_slot( dbg_msg msg )
 {
-	printf("DBG_EXCEPTION %0.8x in %x:%x\n",
+	printf("DBG_EXCEPTION %0.8x in ADDR %x %x:%x\n",
 					msg.exception.except_record.ExceptionCode,
+					msg.exception.except_record.ExceptionAddress,
 					msg.thread_id,
 					msg.process_id
 					);

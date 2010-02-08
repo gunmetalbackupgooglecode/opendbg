@@ -18,6 +18,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "precompiled.h"
 #include "breakpoint.h"
 
 namespace trc
@@ -28,26 +29,13 @@ breakpoint::breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 	  m_thread_id(thread_id),
 	  m_address(address)
 {
-	u8 buf;
-	u32 readed;
-	if (!dbg_read_memory((HANDLE)proc_id, (PVOID)address, (PVOID)&buf, sizeof(buf), &readed))
-		throw tracer_error("can't read memory on creating breakpoint"); // memory is not readable
-
-	m_orig_value = buf;
-	buf = INT3_OPCODE;
-	if (!dbg_write_memory((HANDLE)proc_id, (PVOID)address, &buf, sizeof(buf), &readed))
-		throw tracer_error("can't write memory on creating breakpoint"); // memory is not writable
+	std::cout << "breakpoint ctor\n";
+	turn_on();
 }
 
 breakpoint::~breakpoint()
 {
-	u8 buf;
-	u32 readed;
-	if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, (PVOID)&buf, sizeof(buf), &readed))
-		throw tracer_error("can't read memory on destroying breakpoint"); // memory is not readable
-	if (INT3_OPCODE == buf)
-		if (!dbg_write_memory((HANDLE)m_proc_id, (PVOID)m_address, &m_orig_value, sizeof(m_orig_value), &readed))
-			throw tracer_error("can't write memory on destroying breakpoint"); // memory is not writable
+	std::cout << "breakpoint dtor\n";
 }
 
 }

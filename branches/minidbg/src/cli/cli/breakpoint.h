@@ -21,19 +21,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BREAKPOINT_H__
 #define BREAKPOINT_H__
 
-#include <windows.h>
-#include <vector>
-#include <cstdio>
-
 #include "tracer_error.h"
 #include "dbgapi.h"
 #include "defines.h"
+
+namespace trc
+{
 
 class breakpoint
 {
 public:
 	breakpoint(u32 proc_id, u32 thread_id, u3264 address);
 	~breakpoint();
+
+	void turn_off()
+	{
+		u8 buf = 0;
+		u32 readed = 0;
+		u8 buf_1[16], buf_2[16];
+
+		if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, &buf_1, sizeof(buf_1), &readed))
+			throw tracer_error("can't write memory on destroying breakpoint"); // memory is not writable
+		
+		if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, (PVOID)&buf, sizeof(buf), &readed))
+			throw tracer_error("can't read memory on destroying breakpoint"); // memory is not readable
+		if (INT3_OPCODE == buf)
+		{
+			if (!dbg_write_memory((HANDLE)m_proc_id, (PVOID)m_address, &m_orig_value, sizeof(m_orig_value), &readed))
+				throw tracer_error("can't write memory on destroying breakpoint"); // memory is not writable
+			if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, &buf_2, sizeof(buf_2), &readed))
+				throw tracer_error("can't write memory on destroying breakpoint"); // memory is not writable
+		}
+	}
+
+	void turn_on()
+	{
+		u8 buf = 0;
+		u32 readed = 0;
+		if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, (PVOID)&buf, sizeof(buf), &readed))
+			throw tracer_error("can't read memory on creating breakpoint"); // memory is not readable
+
+		m_orig_value = buf;
+		buf = INT3_OPCODE;
+		if (!dbg_write_memory((HANDLE)m_proc_id, (PVOID)m_address, &buf, sizeof(buf), &readed))
+			throw tracer_error("can't write memory on creating breakpoint"); // memory is not writable
+	}
 
 	int is_enabled()
 	{
@@ -60,5 +92,7 @@ private:
 	u32   m_thread_id;
 	u8   m_orig_value;
 };
+
+}
 
 #endif // BREAKPOINT_H__

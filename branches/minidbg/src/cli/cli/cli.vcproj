@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dbgapi.lib"
+				AdditionalDependencies="dbgapi.lib disasm.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
@@ -236,26 +236,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\stdafx.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\tracer.cpp"
 				>
 				<FileConfiguration
@@ -288,7 +268,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\precompiled.h"
 				>
 			</File>
 			<File

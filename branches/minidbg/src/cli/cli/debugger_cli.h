@@ -1,11 +1,6 @@
 #ifndef _DEBUGGERCLI_H_
 #define _DEBUGGERCLI_H_
 
-#include <string>
-
-#include <boost/thread.hpp>
-#include <boost/ref.hpp>
-
 #include "command_line_interpreter.hpp"
 #include "tracer.h"
 
@@ -35,14 +30,15 @@ public:
 	void interpret(std::istream& input_stream);
 
 private:
+	void run_handler(const std::string& param);
 	void show_handler(const std::string& param);
 	void help_handler(const std::string& param);
 	void load_handler(const std::string& param);
-	void start_handler(const std::string& param);
-	void trace_handler(const std::string& param);
+	void step_handler(const std::string& param);
 	void exit_handler(int code);
 	void next_handler(const std::string& param);
 
+	void created_slot(dbg_msg msg);
 	void debug_slot(dbg_msg msg);
 	void breakpoint_slot(dbg_msg msg);
 	void terminated_slot(dbg_msg msg);
@@ -54,7 +50,7 @@ private:
 private:
 	boost::cli::command_line_interpreter* m_cli;
 
-	tracer m_tracer;
+	trc::tracer m_tracer;
 	condition_t m_condition;
 	mutex_t     m_mutex;
 
