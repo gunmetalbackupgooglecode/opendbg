@@ -22,12 +22,6 @@ debugger_cli::debugger_cli()
 
 	m_desc.add_options()
 		(
-			"show",
-			po::value<std::string>()->implicit_value("info")->notifier(boost::bind(&debugger_cli::show_handler, this, _1)),
-			"show informational messages"
-		)
-
-		(
 			"help,?",
 			po::value<std::string>()->implicit_value("")->notifier(boost::bind(&debugger_cli::help_handler, this, _1)),
 			"show this message"
@@ -39,28 +33,28 @@ debugger_cli::debugger_cli()
 			"load script file(s)"
 		)
 
-		//(
-		//	"start",
-		//	po::value<std::string>()->notifier(boost::bind(&debugger_cli::start_handler, this, _1)),
-		//	"start process(es)"
-		//)
+		(
+			"open",
+			po::value<std::string>()->notifier(boost::bind(&debugger_cli::open_handler, this, _1)),
+			"start debugging process(es)"
+		)
 
 		(
 			"step,s",
-			po::value<std::string>()->notifier(boost::bind(&debugger_cli::step_handler, this, _1)),
-			"trace process(es)"
+			po::value<std::string>()->implicit_value("0")->notifier(boost::bind(&debugger_cli::step_handler, this, _1)),
+			"Step to next line of code. Will step into a function"
+		)
+
+		(
+			"next,n",
+			po::value<std::string>()->implicit_value("0")->notifier(boost::bind(&debugger_cli::next_handler, this, _1)),
+			"Execute next line of code. Will not enter functions"
 		)
 
 		(
 			"quit",
 			po::value<int>()->implicit_value(0)->notifier(boost::bind(&debugger_cli::exit_handler, this, _1)),
 			"close opendbg"
-		)
-
-		(
-			"next",
-			po::value<std::string>()->implicit_value("event")->notifier(boost::bind(&debugger_cli::next_handler, this, _1)),
-			"next event"
 		)
 		;
 
@@ -81,6 +75,12 @@ debugger_cli::~debugger_cli(void)
 	delete m_cli;
 }
 
+void debugger_cli::open_handler(const std::string& filename)
+{
+	m_tracer.set_image_name(filename);
+	boost::thread dbg_thread(boost::ref(m_tracer));
+}
+
 void debugger_cli::load_handler(const std::string& filename)
 {
 	std::cout << "script loading is not supported\n";
@@ -88,22 +88,30 @@ void debugger_cli::load_handler(const std::string& filename)
 
 void debugger_cli::run_handler(const std::string& param)
 {
-	m_tracer.set_image_name(param);
-	boost::thread dbg_thread(boost::ref(m_tracer));
-	//dbg_thread.join();
+	m_condition.notify_one();
 }
 
 void debugger_cli::step_handler(const std::string& param)
 {
-	m_tracer.set_image_name(param);
-	boost::thread dbg_thread(boost::ref(m_tracer));
-	//dbg_thread.join();
+	m_tracer.step_into();
+	m_condition.notify_one();
 }
 
 void debugger_cli::help_handler(const std::string& param)
 {
 	// TODO: normal description
 	//cout << desc;
+}
+
+void debugger_cli::next_handler(const std::string& param)
+{
+	m_tracer.step_over();
+	m_condition.notify_one();
+}
+
+void debugger_cli::exit_handler(int code)
+{
+	exit(code);
 }
 
 void debugger_cli::show_handler(const std::string& param)
@@ -131,16 +139,6 @@ void debugger_cli::show_handler(const std::string& param)
 	}
 }
 
-void debugger_cli::next_handler(const std::string& param)
-{
-	m_condition.notify_one();
-}
-
-void debugger_cli::exit_handler(int code)
-{
-	exit(code);
-}
-
 void debugger_cli::interpret(std::istream& input_stream)
 {
 	m_cli->interpret(input_stream);
@@ -153,6 +151,16 @@ void debugger_cli::start()
 
 void debugger_cli::debug_slot(dbg_msg msg)
 {
+	ud_t disasm;
+	ud_init(&disasm);
+	ud_set_mode(&disasm, 32);
+	u8 buf[MAX_INSTRUCTION_LEN];
+	dbg_read_memory(m_tracer.get_pid(), msg.exception.except_record.ExceptionAddress, &buf, MAX_INSTRUCTION_LEN*sizeof(u8), NULL);
+	ud_set_syntax(&disasm, UD_SYN_INTEL);
+	ud_set_input_buffer(&disasm, buf, MAX_INSTRUCTION_LEN);
+	ud_disassemble(&disasm);
+
+	std::cout << "\n" << msg.exception.except_record.ExceptionAddress << " " << ud_insn_asm(&disasm) << "\n";
 	lock_t lock(m_mutex);
 	m_condition.wait(lock);
 	//std::cout << msg.event_code << "\n";

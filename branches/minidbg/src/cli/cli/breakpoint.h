@@ -38,26 +38,27 @@ public:
 	{
 		u8 buf = 0;
 		u32 readed = 0;
-		u8 buf_1[16], buf_2[16];
 
-		if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, &buf_1, sizeof(buf_1), &readed))
-			throw tracer_error("can't write memory on destroying breakpoint"); // memory is not writable
-		
 		if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, (PVOID)&buf, sizeof(buf), &readed))
 			throw tracer_error("can't read memory on destroying breakpoint"); // memory is not readable
 		if (INT3_OPCODE == buf)
 		{
 			if (!dbg_write_memory((HANDLE)m_proc_id, (PVOID)m_address, &m_orig_value, sizeof(m_orig_value), &readed))
 				throw tracer_error("can't write memory on destroying breakpoint"); // memory is not writable
-			if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, &buf_2, sizeof(buf_2), &readed))
-				throw tracer_error("can't write memory on destroying breakpoint"); // memory is not writable
 		}
+		
+		CONTEXT dbg_context;
+		dbg_context.ContextFlags = CONTEXT_FULL;
+		dbg_get_context((HANDLE)m_thread_id, &dbg_context);
+		dbg_context.Eip -= sizeof(m_orig_value);
+		dbg_set_context((HANDLE)m_thread_id, &dbg_context);
 	}
 
 	void turn_on()
 	{
 		u8 buf = 0;
 		u32 readed = 0;
+
 		if (!dbg_read_memory((HANDLE)m_proc_id, (PVOID)m_address, (PVOID)&buf, sizeof(buf), &readed))
 			throw tracer_error("can't read memory on creating breakpoint"); // memory is not readable
 

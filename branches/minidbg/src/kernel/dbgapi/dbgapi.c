@@ -500,15 +500,20 @@ int dbg_get_context(
 
     do
     {
-        if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL )
+        if ( (h_thread = OpenThread(THREAD_ALL_ACCESS | THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION, FALSE, (DWORD)thread_id)) == NULL )
         {
             break;
         }
 
-        if (GetThreadContext(h_thread, context))
+        if (-1 != SuspendThread(h_thread))
         {
-            succs = 1;
+					if (GetThreadContext(h_thread, context))
+					{
+						if (-1 != ResumeThread(h_thread))
+							succs = 1;
+					}
         }
+
     } while (0);
 
     if (h_thread != NULL)
@@ -534,9 +539,59 @@ int dbg_set_context(
             break;
         }
 
+        SuspendThread(h_thread);
         if (SetThreadContext(h_thread, context)) {
             succs = 1;
         }
+        ResumeThread(h_thread);
+    } while (0);
+
+    if (h_thread != NULL) {
+        CloseHandle(h_thread);
+    }
+
+    return succs;
+}
+
+DBGAPI_API
+DWORD dbg_resume_thread(
+        IN  HANDLE thread_id
+        )
+{
+    HANDLE h_thread = NULL;
+    int    succs    = 0;
+
+    do
+    {
+        if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL ) {
+            break;
+        }
+
+        succs = ResumeThread(h_thread);
+    } while (0);
+
+    if (h_thread != NULL) {
+        CloseHandle(h_thread);
+    }
+
+    return succs;
+}
+
+DBGAPI_API
+DWORD dbg_suspend_thread(
+        IN HANDLE thread_id
+        )
+{
+    HANDLE h_thread = NULL;
+    int    succs    = 0;
+
+    do
+    {
+        if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL ) {
+            break;
+        }
+
+        succs = SuspendThread(h_thread);
     } while (0);
 
     if (h_thread != NULL) {
@@ -664,28 +719,6 @@ BOOL dbg_read_file(
                     nNumberOfBytesToRead,
                     lpNumberOfBytesRead,
                     lpOverlapped);
-}
-
-/*!
-    Stupid thunk
-*/
-DBGAPI_API
-DWORD dbg_resume_thread(
-        IN  HANDLE hThread
-        )
-{
-    return ResumeThread(hThread);
-}
-
-/*!
-    Stupid thunk
-*/
-DBGAPI_API
-DWORD dbg_suspend_thread(
-        IN HANDLE hThread
-        )
-{
-    return SuspendThread(hThread);
 }
 
 /*!

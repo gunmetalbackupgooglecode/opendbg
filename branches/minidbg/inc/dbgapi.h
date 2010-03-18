@@ -406,12 +406,12 @@ BOOL CALLING_CONVENTION dbg_read_file(
 
 DBGAPI_API
 DWORD CALLING_CONVENTION dbg_resume_thread(
-        IN  HANDLE hThread
+        IN  HANDLE thread_id
         );
 
 DBGAPI_API
 DWORD CALLING_CONVENTION dbg_suspend_thread(
-        IN HANDLE hThread               
+        IN HANDLE thread_id               
         );
 
 DBGAPI_API

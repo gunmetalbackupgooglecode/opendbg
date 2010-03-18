@@ -3,6 +3,9 @@
 #include "tracer.h"
 #include "dbgapi.h"
 
+#pragma intrinsic(_ReadWriteBarrier)
+
+
 namespace trc
 {
 
@@ -84,7 +87,7 @@ void tracer::trace_process()
 		std::cout << msg.created.image_base << "\n";
 		HANDLE ep_addr = (HANDLE)((u3264)attach_info.image_ep + (u3264)msg.created.image_base);
 		try {
-			//m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, reinterpret_cast<u3264>(ep_addr)));
+			m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), reinterpret_cast<u3264>(m_tid), reinterpret_cast<u3264>(ep_addr)));
 		} catch (tracer_error& e) {
 			std::cout << e.what() << "\n";
 		}
@@ -117,9 +120,11 @@ void tracer::trace_process()
 		case EXCEPTION_BREAKPOINT:
 			for (int i = 0; i < m_bp_trc_array.size(); ++i)
 				if ( m_bp_trc_array[i].get_address() == reinterpret_cast<u3264>(msg.exception.except_record.ExceptionAddress) )
+				{
 					m_bp_trc_array[i].turn_off();
+					m_breakpoint_signal(msg);
+				}
 
-			m_breakpoint_signal(msg);
 			break;
 
 		case EXCEPTION_SINGLE_STEP:
@@ -217,12 +222,12 @@ void tracer::del_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 bool enable_single_step(HANDLE process_id, HANDLE thread_id)
 {
 	u_long readed, cmdlength;
-	CONTEXT context;
-	context.ContextFlags = CONTEXT_CONTROL;
-	if (dbg_get_context(thread_id, &context))
+	CONTEXT ctx;
+	ctx.ContextFlags = CONTEXT_CONTROL;
+	if (dbg_get_context(thread_id, &ctx))
 	{
-		context.EFlags |= TF_BIT;
-		dbg_set_context(thread_id, &context);
+		ctx.EFlags |= TF_BIT;
+		dbg_set_context(thread_id, &ctx);
 		return true;
 	}
 
@@ -231,11 +236,12 @@ bool enable_single_step(HANDLE process_id, HANDLE thread_id)
 
 bool disable_single_step(HANDLE thread_id)
 {
-	CONTEXT context;
-	if (dbg_get_context(thread_id, &context))
+	CONTEXT ctx;
+	ctx.ContextFlags = CONTEXT_CONTROL;
+	if (dbg_get_context(thread_id, &ctx))
 	{
-		context.EFlags &= ~TF_BIT;
-		dbg_set_context(thread_id, &context);
+		ctx.EFlags &= ~TF_BIT;
+		dbg_set_context(thread_id, &ctx);
 		return true;
 	}
 
@@ -287,11 +293,15 @@ void tracer::step_into()
 void tracer::step_over()
 {
 	CONTEXT ctx;
+	ctx.ContextFlags = CONTEXT_FULL;
 	dbg_get_context(m_tid, &ctx);
 
 	ud_init(&m_disasm);
-	ud_set_mode(&m_disasm, 32);
-	ud_set_input_buffer(&m_disasm, (u8*)ctx.Eip, MAX_INSTRUCTION_LEN);
+
+	u8 buf[MAX_INSTRUCTION_LEN];
+	dbg_read_memory(m_pid, (void*)ctx.Eip, &buf, MAX_INSTRUCTION_LEN*sizeof(u8), NULL);
+	ud_set_syntax(&m_disasm, UD_SYN_INTEL);
+	ud_set_input_buffer(&m_disasm, buf, MAX_INSTRUCTION_LEN);
 	ud_disassemble(&m_disasm);
 
 	if (m_disasm.mnemonic == UD_Icall) {

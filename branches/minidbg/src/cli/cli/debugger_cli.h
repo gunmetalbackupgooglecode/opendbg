@@ -34,9 +34,14 @@ private:
 	void show_handler(const std::string& param);
 	void help_handler(const std::string& param);
 	void load_handler(const std::string& param);
+	
 	void step_handler(const std::string& param);
+	//void stepover_handler(const std::string& param);
+	//void stepout_handler(const std::string& param);
+
 	void exit_handler(int code);
 	void next_handler(const std::string& param);
+	void open_handler(const std::string& param);
 
 	void created_slot(dbg_msg msg);
 	void debug_slot(dbg_msg msg);
