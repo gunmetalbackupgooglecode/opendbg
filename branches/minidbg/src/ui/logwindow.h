@@ -19,15 +19,15 @@ public:
 	{
 	}
 
-public:
-	void created_handler(dbg_msg);
-	void debug_handler(dbg_msg);
-	void breakpoint_handler(dbg_msg);
-	//void terminated_handler(dbg_msg);
-	//void start_thread_handler(dbg_msg);
-	//void exit_thread_handler(dbg_msg);
-	//void exception_handler(dbg_msg);
-	//void dll_load_handler(dbg_msg);
+public slots:
+	void created_slot(dbg_msg msg);
+	void debug_slot(dbg_msg msg);
+	void breakpoint_slot(dbg_msg msg);
+	void terminated_slot(dbg_msg msg);
+	void start_thread_slot(dbg_msg msg);
+	void exit_thread_slot(dbg_msg msg);
+	void exception_slot(dbg_msg msg);
+	void dll_load_slot(dbg_msg msg);
 };
 
 #endif // LOGWINDOW_H__

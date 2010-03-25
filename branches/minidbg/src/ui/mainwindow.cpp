@@ -24,22 +24,31 @@ main_window::main_window(QWidget *parent, Qt::WFlags flags)
 
 	init_menu();
 
-	connect(m_log_window, SIGNAL(log_window::created_handler()), )
+	qRegisterMetaType<dbg_msg>("dbg_msg");
 
-	m_tracer.add_created_slot(boost::bind(&log_window::created_handler, m_log_window, _1));
-	m_tracer.add_trace_slot(boost::bind(&log_window::debug_handler, m_log_window, _1));
-	m_tracer.add_breakpoint_slot(boost::bind(&log_window::breakpoint_handler, m_log_window, _1));
-	//m_tracer.add_terminated_slot(boost::bind(&debugger_cli::terminated_slot, this, _1));
-	//m_tracer.add_start_thread_slot(boost::bind(&debugger_cli::start_thread_slot, this, _1));
-	//m_tracer.add_exit_thread_slot(boost::bind(&debugger_cli::exit_thread_slot, this, _1));
-	//m_tracer.add_exception_slot(boost::bind(&debugger_cli::exception_slot, this, _1));
-	//m_tracer.add_dll_load_slot(boost::bind(&debugger_cli::dll_load_slot, this, _1));
+	connect(this, SIGNAL(created(dbg_msg)), m_log_window, SLOT(created_slot(dbg_msg)));
+	connect(this, SIGNAL(debuged(dbg_msg)), m_log_window, SLOT(debug_slot(dbg_msg)));
+	connect(this, SIGNAL(breakpointed(dbg_msg)), m_log_window, SLOT(breakpoint_slot(dbg_msg)));
+	connect(this, SIGNAL(terminated(dbg_msg)), m_log_window, SLOT(terminated_slot(dbg_msg)));
+	connect(this, SIGNAL(started_thread(dbg_msg)), m_log_window, SLOT(start_thread_slot(dbg_msg)));
+	connect(this, SIGNAL(exited_thread(dbg_msg)), m_log_window, SLOT(exit_thread_slot(dbg_msg)));
+	connect(this, SIGNAL(exceptioned(dbg_msg)), m_log_window, SLOT(exception_slot(dbg_msg)));
+	connect(this, SIGNAL(dll_loaded(dbg_msg)), m_log_window, SLOT(dll_load_slot(dbg_msg)));
+
+	m_tracer.add_created_slot(boost::bind(&main_window::created_handler, this, _1));
+	m_tracer.add_trace_slot(boost::bind(&main_window::debug_handler, this, _1));
+	m_tracer.add_breakpoint_slot(boost::bind(&main_window::breakpoint_handler, this, _1));
+	m_tracer.add_terminated_slot(boost::bind(&main_window::terminated_handler, this, _1));
+	m_tracer.add_start_thread_slot(boost::bind(&main_window::start_thread_handler, this, _1));
+	m_tracer.add_exit_thread_slot(boost::bind(&main_window::exit_thread_handler, this, _1));
+	m_tracer.add_dll_load_slot(boost::bind(&main_window::dll_load_handler, this, _1));
 }
 
 main_window::~main_window()
 {
 	delete m_cpu_window;
 	delete m_cli_window;
+	delete m_log_window;
 }
 
 void main_window::init_menu()
@@ -76,9 +85,15 @@ void main_window::init_menu()
 	m_step_out_action->setStatusTip(tr("Step out the code"));
 	connect(m_step_out_action, SIGNAL(triggered()), this, SLOT(step_out()));
 
+	m_run_action = new QAction(tr("Run"), this);
+	m_run_action->setShortcut(tr("F5"));
+	m_run_action->setStatusTip(tr("Run the program"));
+	connect(m_run_action, SIGNAL(triggered()), this, SLOT(run()));
+
 	m_debug_menu->addAction(m_step_into_action);
 	m_debug_menu->addAction(m_step_over_action);
 	m_debug_menu->addAction(m_step_out_action);
+	m_debug_menu->addAction(m_run_action);
 }
 
 void main_window::open()
@@ -93,16 +108,71 @@ void main_window::exit()
 	this->~main_window();
 }
 
+void main_window::run()
+{
+	m_condition.notify_all();
+}
+
 void main_window::step_into()
 {
+	m_tracer.step_into();
+	m_condition.notify_all();
 }
 
 void main_window::step_over()
 {
-
+	m_tracer.step_over();
+	m_condition.notify_all();
 }
 
 void main_window::step_out()
 {
+	m_tracer.step_out();
+	m_condition.notify_all();
+}
 
+void main_window::created_handler(dbg_msg msg)
+{
+	emit created(msg);
+}
+
+void main_window::debug_handler(dbg_msg msg)
+{
+	emit debuged(msg);
+	lock_t lock(m_mutex);
+	m_condition.wait(lock);
+}
+
+void main_window::breakpoint_handler(dbg_msg msg)
+{
+	emit breakpointed(msg);
+	lock_t lock(m_mutex);
+	m_condition.wait(lock);
+}
+
+void main_window::terminated_handler(dbg_msg msg)
+{
+	emit terminated(msg);
+}
+
+void main_window::start_thread_handler(dbg_msg msg)
+{
+	emit started_thread(msg);
+}
+
+void main_window::exit_thread_handler(dbg_msg msg)
+{
+	emit exited_thread(msg);
+}
+
+void main_window::exception_handler(dbg_msg msg)
+{
+	emit exceptioned(msg);
+	lock_t lock(m_mutex);
+	m_condition.wait(lock);
+}
+
+void main_window::dll_load_handler(dbg_msg msg)
+{
+	emit dll_loaded(msg);
 }
