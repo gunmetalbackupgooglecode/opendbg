@@ -51,7 +51,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="1"
 				PrecompiledHeaderThrough="precompiled.h"
 				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
@@ -59,7 +59,7 @@
 				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
+				DebugInformationFormat="4"
 				CallingConvention="0"
 				CompileAs="0"
 			/>
@@ -138,7 +138,7 @@
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NGTRACER_EXPORTS"
 				MinimalRebuild="false"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="precompiled.h"
 				ObjectFile="$(IntDir)\"
@@ -146,7 +146,7 @@
 				XMLDocumentationFileName="$(IntDir)\"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CallingConvention="2"
 			/>
 			<Tool

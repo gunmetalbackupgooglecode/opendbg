@@ -46,14 +46,14 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(TargetName).pch"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
 				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
 				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="4"
 				CallingConvention="0"
 			/>
 			<Tool
@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dbgapi.lib disasm.lib"
+				AdditionalDependencies="dbgapid.lib disasmd.lib tracerd.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
@@ -153,7 +153,7 @@
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="false"
 				AdditionalOptions="/FORCE:MULTIPLE dbghelp.lib"
-				AdditionalDependencies="dbgapi.lib"
+				AdditionalDependencies="dbgapi.lib disasm.lib tracer.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(BOOST_ROOT)\stage\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
@@ -191,10 +191,6 @@
 		<Filter
 			Name="Source Files"
 			>
-			<File
-				RelativePath=".\breakpoint.cpp"
-				>
-			</File>
 			<File
 				RelativePath=".\cli.cpp"
 				>
@@ -235,48 +231,16 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\tracer.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PrecompiledHeaderThrough="stdafx.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PrecompiledHeaderThrough="stdafx.h"
-					/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			>
 			<File
-				RelativePath=".\breakpoint.h"
-				>
-			</File>
-			<File
 				RelativePath=".\debugger_cli.h"
 				>
 			</File>
 			<File
-				RelativePath=".\precompiled.h"
-				>
-			</File>
-			<File
-				RelativePath=".\tracer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\tracer_error.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 		</Filter>

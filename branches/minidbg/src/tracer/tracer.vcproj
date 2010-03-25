@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="disasm"
-	ProjectGUID="{D37EB57C-DC0B-4BAA-842A-0340140F5FB4}"
-	RootNamespace="disasm"
+	Name="tracer"
+	ProjectGUID="{E26C133E-3FE2-4B91-BF49-D28DB82B9BB8}"
+	RootNamespace="tracer"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -42,12 +42,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc/libudis86&quot;;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="$(BOOST_ROOT);&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;;&quot;$(SolutionDir)\..\..\src\cli\ext&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="1"
 				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
 				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
@@ -65,7 +65,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="dbgapid.lib disasmd.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName)d.lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -90,6 +92,7 @@
 			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -110,11 +113,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc/libudis86&quot;;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="$(BOOST_ROOT);&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;;&quot;$(SolutionDir)\..\..\src\cli\ext&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
 				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
 				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
@@ -132,7 +135,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="dbgapi.lib disasm.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -160,31 +165,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\libudis86\decode.c"
+				RelativePath=".\breakpoint.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\libudis86\input.c"
-				>
-			</File>
-			<File
-				RelativePath=".\libudis86\itab.c"
-				>
-			</File>
-			<File
-				RelativePath=".\libudis86\syn-att.c"
-				>
-			</File>
-			<File
-				RelativePath=".\libudis86\syn-intel.c"
-				>
-			</File>
-			<File
-				RelativePath=".\libudis86\syn.c"
-				>
-			</File>
-			<File
-				RelativePath=".\libudis86\udis86.c"
+				RelativePath=".\tracer.cpp"
 				>
 			</File>
 		</Filter>
@@ -194,35 +179,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\libudis86\decode.h"
+				RelativePath="..\..\inc\breakpoint.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\inc\libudis86\extern.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\libudis86\input.h"
-				>
-			</File>
-			<File
-				RelativePath=".\libudis86\itab.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\inc\libudis86\itab.h"
-				>
-			</File>
-			<File
-				RelativePath=".\libudis86\syn.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\inc\libudis86\types.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\inc\udis86.h"
+				RelativePath="..\..\inc\tracer.h"
 				>
 			</File>
 		</Filter>

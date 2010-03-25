@@ -18,6 +18,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_kernel", "..\..\src\ke
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui", "..\..\src\ui\ui.vcproj", "{EBA67D08-08F2-4572-84BE-A611990005A1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tracer", "..\..\src\tracer\tracer.vcproj", "{E26C133E-3FE2-4B91-BF49-D28DB82B9BB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -72,6 +74,12 @@ Global
 		{EBA67D08-08F2-4572-84BE-A611990005A1}.Release|Win32.ActiveCfg = Release|Win32
 		{EBA67D08-08F2-4572-84BE-A611990005A1}.Release|Win32.Build.0 = Release|Win32
 		{EBA67D08-08F2-4572-84BE-A611990005A1}.Release|x64.ActiveCfg = Release|Win32
+		{E26C133E-3FE2-4B91-BF49-D28DB82B9BB8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E26C133E-3FE2-4B91-BF49-D28DB82B9BB8}.Debug|Win32.Build.0 = Debug|Win32
+		{E26C133E-3FE2-4B91-BF49-D28DB82B9BB8}.Debug|x64.ActiveCfg = Debug|Win32
+		{E26C133E-3FE2-4B91-BF49-D28DB82B9BB8}.Release|Win32.ActiveCfg = Release|Win32
+		{E26C133E-3FE2-4B91-BF49-D28DB82B9BB8}.Release|Win32.Build.0 = Release|Win32
+		{E26C133E-3FE2-4B91-BF49-D28DB82B9BB8}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

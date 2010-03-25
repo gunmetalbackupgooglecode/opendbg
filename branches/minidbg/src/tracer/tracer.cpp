@@ -1,7 +1,6 @@
-#include "precompiled.h"
+#include "stdafx.h"
 
 #include "tracer.h"
-#include "dbgapi.h"
 
 #pragma intrinsic(_ReadWriteBarrier)
 

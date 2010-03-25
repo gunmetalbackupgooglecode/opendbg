@@ -4,10 +4,14 @@
 #include <boost/signals2.hpp>
 #include <vector>
 
-#include "udis86.h"
+#include "dbg_def.h"
+#include "dbgconst.h"
+
 #include "dbgapi.h"
 #include "pdbparser.h"
 #include "breakpoint.h"
+
+#include "udis86.h"
 
 namespace trc
 {
