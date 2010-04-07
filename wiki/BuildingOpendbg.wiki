@@ -20,6 +20,8 @@ The following environment variables should be defined:
 ||DbgToolsSDK||C:\Program Files\Debugging Tools for Windows (x86)\sdk||
 ||WINDDK||C:\WinDDK\7600.16385.0||
 ||WXWIN||C:\wxWidgets-2.8.10||
+||QTDIR||C:\Qt\2009.03\Qt||
+||PATH||%PATH%;C:\Qt\2009.03\Qt||
 
 Then open Visual Studio Command Prompt and do the following
 {{{
