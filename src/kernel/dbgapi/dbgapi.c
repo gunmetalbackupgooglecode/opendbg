@@ -19,14 +19,18 @@
 */
 
 #include <windows.h>
-#include <stdio.h>
+#include <cstdio>
 #include <tlhelp32.h>
 #include <psapi.h>
+#include <imagehlp.h>
+
 // vs2009sp1 memory.h bug workaround
 #if _MSC_FULL_VER == 150030729
 #define _DO_NOT_DECLARE_INTERLOCKED_INTRINSICS_IN_MEMORY
 #endif
+
 #include <intrin.h>
+#define DBGAPI_DLLEXPORT
 #include "dbgapi.h"
 #include "ntdll.h"
 #include "..\sys\syscall.h"
@@ -43,8 +47,6 @@ static struct {
     { SYM_NTAPI_NUM,     "ZwTerminateThread",       NULL },
     { SYM_OFFSET,        "_NtTerminateProcess@8",   NULL },
     { SYM_OFFSET,        "_NtResumeThread@8",       NULL },
-    { SYM_OFFSET,        "_NtCreateThread@32",      NULL },
-    { SYM_OFFSET,        "_NtTerminateThread@8",    NULL },
     { SYM_OFFSET,        "_KiDispatchException@20", NULL },
     { SYM_STRUCT_OFFSET, "_ETHREAD",                "ThreadListEntry" }
 };
@@ -80,9 +82,8 @@ static SC_HANDLE dbg_install_sc(const char *path, const char *name)
 }
 
 DBGAPI_API
-HANDLE dbg_create_process(
-        IN PVOID remote_id,
-        IN PCHAR cmd_line,
+HANDLE CALLING_CONVENTION dbg_create_process(
+        IN const char* cmd_line,
         IN ULONG create_flags
         )
 {
@@ -93,7 +94,7 @@ HANDLE dbg_create_process(
     str.cb = sizeof(str);
 
     b_succ = CreateProcessA(
-               NULL, cmd_line,
+               NULL, const_cast<char*>(cmd_line),
                 NULL, NULL,
                 FALSE, create_flags,
                 NULL, NULL,
@@ -194,7 +195,7 @@ static int dbg_syscall(
 #define SC_DBG_ATTACH         3
 #define SC_DBG_GET_MSG        4
 #define SC_DBG_SET_FILTER     5
-#define SC_DBG_COUNTINUE      6
+#define SC_DBG_CONTINUE      6
 
 DBGAPI_API u_long dbg_drv_version()
 {
@@ -208,22 +209,24 @@ DBGAPI_API u_long dbg_drv_version()
     return ver;
 }
 
-static
-HANDLE dbg_open_process(HANDLE pid)
+DBGAPI_API
+HANDLE CALLING_CONVENTION dbg_open_process(HANDLE pid)
 {
     HANDLE h_proc;
-
-    if (dbg_syscall(SC_OPEN_PROCESS, &pid, sizeof(pid), &h_proc, sizeof(h_proc)) == 0) {
-        h_proc = NULL;
+    if ( (h_proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, (u32)pid)) == NULL) {
+        return 0;
     }
+
+    //if (dbg_syscall(SC_OPEN_PROCESS, &pid, sizeof(pid), &h_proc, sizeof(h_proc)) == 0) {
+    //    h_proc = NULL;
+    //}
 
     return h_proc;
 }
 
 
 DBGAPI_API
-int dbg_terminate_process(
-        IN PVOID  remote_id,
+int CALLING_CONVENTION dbg_terminate_process(
         IN HANDLE proc_id
         )
 {
@@ -236,9 +239,10 @@ int dbg_terminate_process(
             break;
         }
 
-        if (dbg_syscall(SC_TERMINATE_PROCESS, &h_proc, sizeof(h_proc), NULL, 0) != 0) {
-            succs = 1;
-        }
+        TerminateProcess(h_proc, 0);
+        //if (dbg_syscall(SC_TERMINATE_PROCESS, &h_proc, sizeof(h_proc), NULL, 0) != 0) {
+        //    succs = 1;
+        //}
     } while (0);
 
     if (h_proc != NULL) {
@@ -250,38 +254,133 @@ int dbg_terminate_process(
 
 DBGAPI_API
 int dbg_attach_debugger(
-        IN PVOID  remote_id,
-        IN HANDLE proc_id
+        IN HANDLE proc_id,
+        OUT PATTACH_INFO attach_info
         )
 {
     int succs = 0;
+    DWORD ret_bytes;
+    PROCESS_BASIC_INFORMATION pbi;
+    PEB peb;
+    IMAGE_DOS_HEADER dos;
+    IMAGE_NT_HEADERS nt;
+    MODULEINFO mi;
+    HANDLE h_proc = dbg_open_process(proc_id);
+    WCHAR imagename[MAX_PATH];
+    NtQueryInformationProcess(h_proc, ProcessBasicInformation, &pbi, sizeof(PROCESS_BASIC_INFORMATION), &ret_bytes);
+    NtQueryInformationProcess(h_proc, MaxProcessInfoClass, &attach_info->file_name, sizeof(WCHAR) * MAX_PATH, &ret_bytes);
+    dbg_read_memory(proc_id, pbi.PebBaseAddress, &peb, sizeof(PEB), &ret_bytes);
+    dbg_read_memory(proc_id, peb.ImageBaseAddress, &dos, sizeof(IMAGE_DOS_HEADER), &ret_bytes);
+    dbg_read_memory(proc_id, (PVOID)(dos.e_lfanew + (DWORD)peb.ImageBaseAddress), &nt, sizeof(IMAGE_NT_HEADERS), &ret_bytes);
+    ////if (DebugActiveProcess((u32)proc_id))
 
-    if (dbg_syscall(SC_DBG_ATTACH, &proc_id, sizeof(proc_id), NULL, 0) != 0) {
-        succs = 1;
-    }
+		CHAR filename[MAX_PATH];
+		GetModuleFileNameEx(h_proc, NULL, filename, sizeof(CHAR)*MAX_PATH);
 
-    return succs;
+    HMODULE hMod = GetModuleHandle("notepad.exe");
+
+    attach_info->image_ep = (PVOID)nt.OptionalHeader.AddressOfEntryPoint;
+    attach_info->image_base = (PVOID)nt.OptionalHeader.ImageBase;
+    attach_info->image_size = nt.OptionalHeader.SizeOfImage;
+    attach_info->peb_addr = pbi.PebBaseAddress;
+
+    //if (dbg_syscall(SC_DBG_ATTACH, &proc_id, sizeof(proc_id), NULL, 0) != 0) {
+    //    succs = 1;
+    //}
+
+    return succs = 1;
 }
 
 DBGAPI_API
 int dbg_get_msg_event(
-        PVOID    remote_id,
         HANDLE   proc_id,
         dbg_msg *msg
         )
 {
     int succs = 0;
 
-    if (dbg_syscall(SC_DBG_GET_MSG, &proc_id, sizeof(proc_id), msg, sizeof(dbg_msg)) != 0) {
+    DEBUG_EVENT dbg_event;
+
+    if (WaitForDebugEvent(&dbg_event, INFINITE))
+    {
+        msg->process_id   = (HANDLE)dbg_event.dwProcessId;
+        msg->thread_id    = (HANDLE)dbg_event.dwThreadId;
+
+        switch (dbg_event.dwDebugEventCode)
+        {
+            case CREATE_PROCESS_DEBUG_EVENT:
+            {
+							msg->event_code = DBG_CREATED;
+							msg->created.image_base = dbg_event.u.CreateProcessInfo.lpBaseOfImage;
+							msg->created.h_file     = dbg_event.u.CreateProcessInfo.hFile;
+							break;
+            }
+        
+            case EXCEPTION_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_EXCEPTION;
+                msg->exception.first_chance  = (dbg_event.u.Exception.dwFirstChance == 0);
+                msg->exception.except_record = dbg_event.u.Exception.ExceptionRecord;
+                break;
+            }
+
+            case EXIT_PROCESS_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_TERMINATED;
+                msg->terminated.exit_code = dbg_event.u.ExitProcess.dwExitCode;
+                msg->terminated.proc_id   = (HANDLE)dbg_event.dwProcessId;
+                break;
+            }
+
+            case CREATE_THREAD_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_START_THREAD;
+                GetThreadContext(dbg_event.u.CreateThread.hThread, &msg->thread_start.initial_context);
+                msg->thread_start.thread_id = (HANDLE)dbg_event.dwThreadId;
+                msg->thread_start.teb_addr  = (HANDLE)dbg_event.u.CreateThread.lpThreadLocalBase;
+                break;
+            }
+
+            case EXIT_THREAD_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_EXIT_THREAD;
+                msg->thread_exit.exit_code = dbg_event.u.ExitThread.dwExitCode;
+                msg->thread_exit.proc_id   = (HANDLE)dbg_event.dwProcessId;
+                msg->thread_exit.thread_id = (HANDLE)dbg_event.dwThreadId;
+                break;
+            }
+
+            case LOAD_DLL_DEBUG_EVENT:
+            {
+                msg->event_code = DBG_LOAD_DLL;
+                u32 dwImageBase = (u32)dbg_event.u.LoadDll.lpBaseOfDll;
+                msg->dll_load.dll_image_base = dbg_event.u.LoadDll.lpBaseOfDll;
+                msg->dll_load.dll_image_size = dbg_event.u.LoadDll.nDebugInfoSize;
+                if (dbg_event.u.LoadDll.fUnicode)
+                {
+                    dbg_read_memory((HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, &dbg_event.u.LoadDll.lpImageName, sizeof(dbg_event.u.LoadDll.lpImageName), 0);
+                    if (dbg_event.u.LoadDll.lpImageName)
+                    {
+                        dbg_read_memory((HANDLE)msg->process_id, dbg_event.u.LoadDll.lpImageName, msg->dll_load.dll_name, sizeof(msg->dll_load.dll_name), 0);
+                    }
+                }
+
+                break;
+            }
+        }
+
         succs = 1;
     }
+
+    //if (dbg_syscall(SC_DBG_GET_MSG, &proc_id, sizeof(proc_id), msg, sizeof(dbg_msg)) != 0) {
+    //    succs = 1;
+    //}
 
     return succs;
 }
 
 DBGAPI_API
-int dbg_countinue_event(
-        PVOID             remote_id,
+int dbg_continue_event(
         HANDLE            proc_id,
         u32               status,
         PEXCEPTION_RECORD new_record
@@ -300,7 +399,7 @@ int dbg_countinue_event(
             );
     }
 
-    if (dbg_syscall(SC_DBG_COUNTINUE, &cont, sizeof(cont), NULL, 0) != 0) {
+    if (dbg_syscall(SC_DBG_CONTINUE, &cont, sizeof(cont), NULL, 0) != 0) {
         succs = 1;
     }
 
@@ -309,7 +408,6 @@ int dbg_countinue_event(
 
 DBGAPI_API
 int dbg_set_filter(
-       PVOID       remote_id,
        HANDLE      proc_id,
        event_filt *filter
        )
@@ -319,21 +417,20 @@ int dbg_set_filter(
 
     set_data.process = proc_id;
 
-    memcpy(
-        &set_data.filter, filter, sizeof(event_filt)
-        );
+    //memcpy(
+    //    &set_data.filter, filter, sizeof(event_filt)
+    //    );
 
-    if (dbg_syscall(SC_DBG_SET_FILTER, &set_data, sizeof(set_data), NULL, 0) != 0) {
-        succs = 1;
-    }
+    //if (dbg_syscall(SC_DBG_SET_FILTER, &set_data, sizeof(set_data), NULL, 0) != 0) {
+    //    succs = 1;
+    //}
 
-    return succs;
+    return succs = 1;
 }
 
 /* some Win32 API stubs */
 DBGAPI_API
 int dbg_read_memory(
-       PVOID       remote_id,
        HANDLE      proc_id,
        PVOID       mem_addr,
        PVOID       loc_buff,
@@ -364,7 +461,6 @@ int dbg_read_memory(
 
 DBGAPI_API
 int dbg_write_memory(
-       PVOID       remote_id,
        HANDLE      proc_id,
        PVOID       mem_addr,
        PVOID       loc_buff,
@@ -395,7 +491,6 @@ int dbg_write_memory(
 
 DBGAPI_API
 int dbg_get_context(
-       PVOID       remote_id,
        HANDLE      thread_id,
        PCONTEXT    context
        )
@@ -405,15 +500,20 @@ int dbg_get_context(
 
     do
     {
-        if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL )
+        if ( (h_thread = OpenThread(THREAD_ALL_ACCESS | THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION, FALSE, (DWORD)thread_id)) == NULL )
         {
             break;
         }
 
-        if (GetThreadContext(h_thread, context))
+        if (-1 != SuspendThread(h_thread))
         {
-            succs = 1;
+					if (GetThreadContext(h_thread, context))
+					{
+						if (-1 != ResumeThread(h_thread))
+							succs = 1;
+					}
         }
+
     } while (0);
 
     if (h_thread != NULL)
@@ -426,7 +526,6 @@ int dbg_get_context(
 
 DBGAPI_API
 int dbg_set_context(
-       PVOID       remote_id,
        HANDLE      thread_id,
        PCONTEXT    context
        )
@@ -440,9 +539,59 @@ int dbg_set_context(
             break;
         }
 
+        SuspendThread(h_thread);
         if (SetThreadContext(h_thread, context)) {
             succs = 1;
         }
+        ResumeThread(h_thread);
+    } while (0);
+
+    if (h_thread != NULL) {
+        CloseHandle(h_thread);
+    }
+
+    return succs;
+}
+
+DBGAPI_API
+DWORD dbg_resume_thread(
+        IN  HANDLE thread_id
+        )
+{
+    HANDLE h_thread = NULL;
+    int    succs    = 0;
+
+    do
+    {
+        if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL ) {
+            break;
+        }
+
+        succs = ResumeThread(h_thread);
+    } while (0);
+
+    if (h_thread != NULL) {
+        CloseHandle(h_thread);
+    }
+
+    return succs;
+}
+
+DBGAPI_API
+DWORD dbg_suspend_thread(
+        IN HANDLE thread_id
+        )
+{
+    HANDLE h_thread = NULL;
+    int    succs    = 0;
+
+    do
+    {
+        if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL ) {
+            break;
+        }
+
+        succs = SuspendThread(h_thread);
     } while (0);
 
     if (h_thread != NULL) {
@@ -462,7 +611,7 @@ int dbg_initialize_api(
     char      drv_path[MAX_PATH] = {0};
     char     *p = &drv_path[MAX_PATH];
     int       succs = 0;
-    SC_HANDLE h_svc;
+    //SC_HANDLE h_svc;
 
     acc_key = access_key;
 
@@ -478,22 +627,22 @@ int dbg_initialize_api(
 
     strcpy(p+1, driver_name);
 
-    if (h_svc = dbg_install_sc(drv_path, driver_name))
-    {
-        if (dbg_build_start_params(driver_name, acc_key, pdb_path, sym_callback) != 0)
-        {
-            succs = StartService(h_svc, 0, NULL);
-        }
+    //if (h_svc = dbg_install_sc(drv_path, driver_name))
+    //{
+    //    if (dbg_build_start_params(driver_name, acc_key, pdb_path, sym_callback) != 0)
+    //    {
+    //        succs = StartService(h_svc, 0, NULL);
+    //    }
 
-        DeleteService(h_svc);
-        CloseServiceHandle(h_svc);
-    }
+    //    DeleteService(h_svc);
+    //    CloseServiceHandle(h_svc);
+    //}
 
-    return succs;
+    return succs = 1;
 }
 
 static
-void enable_debug_privilegies()
+void enable_debug_privileges()
 {
     HANDLE TTokenHd;
     TOKEN_PRIVILEGES TTokenPvg, rTTokenPvg;
@@ -519,7 +668,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
-            enable_debug_privilegies();
+            enable_debug_privileges();
         break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
@@ -576,28 +725,6 @@ BOOL dbg_read_file(
     Stupid thunk
 */
 DBGAPI_API
-DWORD dbg_resume_thread(
-        IN  HANDLE hThread
-        )
-{
-    return ResumeThread(hThread);
-}
-
-/*!
-    Stupid thunk
-*/
-DBGAPI_API
-DWORD dbg_suspend_thread(
-        IN HANDLE hThread
-        )
-{
-    return SuspendThread(hThread);
-}
-
-/*!
-    Stupid thunk
-*/
-DBGAPI_API
 int dbg_set_rdtsc(
         IN PVOID   context,
         IN BOOLEAN rdtsc_on
@@ -614,18 +741,24 @@ void dbg_close_thread(
         IN PVOID dbg_thread
         )
 {
+    CloseHandle((HANDLE)dbg_thread);
 }
 
 /*!
     Stupid thunk
 */
 DBGAPI_API
-PVOID dbg_open_thread(
+HANDLE dbg_open_thread(
         IN PVOID context,
         IN ULONG thread_id
         )
 {
-    return INVALID_HANDLE_VALUE;
+    HANDLE h_thread;
+    if ( (h_thread = OpenThread(THREAD_ALL_ACCESS, FALSE, (DWORD)thread_id)) == NULL) {
+       return 0;
+    }
+
+    return h_thread;
 }
 
 /*!
@@ -657,7 +790,6 @@ PVOID dbg_enum_modules(
 */
 DBGAPI_API
 PVOID dbg_enum_threads(
-        IN PVOID remote_id,
         IN ULONG process_id
         )
 {
@@ -706,4 +838,3 @@ int dbg_hook_page(
 {
     return -1;
 }
-

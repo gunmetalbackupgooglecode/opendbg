@@ -12,6 +12,7 @@ typedef struct _dbg_item {
 	u32         ref_count;
 	channel    *chan;
 	event_filt  filter;
+
 } dbg_item;
 
 int init_dbg_item(HANDLE h_key);

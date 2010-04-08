@@ -1,7 +1,7 @@
 /*
     *
-	* Copyright (c) 2009
-	* vol4ok <vol4ok@highsecure.ru> PGP key ID - 0x7A1C8BB4A0F34B67
+    * Copyright (c) 2008
+    * ntldr <ntldr@freed0m.org> PGP key ID - 0xC48251EB4F8E4E6E
     *
 
     This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@
 #include "dbg_item.h"
 #include "debug.h"
 #include "pedef.h"
-#include "code_hook.h"
 
 void *ntkrn_base;
 
@@ -86,11 +85,6 @@ NTSTATUS DriverEntry(
 			break;
 		}
 		*/
-		
-		if (init_hook_list() == 0){
-			DbgMsg("init_hook_list failed\n");
-			break;
-		}
 
 		if (init_dbg_item(h_key) == 0) {
 			DbgMsg("init_dbg_item failed\n");

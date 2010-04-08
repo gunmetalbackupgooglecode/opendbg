@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="dbgapi"
 	ProjectGUID="{A383900F-BFF7-4C3C-8B08-360B4D0F1928}"
 	RootNamespace="dbgapi"
@@ -18,11 +18,11 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="0"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -42,11 +42,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Visual Studio 9.0\DIA SDK\include&quot;;&quot;$(SolutionDir)../../inc&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DBGAPI_EXPORTS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -66,12 +66,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="ntdll.lib psapi.lib ole32.lib oleaut32.lib uuid.lib"
-				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
-				LinkIncremental="2"
+				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName)d.dll&quot;"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;;&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
 				GenerateManifest="false"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(TargetName).pdb&quot;"
+				GenerateMapFile="true"
+				MapExports="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -97,16 +99,17 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -125,15 +128,15 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
+				Optimization="0"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DBGAPI_EXPORTS;_CRT_SECURE_NO_WARNINGS"
-				ExceptionHandling="0"
-				RuntimeLibrary="0"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
 				StructMemberAlignment="0"
 				BufferSecurityCheck="false"
 				UsePrecompiledHeader="0"
@@ -141,7 +144,7 @@
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 				CallingConvention="2"
-				CompileAs="1"
+				CompileAs="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -154,10 +157,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="psapi.lib msvcrt.lib ntdll.lib"
+				AdditionalOptions="ntdll.lib psapi.lib ole32.lib oleaut32.lib uuid.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).dll&quot;"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)../../lib/i386/&quot;;&quot;$(SolutionDir)../../lib&quot;;&quot;$(SolutionDir)../../bin/$(ConfigurationName)/&quot;"
 				GenerateManifest="false"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(TargetName).pdb&quot;"
@@ -189,6 +192,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -204,6 +208,10 @@
 				RelativePath=".\dbgapi.c"
 				>
 			</File>
+			<File
+				RelativePath=".\pdbparser.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -216,6 +224,10 @@
 			</File>
 			<File
 				RelativePath=".\ntdll.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\inc\pdbparser.h"
 				>
 			</File>
 		</Filter>

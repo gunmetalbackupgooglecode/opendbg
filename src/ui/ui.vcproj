@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="windows-1251"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="ui"
-	ProjectGUID="{907ADCAE-EC02-4D82-9637-751B80E53250}"
+	ProjectGUID="{EBA67D08-08F2-4572-84BE-A611990005A1}"
 	RootNamespace="ui"
-	Keyword="Win32Proj"
-	TargetFrameworkVersion="196613"
+	Keyword="Qt4VSv1.0"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -17,12 +17,11 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="0"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,53 +40,40 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
-				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(ProjectDir)\inc&quot;;&quot;$(SolutionDir)../../inc&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
-				MinimalRebuild="false"
-				BasicRuntimeChecks="0"
-				RuntimeLibrary="1"
-				BufferSecurityCheck="true"
-				UsePrecompiledHeader="0"
-				ObjectFile="$(OutDir)\obj\$(ProjectName)\"
-				ProgramDataBaseFileName="$(OutDir)\obj\$(ProjectName)\vc80.pdb"
-				XMLDocumentationFileName="$(OutDir)\obj\$(ProjectName)\"
-				WarningLevel="3"
-				DebugInformationFormat="0"
+				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;;&quot;$(SolutionDir)\..\..\src\cli\ext&quot;;.\"
+				PreprocessorDefinitions="UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_THREAD_SUPPORT,QT_NO_DEBUG,NDEBUG,QT_CORE_LIB,QT_GUI_LIB"
+				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="StdAfx.h"
+				PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
+				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
+				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
+				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				ResourceOutputFileName="&quot;$(OutDir)/obj/$(ProjectName)/$(InputName).res&quot;"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib uuid.lib rpcrt4.lib advapi32.lib wxbase28d.lib wxmsw28d_core.lib wxmsw28d_aui.lib wxmsw28d_adv.lib wxmsw28d_richtext.lib wxmsw28d_html.lib wxpngd.lib wxzlibd.lib cadt.lib tracer.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib tracer.lib"
 				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(WXWIN)/lib/vc_lib/&quot;;&quot;$(SolutionDir)../../lib&quot;"
-				GenerateManifest="false"
-				ManifestFile="$(OutDir)\obj\$(ProjectName)\$(TargetFileName).intermediate.manifest"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(TargetName).pdb&quot;"
+				AdditionalLibraryDirectories="$(QTDIR)\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
+				GenerateDebugInformation="false"
 				SubSystem="2"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
 			/>
 			<Tool
 				Name="VCManifestTool"
-				EmbedManifest="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -106,13 +92,12 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="0"
-			WholeProgramOptimization="1"
-			BuildLogFile="$(OutDir)\obj\$(ProjectName)\BuildLog.htm"
+			CharacterSet="1"
+			BuildLogFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\$(ProjectName)BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -131,46 +116,35 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
-				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(ProjectDir)\inc&quot;;&quot;$(SolutionDir)../../inc&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				RuntimeLibrary="0"
-				BufferSecurityCheck="true"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
-				ObjectFile="$(OutDir)\obj\$(ProjectName)\"
-				ProgramDataBaseFileName="$(OutDir)\obj\$(ProjectName)\vc80.pdb"
-				XMLDocumentationFileName="$(OutDir)\obj\$(ProjectName)\"
-				WarningLevel="3"
-				DebugInformationFormat="0"
+				Optimization="0"
+				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(SolutionDir)../../inc&quot;;&quot;$(DbgToolsSDK)/sdk/inc&quot;;&quot;$(VCInstallDir)/../DIA SDK/include&quot;;&quot;$(SolutionDir)\..\..\src\cli\ext&quot;;.\"
+				PreprocessorDefinitions="UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="stdafx.h"
+				PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
+				ObjectFile="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
+				ProgramDataBaseFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\vc90.pdb"
+				XMLDocumentationFileName="$(SolutionDir)..\..\bin\$(ConfigurationName)\"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				ResourceOutputFileName="&quot;$(OutDir)/obj/$(ProjectName)/$(InputName).res&quot;"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib uuid.lib rpcrt4.lib advapi32.lib wxbase28.lib wxmsw28_core.lib wxmsw28_aui.lib wxmsw28_adv.lib wxmsw28_richtext.lib wxmsw28_html.lib wxpng.lib wxzlib.lib cadt.lib tracer.lib"
-				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName).exe&quot;"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(WXWIN)/lib/vc_lib/&quot;;&quot;$(SolutionDir)../../lib&quot;"
-				GenerateManifest="false"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib tracerd.lib"
+				OutputFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(ProjectName)d.exe&quot;"
+				AdditionalLibraryDirectories="$(QTDIR)\lib;&quot;$(DbgToolsSDK)/sdk/lib/i386/&quot;;&quot;$(SolutionDir)/../../bin/$(ConfigurationName)/&quot;;&quot;$(SolutionDir)../../lib&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="&quot;$(SolutionDir)../../bin/$(ConfigurationName)/$(TargetName).pdb&quot;"
 				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -200,187 +174,380 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			Filter="cpp;cxx;c;def"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\bpframe.cpp"
+				RelativePath=".\cliwindow.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\childframe.cpp"
+				RelativePath=".\cpuwindow.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\memctrl\column.cpp"
+				RelativePath=".\logwindow.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\cpuframe.cpp"
+				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\cpulistview.cpp"
+				RelativePath=".\mainwindow.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\debugger.cpp"
+				RelativePath=".\stdafx.cpp"
 				>
-			</File>
-			<File
-				RelativePath=".\src\disasm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\events.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\listview.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\logframe.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\mainframe.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\memctrl\memctrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\memframe.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\modframe.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\regframe.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\stackframe.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\threadframe.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\utils.cpp"
-				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			Filter="h"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\inc\bpframe.h"
+				RelativePath=".\cliwindow.h"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(BOOST_ROOT)\.&quot; -I&quot;$(SolutionDir)..\..\inc\.&quot; -I&quot;$(DbgToolsSDK)\sdk\inc\.&quot; -I&quot;$(VCInstallDir)\..\DIA SDK\include\.&quot; -I&quot;$(SolutionDir)\..\..\src\cli\ext\.&quot; -I&quot;.\.&quot; &quot;.\cliwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\cliwindow.h&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(BOOST_ROOT)\.&quot; -I&quot;$(SolutionDir)..\..\inc\.&quot; -I&quot;$(DbgToolsSDK)\sdk\inc\.&quot; -I&quot;$(VCInstallDir)\..\DIA SDK\include\.&quot; -I&quot;$(SolutionDir)\..\..\src\cli\ext\.&quot; -I&quot;.\.&quot; &quot;.\cliwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fstdafx.h&quot; &quot;-f..\..\cliwindow.h&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\inc\cadt.h"
+				RelativePath=".\cpuwindow.h"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(BOOST_ROOT)\.&quot; -I&quot;$(SolutionDir)..\..\inc\.&quot; -I&quot;$(DbgToolsSDK)\sdk\inc\.&quot; -I&quot;$(VCInstallDir)\..\DIA SDK\include\.&quot; -I&quot;$(SolutionDir)\..\..\src\cli\ext\.&quot; -I&quot;.\.&quot; &quot;.\cpuwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\cpuwindow.h&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(BOOST_ROOT)\.&quot; -I&quot;$(SolutionDir)..\..\inc\.&quot; -I&quot;$(DbgToolsSDK)\sdk\inc\.&quot; -I&quot;$(VCInstallDir)\..\DIA SDK\include\.&quot; -I&quot;$(SolutionDir)\..\..\src\cli\ext\.&quot; -I&quot;.\.&quot; &quot;.\cpuwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fstdafx.h&quot; &quot;-f..\..\cpuwindow.h&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\inc\childframe.h"
+				RelativePath=".\logwindow.h"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(BOOST_ROOT)\.&quot; -I&quot;$(SolutionDir)..\..\inc\.&quot; -I&quot;$(DbgToolsSDK)\sdk\inc\.&quot; -I&quot;$(VCInstallDir)\..\DIA SDK\include\.&quot; -I&quot;$(SolutionDir)\..\..\src\cli\ext\.&quot; -I&quot;.\.&quot; &quot;.\logwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\logwindow.h&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(BOOST_ROOT)\.&quot; -I&quot;$(SolutionDir)..\..\inc\.&quot; -I&quot;$(DbgToolsSDK)\sdk\inc\.&quot; -I&quot;$(VCInstallDir)\..\DIA SDK\include\.&quot; -I&quot;$(SolutionDir)\..\..\src\cli\ext\.&quot; -I&quot;.\.&quot; &quot;.\logwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fstdafx.h&quot; &quot;-f..\..\logwindow.h&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\inc\memctrl\column.h"
+				RelativePath=".\mainwindow.h"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(BOOST_ROOT)\.&quot; -I&quot;$(SolutionDir)..\..\inc\.&quot; -I&quot;$(DbgToolsSDK)\sdk\inc\.&quot; -I&quot;$(VCInstallDir)\..\DIA SDK\include\.&quot; -I&quot;$(SolutionDir)\..\..\src\cli\ext\.&quot; -I&quot;.\.&quot; &quot;.\mainwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\mainwindow.h&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(BOOST_ROOT)\.&quot; -I&quot;$(SolutionDir)..\..\inc\.&quot; -I&quot;$(DbgToolsSDK)\sdk\inc\.&quot; -I&quot;$(VCInstallDir)\..\DIA SDK\include\.&quot; -I&quot;$(SolutionDir)\..\..\src\cli\ext\.&quot; -I&quot;.\.&quot; &quot;.\mainwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fstdafx.h&quot; &quot;-f..\..\mainwindow.h&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\inc\cpuframe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\cpulistview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\debugger.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\disasm.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\events.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\listview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\logframe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\mainframe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\memctrl\memctrl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\memframe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\modframe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\ngtracerapi.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\precomp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\regframe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\stackframe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\threadframe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\utils.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			Name="Form Files"
+			Filter="ui"
+			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
 			>
 			<File
-				RelativePath=".\inc\ui.rc"
+				RelativePath=".\main_window.ui"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;.\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;.\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="qrc;*"
+			UniqueIdentifier="{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}"
+			ParseFiles="false"
+			>
+			<File
+				RelativePath=".\main_window.qrc"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Rcc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(InputPath)"
+						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Rcc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(InputPath)"
+						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Generated Files"
+			Filter="moc;h;cpp"
+			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}"
+			>
+			<File
+				RelativePath=".\GeneratedFiles\Debug\moc_cliwindow.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\qrc_main_window.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\ui_main_window.h"
 				>
 			</File>
+			<Filter
+				Name="Release"
+				Filter="cpp;moc"
+				SourceControlFiles="false"
+				>
+				<File
+					RelativePath=".\GeneratedFiles\Release\moc_cpuwindow.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\GeneratedFiles\Release\moc_logwindow.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\GeneratedFiles\Release\moc_mainwindow.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="Debug"
+				Filter="cpp;moc"
+				SourceControlFiles="false"
+				>
+				<File
+					RelativePath=".\GeneratedFiles\Debug\moc_cpuwindow.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\GeneratedFiles\Debug\moc_logwindow.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\GeneratedFiles\Debug\moc_mainwindow.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
+		<Global
+			Name="lupdateOnBuild"
+			Value="0"
+		/>
+		<Global
+			Name="MocDir"
+			Value=".\GeneratedFiles\$(ConfigurationName)"
+		/>
+		<Global
+			Name="MocOptions"
+			Value=""
+		/>
+		<Global
+			Name="QtVersion Win32"
+			Value="4.6.2"
+		/>
+		<Global
+			Name="RccDir"
+			Value=".\GeneratedFiles"
+		/>
+		<Global
+			Name="UicDir"
+			Value=".\GeneratedFiles"
+		/>
 	</Globals>
 </VisualStudioProject>

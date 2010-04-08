@@ -1,7 +1,12 @@
 #ifndef DBGAPI_H__
 #define DBGAPI_H__
 
-#define DBGAPI_API  __declspec(dllexport)
+#ifndef DBGAPI_DLLEXPORT
+#define DBGAPI_API __declspec(dllimport)
+#else
+#define DBGAPI_API __declspec(dllexport)
+#endif
+
 #ifdef _MSC_VER
 #define CALLING_CONVENTION __stdcall
 #else
@@ -243,7 +248,7 @@ typedef struct _ATTACH_INFO
 	ULONG image_size;
 	PVOID image_ep;
 	PVOID peb_addr;
-	CHAR  file_name[MAX_PATH];
+	WCHAR file_name[MAX_PATH];
 } ATTACH_INFO, *PATTACH_INFO;
 
 typedef
@@ -272,22 +277,7 @@ typedef struct _DBG_CONTEXT
 	PVOID            user_arg;
 } DBG_CONTEXT, *PDBG_CONTEXT;
 
-
-
 //#pragma pack (pop)
-
-#define DBG_EXCEPTION     1
-#define DBG_TERMINATED    2 
-#define DBG_START_THREAD  4
-#define DBG_EXIT_THREAD   8
-#define DBG_LOAD_DLL      16
-#define DBG_UNLOAD_DLL    32
-#define DBG_CONTINUE_CALL 64
-#define DBG_RDTSC         128
-
-#define RES_NOT_HANDLED   0
-#define RES_CONTINUE      1
-#define RES_CORRECT_FRAME 2
 
 #define FILTER_MAX  100
 
@@ -319,44 +309,45 @@ int CALLING_CONVENTION dbg_initialize_api(
         dbg_sym_get sym_callback
         );
 
-DBGAPI_API u_long CALLING_CONVENTION dbg_drv_version();
+DBGAPI_API
+HANDLE CALLING_CONVENTION dbg_open_process(
+        HANDLE pid
+        );
+
+DBGAPI_API
+u_long CALLING_CONVENTION dbg_drv_version();
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_terminate_process(
-        IN PVOID  remote_id,
         IN HANDLE proc_id
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_attach_debugger(
-        IN PVOID  remote_id,
-        IN HANDLE proc_id
+        IN HANDLE proc_id,
+        OUT PATTACH_INFO attach_info
         );
 
 DBGAPI_API
 HANDLE CALLING_CONVENTION dbg_create_process(
-        IN PVOID remote_id,
-        IN PCHAR cmd_line,
+        IN const char* cmd_line,
         IN ULONG create_flags
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_get_msg_event(
-        PVOID    remote_id,
         HANDLE   proc_id, 
         dbg_msg  *msg
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_set_filter(
-        PVOID       remote_id,
         HANDLE      proc_id,
         event_filt  *filter
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_continue_event(
-        PVOID             remote_id,
         HANDLE            proc_id, 
         u32               status,
         PEXCEPTION_RECORD new_record
@@ -364,7 +355,6 @@ int CALLING_CONVENTION dbg_continue_event(
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_read_memory(
-        PVOID       remote_id,
         HANDLE      proc_id,
         PVOID       mem_addr,
         PVOID       loc_buff,
@@ -374,7 +364,6 @@ int CALLING_CONVENTION dbg_read_memory(
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_write_memory(
-        PVOID       remote_id,
         HANDLE      proc_id,
         PVOID       mem_addr,
         PVOID       loc_buff,
@@ -384,14 +373,12 @@ int CALLING_CONVENTION dbg_write_memory(
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_get_context(
-        PVOID       remote_id,
         HANDLE      thread_id,
         PCONTEXT    context
         );
 
 DBGAPI_API
 int CALLING_CONVENTION dbg_set_context(
-        PVOID       remote_id,
         HANDLE      thread_id,
         PCONTEXT    context
         );
@@ -406,7 +393,7 @@ HFILE CALLING_CONVENTION dbg_open_file(
 DBGAPI_API
 BOOL CALLING_CONVENTION dbg_close_file(
         IN  HANDLE hObject
-		);
+        );
 
 DBGAPI_API
 BOOL CALLING_CONVENTION dbg_read_file(
@@ -419,12 +406,12 @@ BOOL CALLING_CONVENTION dbg_read_file(
 
 DBGAPI_API
 DWORD CALLING_CONVENTION dbg_resume_thread(
-        IN  HANDLE hThread
+        IN  HANDLE thread_id
         );
 
 DBGAPI_API
 DWORD CALLING_CONVENTION dbg_suspend_thread(
-        IN HANDLE hThread               
+        IN HANDLE thread_id               
         );
 
 DBGAPI_API
@@ -456,7 +443,6 @@ PVOID CALLING_CONVENTION dbg_enum_modules(
 
 DBGAPI_API
 PVOID CALLING_CONVENTION dbg_enum_threads(
-        IN PVOID remote_id,
         IN ULONG process_id
         );
 
@@ -482,6 +468,4 @@ int CALLING_CONVENTION dbg_hook_page(
         IN PVOID page_addr,
         IN PVOID code_page
         );
-
-
 #endif // DBGAPI_H__
