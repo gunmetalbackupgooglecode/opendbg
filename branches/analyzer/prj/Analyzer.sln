@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Analyzer", "../src/analyzer/Analyzer.vcproj", "{2A531509-7ECE-4A1E-A4E9-B133AE1DD393}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mediana", "Mediana.vcproj", "{CBE744BB-661E-4659-8F20-A5023B0373D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A531509-7ECE-4A1E-A4E9-B133AE1DD393}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2A531509-7ECE-4A1E-A4E9-B133AE1DD393}.Debug|Win32.Build.0 = Debug|Win32
+		{2A531509-7ECE-4A1E-A4E9-B133AE1DD393}.Release|Win32.ActiveCfg = Release|Win32
+		{2A531509-7ECE-4A1E-A4E9-B133AE1DD393}.Release|Win32.Build.0 = Release|Win32
+		{CBE744BB-661E-4659-8F20-A5023B0373D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CBE744BB-661E-4659-8F20-A5023B0373D2}.Debug|Win32.Build.0 = Debug|Win32
+		{CBE744BB-661E-4659-8F20-A5023B0373D2}.Release|Win32.ActiveCfg = Release|Win32
+		{CBE744BB-661E-4659-8F20-A5023B0373D2}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
