@@ -1,0 +1,69 @@
+ѕримеры:
+
+And дл€ контрол€ диапазона и Jcc не св€занный со свитчом:
+.text:0042A448                 shr     ecx, 2
+.text:0042A44B                 and     edx, 3
+.text:0042A44E                 cmp     ecx, 8
+.text:0042A451                 jb      short loc_42A47C
+.text:0042A453                 rep movsd
+.text:0042A455                 jmp     off_42A568[edx*4]
+...
+.text:0042A568 off_42A568      dd offset loc_42A578
+.text:0042A56C                 dd offset loc_42A580
+.text:0042A570                 dd offset loc_42A58C
+.text:0042A574 off_42A574      dd offset loc_42A5A0
+
+Forward-таблица с двойным контролем диапазона:
+.text:0042A440                 test    edi, 3
+.text:0042A446                 jnz     short loc_42A45C
+...
+.text:0042A45C                 mov     eax, edi
+.text:0042A45E                 mov     edx, 3
+.text:0042A463                 sub     ecx, 4
+.text:0042A466                 jb      short loc_42A474
+.text:0042A468                 and     eax, 3
+.text:0042A46B                 add     ecx, eax
+.text:0042A46D                 jmp     dword ptr off_42A484[eax*4-4]
+...
+.text:0042A483                 db  90h ; ?
+.text:0042A484                 dd offset loc_42A490
+.text:0042A488                 dd offset loc_42A4BC
+.text:0042A48C                 dd offset loc_42A4E0
+
+Back-таблица и JMP с единственным референсом:
+.text:0042A463                 sub     ecx, 4
+.text:0042A466                 jb      short loc_42A474
+...
+.text:0042A474                 jmp     dword ptr off_42A574[ecx*4+4]
+...
+.text:0042A568 off_42A568      dd offset loc_42A578
+.text:0042A56C                 dd offset loc_42A580
+.text:0042A570                 dd offset loc_42A58C
+.text:0042A574 off_42A574      dd offset loc_42A5A0
+
+Back-таблица с NEG:
+.text:0042A5CB                 and     edx, 3 // дл€ следующего примера
+.text:0042A5CE                 cmp     ecx, 8
+.text:0042A5D1                 jb      short loc_42A5E0
+...
+.text:0042A5E0                 neg     ecx
+.text:0042A5E2                 jmp     off_42A6B0[ecx*4]
+...
+.text:0042A694                 dd offset loc_42A6B4
+.text:0042A698                 dd offset loc_42A6BC
+.text:0042A69C                 dd offset loc_42A6C4
+.text:0042A6A0                 dd offset loc_42A6CC
+.text:0042A6A4                 dd offset loc_42A6D4
+.text:0042A6A8                 dd offset loc_42A6DC
+.text:0042A6AC                 dd offset loc_42A6E4
+.text:0042A6B0 off_42A6B0      dd offset loc_42A6F7
+
+“аблица с заранее неизвестным диапазоном значений (вложенный switch):
+.text:0042A6B0 off_42A6B0      dd offset loc_42A6F7
+...
+.text:0042A6F7                 jmp     off_42A700[edx*4]
+...
+.text:0042A700 off_42A700      dd offset loc_42A710
+.text:0042A704                 dd offset loc_42A718
+.text:0042A708                 dd offset loc_42A728
+.text:0042A70C                 dd offset loc_42A73C
