@@ -10,8 +10,8 @@ namespace analyser
 {
 
 /* ¬озвращаемые значени€:
-	= 0 - блок завершилс€ выходом за диапазон (не достаточно пам€ти или неправильный блок)
-	< 0 - блок заверешилс€ ошибкой анализа (неправильный блок)
+	= 0 - блок завершилс€ врезанием в уже проанализированный блок (неправильный блок или прыжок в середину блока)
+	< 0 - блок заверешилс€ ошибкой анализа (неправильный блок или недостаточно пам€ти)
 	> 0 - блок завершилс€ инструкцией завершени€ блока
 */
 #ifdef ARMADILLO
@@ -43,6 +43,9 @@ namespace analyser
 		{
 			EIP = code_section_va + (ptr - base);
 			res = medi_disassemble(ptr, &instr, &params);
+			/* TODO: проверка на вхождение адреса в уже существующий блок */
+
+			/**/
 			if (EIP == 0x42BB15 || EIP == 0x430A89)//0x406A17)
 				EIP = EIP;
 			if (params.errcode)
@@ -66,6 +69,7 @@ namespace analyser
 #ifdef _DEBUG
 					printf("=====================End of block===============================\n");
 #endif
+					node->address_end = node->address + node->size;
 					node->id = instr.id;
 					switch (instr.id)
 					{
@@ -303,8 +307,13 @@ namespace analyser
 		std::cout << "Exception raised: " << str << '\n';
 	}
 
-	return 0;
+	return -1;
 }
+
+/* TODO: реализовать функции: */
+u32 find_block_by_va (u32 vaddr){return 0;}
+int blocks_split (u32 first, u32 second){return 0;}
+int blocks_join (u32 first, u32 second){return 0;}
 
 #ifdef ARMADILLO
 	void blocks_analyser::ananlyze_from_va (u32 v_start_addr, nano_db *nanos)

@@ -82,6 +82,9 @@ private:
 	struct INSTRUCTION instr;
 	struct DISASM_INOUT_PARAMS params;
 	// END Mediana disassembler vars
+	u32 find_block_by_va (u32 vaddr);
+	int blocks_split (u32 first, u32 second);
+	int blocks_join (u32 first, u32 second);
 
 public:
 	u8 *base;
