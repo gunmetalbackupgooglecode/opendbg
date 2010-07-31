@@ -9,8 +9,10 @@ Tools and libraries you need:
  * [http://www.boost.org/users/download/ Boost]
  * [http://www.microsoft.com/whdc/DevTools/Debugging/default.mspx Debugging Tools for Windows]
  * [http://www.microsoft.com/whdc/DevTools/WDK/WDKpkg.mspx WDK]
-GUI:
+GUI (wxWidgets):
  * [http://www.wxwidgets.org/downloads/ wxWidgets]
+GUI (Qt):
+ * [http://qt.nokia.com/products/ Qt]
 
 = Details =
 
@@ -23,8 +25,7 @@ The following environment variables should be defined:
 ||QTDIR||C:\Qt\2009.03\Qt||
 ||PATH||%PATH%;C:\Qt\2009.03\Qt||
 
-Additional path for Visual Studio should be added. Open Tools->Options->Projects and Solutions\VC++ Directories, choose Platform:Win32, Show directories for:Include files, then add the following line:
-$(WXWIN)\include\msvc
+Additional path for Visual Studio should be added. Open Tools->Options->Projects and Solutions\VC++ Directories, choose Platform:Win32, Show directories for:Include files, then add the following line: $(WXWIN)\include\msvc
 
 Then open Visual Studio Command Prompt and do the following
 {{{
