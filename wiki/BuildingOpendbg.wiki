@@ -23,6 +23,9 @@ The following environment variables should be defined:
 ||QTDIR||C:\Qt\2009.03\Qt||
 ||PATH||%PATH%;C:\Qt\2009.03\Qt||
 
+Additional path for Visual Studio should be added. Open Tools->Options->Projects and Solutions\VC++ Directories, choose Platform:Win32, Show directories for:Include files, then add the following line:
+$(WXWIN)\include\msvc
+
 Then open Visual Studio Command Prompt and do the following
 {{{
 $ svn checkout https://opendbg.googlecode.com/svn/branches/minidbg opendbg
