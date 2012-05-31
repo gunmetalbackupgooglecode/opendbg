@@ -132,7 +132,7 @@ int dbg_build_start_params( cs8 *drv_name, u32 acc_key, const wchar_t* pdb_path,
     // How turn off it?! I can't... ;(
     do
     {
-        if (RegOpenKey(HKEY_LOCAL_MACHINE, name, &h_key) != 0) break;
+        if (RegOpenKeyA(HKEY_LOCAL_MACHINE, name, &h_key) != 0) break;
 
         for (i = 0; i < NUM_SYM; i++)
         {
@@ -157,13 +157,13 @@ int dbg_build_start_params( cs8 *drv_name, u32 acc_key, const wchar_t* pdb_path,
                     );
             }
 
-            if (RegSetValueEx(h_key, name, 0, REG_DWORD, (BYTE*)pv(&sym), sizeof(sym)) != 0) break;
+            if (RegSetValueExA(h_key, name, 0, REG_DWORD, (BYTE*)pv(&sym), sizeof(sym)) != 0) break;
         }
 
         if (i != NUM_SYM) break;
 
         /* save access key */
-        if (RegSetValueEx(h_key, "sc_key", 0, REG_DWORD, (BYTE*)pv(&acc_key), sizeof(u32)) != 0) break;
+        if (RegSetValueExA(h_key, "sc_key", 0, REG_DWORD, (BYTE*)pv(&acc_key), sizeof(u32)) != 0) break;
         succs = 1;
     } while (0);
 
@@ -264,9 +264,9 @@ int dbg_attach_debugger(
     PEB peb;
     IMAGE_DOS_HEADER dos;
     IMAGE_NT_HEADERS nt;
-    MODULEINFO mi;
+    //MODULEINFO mi;
     HANDLE h_proc = dbg_open_process(proc_id);
-    WCHAR imagename[MAX_PATH];
+    //WCHAR imagename[MAX_PATH];
     NtQueryInformationProcess(h_proc, ProcessBasicInformation, &pbi, sizeof(PROCESS_BASIC_INFORMATION), &ret_bytes);
     NtQueryInformationProcess(h_proc, MaxProcessInfoClass, &attach_info->file_name, sizeof(WCHAR) * MAX_PATH, &ret_bytes);
     dbg_read_memory(proc_id, pbi.PebBaseAddress, &peb, sizeof(PEB), &ret_bytes);
@@ -275,9 +275,9 @@ int dbg_attach_debugger(
     ////if (DebugActiveProcess((u32)proc_id))
 
 		CHAR filename[MAX_PATH];
-		GetModuleFileNameEx(h_proc, NULL, filename, sizeof(CHAR)*MAX_PATH);
+		GetModuleFileNameExA(h_proc, NULL, filename, sizeof(CHAR)*MAX_PATH);
 
-    HMODULE hMod = GetModuleHandle("notepad.exe");
+   // HMODULE hMod = GetModuleHandleA("notepad.exe");
 
     attach_info->image_ep = (PVOID)nt.OptionalHeader.AddressOfEntryPoint;
     attach_info->image_base = (PVOID)nt.OptionalHeader.ImageBase;

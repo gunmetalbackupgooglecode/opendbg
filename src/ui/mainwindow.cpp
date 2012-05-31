@@ -7,22 +7,39 @@ main_window::main_window(QWidget *parent, Qt::WFlags flags)
 {
 	ui.setupUi(this);
 	setWindowTitle(tr("opendbg"));
-	QDockWidget* cli_dock    = new QDockWidget(tr("Command Line"), this);
+	QDockWidget* cli_dock = new QDockWidget(tr("Command Line"), this);
 	QDockWidget* cpu_dock = new QDockWidget(tr("CPU View"), this);
 	QDockWidget* log_dock = new QDockWidget(tr("Log"), this);
+	QDockWidget* reg_dock = new QDockWidget(tr("Registers"), this);
+	QDockWidget* stack_dock = new QDockWidget(tr("Stack"), this);
+	QDockWidget* break_dock = new QDockWidget(tr("Breakpoints"), this);
 
 	m_cpu_window = new cpu_window();
 	m_cli_window = new cli_window("> ");
 	m_log_window = new log_window();
+	m_reg_window = new reg_window();
+	m_stk_window = new stk_window();
+	m_brk_window = new break_window();
+	
+	m_log_window->setReadOnly(true);
+	m_reg_window->setReadOnly(true);
+	m_stk_window->setReadOnly(true);
 
 	cpu_dock->setWidget(m_cpu_window);
 	cli_dock->setWidget(m_cli_window);
 	log_dock->setWidget(m_log_window);
+	reg_dock->setWidget(m_reg_window);
+	stack_dock->setWidget(m_stk_window);
+	break_dock->setWidget(m_brk_window);
+	this->addDockWidget(Qt::RightDockWidgetArea, reg_dock);
+	this->addDockWidget(Qt::RightDockWidgetArea, stack_dock);
 	this->addDockWidget(Qt::LeftDockWidgetArea, cpu_dock);
-	this->addDockWidget(Qt::TopDockWidgetArea, cli_dock);
+	this->addDockWidget(Qt::BottomDockWidgetArea, cli_dock);
 	this->addDockWidget(Qt::BottomDockWidgetArea, log_dock);
+	this->addDockWidget(Qt::BottomDockWidgetArea, break_dock);
 
 	init_menu();
+	init_toolbar();
 
 	qRegisterMetaType<dbg_msg>("dbg_msg");
 
@@ -34,6 +51,24 @@ main_window::main_window(QWidget *parent, Qt::WFlags flags)
 	connect(this, SIGNAL(exited_thread(dbg_msg)), m_log_window, SLOT(exit_thread_slot(dbg_msg)));
 	connect(this, SIGNAL(exceptioned(dbg_msg)), m_log_window, SLOT(exception_slot(dbg_msg)));
 	connect(this, SIGNAL(dll_loaded(dbg_msg)), m_log_window, SLOT(dll_load_slot(dbg_msg)));
+
+	connect(this, SIGNAL(created(dbg_msg)), m_reg_window, SLOT(created_slot(dbg_msg)));
+	connect(this, SIGNAL(debuged(dbg_msg)), m_reg_window, SLOT(debug_slot(dbg_msg)));
+	connect(this, SIGNAL(breakpointed(dbg_msg)), m_reg_window, SLOT(breakpoint_slot(dbg_msg)));
+	connect(this, SIGNAL(terminated(dbg_msg)), m_reg_window, SLOT(terminated_slot(dbg_msg)));
+	connect(this, SIGNAL(exceptioned(dbg_msg)), m_reg_window, SLOT(exception_slot(dbg_msg)));
+	
+	connect(this, SIGNAL(created(dbg_msg)), m_stk_window, SLOT(created_slot(dbg_msg)));
+	connect(this, SIGNAL(debuged(dbg_msg)), m_stk_window, SLOT(debug_slot(dbg_msg)));
+	connect(this, SIGNAL(terminated(dbg_msg)), m_stk_window, SLOT(terminated_slot(dbg_msg)));
+
+	connect(this, SIGNAL(created(dbg_msg)), m_brk_window, SLOT(created_slot(dbg_msg)));
+	connect(this, SIGNAL(debuged(dbg_msg)), m_brk_window, SLOT(debug_slot(dbg_msg)));
+	connect(this, SIGNAL(breakpointed(dbg_msg)), m_brk_window, SLOT(breakpoint_slot(dbg_msg)));
+	connect(this, SIGNAL(terminated(dbg_msg)), m_brk_window, SLOT(terminated_slot(dbg_msg)));
+	connect(this, SIGNAL(started_thread(dbg_msg)), m_brk_window, SLOT(start_thread_slot(dbg_msg)));
+	connect(this, SIGNAL(exited_thread(dbg_msg)), m_log_window, SLOT(exit_thread_slot(dbg_msg)));
+	connect(this, SIGNAL(exceptioned(dbg_msg)), m_brk_window, SLOT(exception_slot(dbg_msg)));
 
 	m_tracer.add_created_slot(boost::bind(&main_window::created_handler, this, _1));
 	m_tracer.add_trace_slot(boost::bind(&main_window::debug_handler, this, _1));
@@ -49,6 +84,8 @@ main_window::~main_window()
 	delete m_cpu_window;
 	delete m_cli_window;
 	delete m_log_window;
+	delete m_reg_window;
+	delete m_stk_window;
 }
 
 void main_window::init_menu()
@@ -90,17 +127,58 @@ void main_window::init_menu()
 	m_run_action->setStatusTip(tr("Run the program"));
 	connect(m_run_action, SIGNAL(triggered()), this, SLOT(run()));
 
+	m_options_menu = menuBar()->addMenu(tr("&Options"));
+
+	m_options_action = new QAction(tr("Debugger o&ptions"), this);
+	m_options_action->setShortcut(tr("Ctrl-F12"));
+	m_options_action->setStatusTip(tr("Debugger options"));
+	connect(m_run_action, SIGNAL(triggered()), this, SLOT(options()));
+	
+	m_options_menu->addAction(m_options_action);
+
 	m_debug_menu->addAction(m_step_into_action);
 	m_debug_menu->addAction(m_step_over_action);
 	m_debug_menu->addAction(m_step_out_action);
 	m_debug_menu->addAction(m_run_action);
 }
 
+void main_window::init_toolbar()
+{
+	ui.mainToolBar->setObjectName(tr("Toolbar"));
+	m_btn_open_action = ui.mainToolBar->addAction(QIcon(":/main_window/open"), tr("Open"));
+	m_btn_open_action->setStatusTip(tr("Open module for debugging"));
+	connect(m_btn_open_action, SIGNAL(triggered()), this, SLOT(open()));
+
+	m_btn_restart_action = ui.mainToolBar->addAction(QIcon(":/main_window/restart"), tr("Restart"));
+	m_btn_restart_action->setStatusTip(tr("Restart module"));
+	connect(m_btn_restart_action, SIGNAL(triggered()), this, SLOT(restart()));
+
+	m_btn_stop_action = ui.mainToolBar->addAction(QIcon(":/main_window/close"), tr("Close"));
+	m_btn_stop_action->setStatusTip(tr("Stop debugging"));
+	connect(m_btn_stop_action, SIGNAL(triggered()), this, SLOT(stop()));
+
+	ui.mainToolBar->addSeparator();
+
+	m_btn_run_action = ui.mainToolBar->addAction(QIcon(":/main_window/run"), tr("Run"));
+	m_btn_run_action->setStatusTip(tr("Run module"));
+	connect(m_btn_run_action, SIGNAL(triggered()), this, SLOT(run()));
+
+	m_btn_stepin_action = ui.mainToolBar->addAction(QIcon(":/main_window/stepin"), tr("Step Into"));
+	m_btn_stepin_action->setStatusTip(tr("Step into"));
+	connect(m_btn_stepin_action, SIGNAL(triggered()), this, SLOT(step_into()));
+
+	m_btn_stepover_action = ui.mainToolBar->addAction(QIcon(":/main_window/stepover"), tr("Step Over"));
+	m_btn_stepover_action->setStatusTip(tr("Step over"));
+	connect(m_btn_stepover_action, SIGNAL(triggered()), this, SLOT(step_over()));
+}
+
 void main_window::open()
 {
-	QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QString(), tr("Executables (*.exe *.dll)"));
-	m_tracer.set_image_name(filename.toStdString());
-	boost::thread dbg_thread(boost::ref(m_tracer));
+	filename = QFileDialog::getOpenFileName(this, tr("Open File"), QString(), tr("Executables (*.exe *.dll)"));
+	if (filename.size()) {
+		m_tracer.set_image_name(filename.toStdString());
+		boost::thread dbg_thread(boost::ref(m_tracer));
+	}
 }
 
 void main_window::exit()
@@ -127,8 +205,29 @@ void main_window::step_over()
 
 void main_window::step_out()
 {
-	m_tracer.step_out();
+	//m_tracer.step_out();
+	//m_condition.notify_all();
+}
+
+void main_window::stop()
+{
+	m_tracer.stop_process();
 	m_condition.notify_all();
+}
+
+void main_window::restart()
+{
+	m_tracer.stop_process();
+	m_condition.notify_all();
+	if (filename.size()) {
+		m_tracer.set_image_name(filename.toStdString());
+		boost::thread dbg_thread(boost::ref(m_tracer));
+	}
+	m_condition.notify_all();
+}
+
+void main_window::options()
+{
 }
 
 void main_window::created_handler(dbg_msg msg)

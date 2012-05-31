@@ -74,7 +74,7 @@ void test_dbg_attach_debugger()
 void test_events_handling()
 {
 	std::string image_name("c:\\windows\\notepad.exe");
-	trc::tracer tracer_obj(trc::X86);
+	trc::tracer tracer_obj(trc::instruction_set_X86);
 	tracer_obj.set_image_name(image_name);
 	BOOST_CHECK_EQUAL( tracer_obj.get_image_name(), "c:\\windows\\notepad.exe" );
 
@@ -92,7 +92,7 @@ void test_events_handling()
 
 void test_step_trace_functions()
 {
-	trc::tracer tracer_obj(trc::X86);
+	trc::tracer tracer_obj(trc::instruction_set_X86);
 
 	u8 loop[] = { 0xE2, 0xE9 };
 	BOOST_CHECK(tracer_obj.is_loop(loop));

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "mainwindow.h"
 #include <QtGui/QApplication>
 

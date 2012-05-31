@@ -55,7 +55,7 @@ private:
 private:
 	boost::cli::command_line_interpreter* m_cli;
 
-	trc::tracer m_tracer;
+	debugger::tracer m_tracer;
 	condition_t m_condition;
 	mutex_t     m_mutex;
 

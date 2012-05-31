@@ -9,7 +9,7 @@
 
 #include "dbgapi.h"
 #include "pdbparser.h"
-#include "../../../src/tracer/BreakpointsManager.h"
+#include "BreakpointsManager.h"
 
 #include "udis86.h"
 

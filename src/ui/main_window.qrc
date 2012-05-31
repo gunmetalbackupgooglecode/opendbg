@@ -1,4 +1,10 @@
 <RCC>
-    <qresource prefix="main_window">
+    <qresource prefix="/main_window">
+        <file alias="close">Resources/CLOSE.bmp</file>
+        <file alias="open">Resources/OPEN.bmp</file>
+        <file alias="restart">Resources/RESTART.bmp</file>
+        <file alias="run">Resources/RUN.bmp</file>
+        <file alias="stepin">Resources/STEPIN.bmp</file>
+        <file alias="stepover">Resources/STEPOVER.bmp</file>
     </qresource>
 </RCC>

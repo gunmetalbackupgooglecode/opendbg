@@ -9,12 +9,11 @@
 
 #include "dbgapi.h"
 #include "pdbparser.h"
-#include "breakpoint.h"
+#include "../src/tracer/BreakpointsManager.h"
 
 #include "udis86.h"
 
-namespace trc
-{
+namespace debugger{
 
 #define MAX_INSTRUCTION_LEN 16
 
@@ -25,8 +24,8 @@ class tracer
 public:
 	typedef boost::signals2::signal<void (dbg_msg&)> signal_t;
 	typedef boost::signals2::connection             connection_t;
-	typedef std::vector<breakpoint>                 breakpoint_array_t;
-	typedef breakpoint_array_t::iterator            breakpoint_iterator;
+	//typedef std::vector<breakpoint>                 breakpoint_array_t;
+	//typedef breakpoint_array_t::iterator            breakpoint_iterator;
 
 public:
 	tracer();
@@ -36,15 +35,18 @@ public:
 
 	void init(instruction_set set);
 	void trace_process();
+	void stop_process();
 	u_long get_version();
 	void open_process(const std::string& filename);
-	void add_breakpoint(u32 proc_id, u32 thread_id, u3264 address);
-	void del_breakpoint(u32 proc_id, u32 thread_id, u3264 address);
+	// interfaces by Rascal
+	BreakpointsManager& getBreakpointsManager();
+	//void add_breakpoint(u32 proc_id, u32 thread_id, u3264 address);
+	//void del_breakpoint(u32 proc_id, u32 thread_id, u3264 address);
 
 	bool is_untraceable_opcode(u8* opcode);
-	bool is_call(u8* opcode);
-	bool is_rep(u8* opcode);
-	bool is_loop(u8* opcode);
+	bool is_call();
+	bool is_rep();
+	bool is_loop();
 
 	void step_into();
 	void step_over();
@@ -119,6 +121,9 @@ private:
 	HANDLE      m_pid;
 	HANDLE      m_tid;
 	dbg_msg     m_msg;
+	// interfaces by Rascal
+	sys::PROCESS_PTR process;
+	BreakpointsManager breakpointsManager;
 
 	signal_t m_created_signal;
 	signal_t m_trace_signal;
@@ -129,8 +134,8 @@ private:
 	signal_t m_exception_signal;
 	signal_t m_dll_load_signal;
 
-	breakpoint_array_t m_bp_usr_array;
-	breakpoint_array_t m_bp_trc_array;
+	//breakpoint_array_t m_bp_usr_array;
+	//breakpoint_array_t m_bp_trc_array;
 	ud_t m_disasm;
 };
 

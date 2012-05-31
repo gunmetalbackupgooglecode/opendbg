@@ -6,9 +6,14 @@
 #include <QtGui/QTextEdit>
 #include "ui_main_window.h"
 
+#include "stdafx.h"
+
 #include "cpuwindow.h"
 #include "cliwindow.h"
 #include "logwindow.h"
+#include "regwindow.h"
+#include "stackwindow.h"
+#include "breakwindow.h"
 
 #include "tracer.h"
 
@@ -52,9 +57,14 @@ private slots:
 	void step_over();
 	void step_out();
 	void run();
+	void stop();
+	void restart();
+
+	void options();
 
 private:
 	void init_menu();
+	void init_toolbar();
 
 	void created_handler(dbg_msg msg);
 	void debug_handler(dbg_msg msg);
@@ -68,6 +78,7 @@ private:
 private:
 	QMenu* m_file_menu;
 	QMenu* m_debug_menu;
+	QMenu *m_options_menu;
 
 private:
 	QAction* m_open_action;
@@ -76,15 +87,26 @@ private:
 	QAction* m_step_over_action;
 	QAction* m_step_out_action;
 	QAction* m_run_action;
+	QAction* m_options_action;
+	QAction* m_btn_open_action;
+	QAction* m_btn_restart_action;
+	QAction* m_btn_stop_action;
+	QAction* m_btn_run_action;
+	QAction* m_btn_stepin_action;
+	QAction* m_btn_stepover_action;
 
 private:
 	Ui::main_windowClass ui;
 	cli_window* m_cli_window;
 	cpu_window* m_cpu_window;
 	log_window* m_log_window;
+	reg_window *m_reg_window;
+	stk_window *m_stk_window;
+	break_window *m_brk_window;
 
 private:
-	trc::tracer m_tracer;
+	QString filename;
+	debugger::tracer m_tracer;
 	condition_t m_condition;
 	mutex_t     m_mutex;
 
