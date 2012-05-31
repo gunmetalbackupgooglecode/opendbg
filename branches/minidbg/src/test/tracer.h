@@ -10,7 +10,7 @@ namespace trc
 
 #define MAX_INSTRUCTION_LEN 16
 
-enum instruction_set { X86 = 32, X86_64 = 64 };
+enum instruction_set { instruction_set_X86 = 32, instruction_set_X86_64 = 64 };
 
 class tracer
 {

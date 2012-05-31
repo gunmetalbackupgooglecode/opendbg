@@ -1,33 +1,33 @@
 #pragma once
-#ifndef LOGWINDOW_H__
-#define LOGWINDOW_H__
+#ifndef STACKWINDOW_H__
+#define STACKWINDOW_H__
 
 #include <QtGui/QTextEdit>
 #include "dbgapi.h"
 
-class log_window : public QTextEdit
+class stk_window : public QTextEdit
 {
 	Q_OBJECT
 public:
-	log_window()
+	stk_window()
 	 : QTextEdit()
 	{
 	}
 
-	log_window(const QString &text, QWidget *parent = 0)
+	stk_window(const QString &text, QWidget *parent = 0)
 	 : QTextEdit(text)
 	{
 	}
+
+private:
+	void contextMenuEvent(QContextMenuEvent *event);
 
 public slots:
 	void created_slot(dbg_msg msg);
 	void debug_slot(dbg_msg msg);
 	void breakpoint_slot(dbg_msg msg);
 	void terminated_slot(dbg_msg msg);
-	void start_thread_slot(dbg_msg msg);
-	void exit_thread_slot(dbg_msg msg);
 	void exception_slot(dbg_msg msg);
-	void dll_load_slot(dbg_msg msg);
 };
 
-#endif // LOGWINDOW_H__
+#endif // STACKWINDOW_H__

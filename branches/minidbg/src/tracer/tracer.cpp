@@ -1,17 +1,17 @@
 #include "stdafx.h"
 
 #include "tracer.h"
+#include "Process.h"
 
 #pragma intrinsic(_ReadWriteBarrier)
 
 
-namespace trc
-{
+namespace debugger{
 
 tracer::tracer()
  : m_image_name("")
 {
-	init(instruction_set::X86);
+	init(X86);
 }
 
 tracer::tracer(instruction_set set)
@@ -72,6 +72,7 @@ void tracer::trace_process()
 	do
 	{
 	dbg_msg msg;
+	u3264 ep_addr;
 	u32 continue_status = DBG_CONTINUE;
 	if (dbg_get_msg_event(m_pid, &msg) == 0)
 	{
@@ -83,11 +84,18 @@ void tracer::trace_process()
 
 	if (msg.event_code == DBG_CREATED)
 	{
+		sys::PROCESS_PTR ps(new sys::Process((u3264)m_pid));
+		process = ps;
+		sys::THREAD_PTR targetThread(new sys::Thread((u3264)m_tid));
 		std::cout << msg.created.image_base << "\n";
-		HANDLE ep_addr = (HANDLE)((u3264)attach_info.image_ep + (u3264)msg.created.image_base);
+		ep_addr = (u3264)attach_info.image_ep + (u3264)msg.created.image_base;
+		
 		try {
-			m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), reinterpret_cast<u3264>(m_tid), reinterpret_cast<u3264>(ep_addr)));
-		} catch (tracer_error& e) {
+			// @todo replace with temprorary breakpoint
+			debugger::BREAKPOINT_PTR breakpoint(new debugger::SoftwareBreakpoint(process, targetThread,
+				ep_addr, 1, debugger::Breakpoint::onExecute, false));
+			breakpointsManager.addBreakpoint(breakpoint);
+		} catch (DebuggerException& e) {
 			std::cout << e.what() << "\n";
 		}
 		m_created_signal(msg);
@@ -117,12 +125,25 @@ void tracer::trace_process()
 				: continue_status = DBG_EXCEPTION_NOT_HANDLED;
 
 		case EXCEPTION_BREAKPOINT:
-			for (int i = 0; i < m_bp_trc_array.size(); ++i)
-				if ( m_bp_trc_array[i].get_address() == reinterpret_cast<u3264>(msg.exception.except_record.ExceptionAddress) )
-				{
-					m_bp_trc_array[i].turn_off();
-					m_breakpoint_signal(msg);
+			{
+				u3264 mem_addr = reinterpret_cast<u3264>(msg.exception.except_record.ExceptionAddress);
+				BREAKPOINT_PTR stop = breakpointsManager.findBreakpoint(mem_addr);
+				if (stop.get()) {
+					stop.get()->disable();
+					// jump back to exception address
+					CONTEXT dbg_context;
+					dbg_context.ContextFlags = CONTEXT_FULL;
+					dbg_get_context((HANDLE)m_tid, &dbg_context);
+					dbg_context.Eip--;
+					dbg_set_context((HANDLE)m_tid, &dbg_context);
+					// delete temprorary breakpoints
+					if (stop.get()->get_type() == brk_temp)
+						breakpointsManager.deleteBreakpoint(mem_addr);
+					// generate Breakpoint signal
+                    m_breakpoint_signal(msg);
 				}
+			}
+			// @todo process unknown breakpoints
 
 			break;
 
@@ -154,6 +175,11 @@ void tracer::trace_process()
 	if (!ContinueDebugEvent((u32)msg.process_id, (u32)msg.thread_id, continue_status))
 		break;
 	} while (1);
+}
+
+void tracer::stop_process()
+{
+	dbg_terminate_process(m_pid);
 }
 
 // modified version for xp sp3
@@ -203,7 +229,7 @@ CALLBACK tracer::get_symbols_callback(int sym_type, char * sym_name, char * sym_
 
 	return 0;
 }
-
+/*
 void tracer::add_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 {
 	m_bp_usr_array.push_back(breakpoint(proc_id, thread_id, address));
@@ -216,11 +242,10 @@ void tracer::del_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 		m_bp_usr_array.end(),
 		boost::bind(&breakpoint::get_address, _1) == address
 	);
-}
+}*/
 
 bool enable_single_step(HANDLE process_id, HANDLE thread_id)
 {
-	u_long readed, cmdlength;
 	CONTEXT ctx;
 	ctx.ContextFlags = CONTEXT_CONTROL;
 	if (dbg_get_context(thread_id, &ctx))
@@ -254,19 +279,13 @@ bool tracer::is_untraceable_opcode(u8* opcode)
 	(opcode[0] == 0x9C); // pushfd 
 }
 
-bool tracer::is_call(u8* opcode)
+bool tracer::is_call()
 {
-	ud_set_input_buffer(&m_disasm, opcode, MAX_INSTRUCTION_LEN);
-	ud_disassemble(&m_disasm);
-
 	return m_disasm.mnemonic == UD_Icall;
 }
 
-bool tracer::is_rep(u8* opcode)
+bool tracer::is_rep()
 {
-	ud_set_input_buffer(&m_disasm, opcode, MAX_INSTRUCTION_LEN);
-	ud_disassemble(&m_disasm);
-
 	return m_disasm.pfx_rep ||
 		m_disasm.pfx_repe ||
 		m_disasm.pfx_repne ||
@@ -274,11 +293,8 @@ bool tracer::is_rep(u8* opcode)
 		m_disasm.mnemonic == UD_Irepne;
 }
 
-bool tracer::is_loop(u8* opcode)
+bool tracer::is_loop()
 {
-	ud_set_input_buffer(&m_disasm, opcode, MAX_INSTRUCTION_LEN);
-	ud_disassemble(&m_disasm);
-
 	return (m_disasm.mnemonic == UD_Iloop) ||
 		(m_disasm.mnemonic == UD_Iloope) ||
 		(m_disasm.mnemonic == UD_Iloopnz);
@@ -286,7 +302,32 @@ bool tracer::is_loop(u8* opcode)
 
 void tracer::step_into()
 {
-	enable_single_step(m_pid, m_tid);
+	CONTEXT ctx;
+	ctx.ContextFlags = CONTEXT_FULL;
+	dbg_get_context(m_tid, &ctx);
+
+	
+	u8 buf[MAX_INSTRUCTION_LEN];
+	dbg_read_memory(m_pid, (void*)ctx.Eip, &buf, MAX_INSTRUCTION_LEN*sizeof(u8), NULL);
+
+	if (is_untraceable_opcode(buf))
+	{
+		ud_init(&m_disasm);
+		ud_set_mode(&m_disasm, 32);
+		
+		ud_set_syntax(&m_disasm, UD_SYN_INTEL);
+		ud_set_input_buffer(&m_disasm, buf, MAX_INSTRUCTION_LEN);
+		size_t sz = ud_disassemble(&m_disasm);
+		// @todo fix this
+		sys::THREAD_PTR targetThread(new sys::Thread((u3264)m_tid));
+		// @todo replace with temprorary breakpoint
+		debugger::BREAKPOINT_PTR breakpoint(new debugger::SoftwareBreakpoint(process, targetThread,
+			ctx.Eip + sz, 1, debugger::Breakpoint::onExecute, false));
+		breakpointsManager.addBreakpoint(breakpoint);
+		//m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, ctx.Eip + sz));
+	} else {
+		enable_single_step(m_pid, m_tid);
+	}
 }
 
 void tracer::step_over()
@@ -296,16 +337,17 @@ void tracer::step_over()
 	dbg_get_context(m_tid, &ctx);
 
 	ud_init(&m_disasm);
+	ud_set_mode(&m_disasm, 32);
 
 	u8 buf[MAX_INSTRUCTION_LEN];
 	dbg_read_memory(m_pid, (void*)ctx.Eip, &buf, MAX_INSTRUCTION_LEN*sizeof(u8), NULL);
 	ud_set_syntax(&m_disasm, UD_SYN_INTEL);
 	ud_set_input_buffer(&m_disasm, buf, MAX_INSTRUCTION_LEN);
-	ud_disassemble(&m_disasm);
+	size_t sz = ud_disassemble(&m_disasm);
 
-	if (m_disasm.mnemonic == UD_Icall) {
-		size_t sz = get_size_till_ret((void*)ctx.Eip);
-		m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, ctx.Eip + sz));
+	if (is_loop() || is_rep() || is_call()) {
+		//size_t sz = get_size_till_ret((void*)ctx.Eip);
+		//m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, ctx.Eip + sz));
 	} else {
 		enable_single_step(m_pid, m_tid);
 	}
@@ -313,11 +355,12 @@ void tracer::step_over()
 
 void tracer::step_out()
 {
+	return; // @todo rewrite it from scratch!
 	CONTEXT ctx;
 	dbg_get_context(m_tid, &ctx);
 
-	size_t sz = get_size_till_ret((void*)ctx.Eip);
-	m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, ctx.Eip + sz));
+	size_t sz = get_size_till_ret((void*)ctx.Eip); // wrong!
+	//m_bp_trc_array.push_back(breakpoint(reinterpret_cast<u3264>(m_pid), 0, ctx.Eip + sz));
 }
 
 u32 get_size_till_ret(void* fn)
@@ -327,13 +370,14 @@ u32 get_size_till_ret(void* fn)
 	ud_init(&disasm);
 	ud_set_mode(&disasm, 32);
 
+	// @todo fixme (need analyzer)
 	do
 	{
 		ud_set_input_buffer(&disasm, (uint8_t*)fn, MAX_INSTRUCTION_LEN);
 		ud_disassemble(&disasm);
 		len = ud_insn_len(&disasm);
 		res += len;
-		if ((len == 1) && (disasm.mnemonic == UD_Iret)) break;
+		if ((disasm.mnemonic == UD_Iretf) || (disasm.mnemonic == UD_Iret)) break;
 		fn = (void*)((u32)fn + len);
 	} while (len);
 

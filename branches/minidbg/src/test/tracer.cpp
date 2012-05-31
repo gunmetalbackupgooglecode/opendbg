@@ -9,7 +9,7 @@ namespace trc
 tracer::tracer()
  : m_image_name("")
 {
-	init(instruction_set::X86);
+	init(instruction_set_X86);
 }
 
 tracer::tracer(instruction_set set)
@@ -118,7 +118,7 @@ void tracer::trace_process()
 				: continue_status = DBG_EXCEPTION_NOT_HANDLED;
 
 		case EXCEPTION_BREAKPOINT:
-			for (int i = 0; i < m_bp_trc_array.size(); ++i)
+			for (unsigned int i = 0; i < m_bp_trc_array.size(); ++i)
 				if ( m_bp_trc_array[i].get_address() == reinterpret_cast<u3264>(msg.exception.except_record.ExceptionAddress) )
 					m_bp_trc_array[i].turn_off();
 
@@ -212,7 +212,7 @@ void tracer::del_breakpoint(u32 proc_id, u32 thread_id, u3264 address)
 
 bool enable_single_step(HANDLE process_id, HANDLE thread_id)
 {
-	u_long readed, cmdlength;
+	//u_long readed, cmdlength;
 	CONTEXT context;
 	context.ContextFlags = CONTEXT_CONTROL;
 	if (dbg_get_context(thread_id, &context))

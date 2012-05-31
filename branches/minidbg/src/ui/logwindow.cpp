@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "logwindow.h"
 
-#include "dbg_def.h"
 #include "dbgapi.h"
 #include "udis86.h"
 
@@ -31,8 +30,18 @@ void log_window::debug_slot(dbg_msg msg)
 
 void log_window::breakpoint_slot(dbg_msg msg)
 {
-	append(QString().sprintf("DBG_BREAKPOINT %x",
-					msg.exception.except_record.ExceptionAddress)
+	ud_t disasm;
+	ud_init(&disasm);
+	ud_set_mode(&disasm, 32);
+	u8 buf[max_instruction_len];
+	dbg_read_memory(msg.process_id, msg.exception.except_record.ExceptionAddress, &buf, max_instruction_len*sizeof(u8), NULL);
+	ud_set_syntax(&disasm, UD_SYN_INTEL);
+	ud_set_input_buffer(&disasm, buf, max_instruction_len);
+	ud_disassemble(&disasm);
+
+	append(QString().sprintf("DBG_BREAKPOINT %x %s",
+					msg.exception.except_record.ExceptionAddress,
+					ud_insn_asm(&disasm))
 				);
 }
 
@@ -74,11 +83,11 @@ void log_window::exception_slot(dbg_msg msg)
 
 void log_window::dll_load_slot(dbg_msg msg)
 {
-	append(QString().sprintf("DBG_LOAD_DLL %s adr 0x%p sz 0x%x in %x:%x",
-			QString::fromWCharArray(msg.dll_load.dll_name).toStdString().c_str(),
-			msg.dll_load.dll_image_base,
-			msg.dll_load.dll_image_size,
-			msg.thread_id,
-			msg.process_id)
+	append(QString("DBG_LOAD_DLL %1 addr 0x%2 sz 0x%3 in %4:%5")
+			.arg(QString::fromWCharArray(msg.dll_load.dll_name))
+			.arg(reinterpret_cast<quint32>(msg.dll_load.dll_image_base), 0, 16)
+			.arg(msg.dll_load.dll_image_size)
+			.arg(reinterpret_cast<quint32>(msg.thread_id), 0, 16)
+			.arg(reinterpret_cast<quint32>(msg.process_id), 0, 16)
 		);
 }
